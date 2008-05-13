@@ -98,6 +98,7 @@ public class pascal_program {
 
 	executable get_next_command(ListIterator<token> token_iterator) {
 		token next = token_iterator.next();
+		if(next instanceof i)
 		if (next instanceof word_token) {
 			String name = get_word_value(next);
 			next = token_iterator.next();
