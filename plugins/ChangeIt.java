@@ -2,15 +2,16 @@ package plugins;
 
 import java.util.ArrayList;
 
-import pascalTypes.pascalType;
-import pascalTypes.pascalVar;
+import pascalTypes.pascal_type;
+import pascalTypes.standard_type;
+import pascalTypes.standard_var;
 import processing.pascalPlugin;
 
 public class ChangeIt extends pascalPlugin<Object> {
-	public pascalVar<String> text;
+	public standard_var<String> text;
 
 	@SuppressWarnings("unchecked")
-	public ChangeIt(ArrayList<pascalType> arrayOfArgs) throws Exception {
+	public ChangeIt(ArrayList<pascal_type> arrayOfArgs) throws Exception {
 		super(arrayOfArgs);
 	}
 

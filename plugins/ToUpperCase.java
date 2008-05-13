@@ -1,14 +1,16 @@
 package plugins;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
-import pascalTypes.pascalType;
+import pascalTypes.pascal_type;
+import pascalTypes.standard_type;
 import processing.pascalPlugin;
 
 public class ToUpperCase extends pascalPlugin<String> {
 	public String text;
 
-	public ToUpperCase(ArrayList<pascalType> arrayOfArgs) throws Exception {
+	public ToUpperCase(LinkedList<pascal_type> arrayOfArgs) throws Exception {
 		super(arrayOfArgs);
 	}
 

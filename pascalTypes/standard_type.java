@@ -2,7 +2,7 @@ package pascalTypes;
 
 import java.util.HashMap;
 
-public class pascalType<T> {
+public class standard_type<T> implements pascal_type {
 	static HashMap<Class, Object> default_values;
 	static {
 		default_values = new HashMap<Class, Object>();
@@ -17,19 +17,19 @@ public class pascalType<T> {
 		return value;
 	}
 
-	public pascalType(T value) {
+	public standard_type(T value) {
 		this.value = value;
 	}
 
-	public pascalType(pascalType<T> value) {
+	public standard_type(standard_type<T> value) {
 		this.value = value.get();
 	}
 
 	public final boolean is_variable() {
-		return this instanceof pascalVar;
+		return this instanceof standard_var;
 	}
 
-	public pascalType(Class<T> type) {
+	public standard_type(Class<T> type) {
 		this((T) default_values.get(type));
 	}
 

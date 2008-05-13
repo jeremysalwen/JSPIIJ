@@ -1,6 +1,6 @@
 package preprocessed;
 
-import pascalTypes.pascalVar;
+import pascalTypes.standard_var;
 
 public class variable_set<T> implements executable {
 	String name;
@@ -12,7 +12,7 @@ public class variable_set<T> implements executable {
 	}
 
 	public void execute(function_on_stack f) {
-		((pascalVar<T>) f.variables.get(name)).set(value.get_value(f).get());
+		((standard_var<T>) f.variables.get(name)).set(value.get_value(f).get());
 	}
 
 }

@@ -25,6 +25,7 @@ import tokens.colon_token;
 import tokens.comma_token;
 import tokens.do_token;
 import tokens.if_token;
+import tokens.operator_token;
 import tokens.parenthesized_token;
 import tokens.semicolon_token;
 import tokens.then_token;
@@ -107,28 +108,32 @@ public class pascal_program {
 			assert (token_iterator.next() instanceof then_token);
 			executable command = get_next_command(token_iterator);
 			return new if_statement(condition, command);
-		} else if(next instanceof while_token) {
+		} else if (next instanceof while_token) {
 			returns_value<Boolean> condition = get_next_returns_value(token_iterator);
 			assert (token_iterator.next() instanceof do_token);
 			executable command = get_next_command(token_iterator);
 			return new while_statement(condition, command);
-		}else if(next instanceof word_token) {
+		} else if (next instanceof word_token) {
 			String name = get_word_value(next);
 			next = token_iterator.next();
 			if (next instanceof parenthesized_token) {
 				LinkedList<returns_value> arguments = get_arguments_for_call((parenthesized_token) next);
-				assert (token_iterator.next() instanceof semicolon_token);
+				assert_next_semicolon(token_iterator);
 				if (plugins.containsKey(name)) {
 					return new plugin_call(name, arguments);
 				} else {
 					return new function_call(name, arguments);
 				}
-			} else if (next instanceof assignment_token) {
+			} else if (next instanceof operator_token
+					&& ((operator_token) next).type == operator_token.types.PERIOD) {
+				
+			}
+			if (next instanceof assignment_token) {
+
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
 				assert_next_semicolon(token_iterator);
 				return new variable_set(name, value_to_assign);
 			}
-
 		}
 	}
 

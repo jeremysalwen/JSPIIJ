@@ -18,8 +18,8 @@ import pascalTypes.Int;
 import pascalTypes.VarChar;
 import pascalTypes.VarInt;
 import pascalTypes.VarString;
-import pascalTypes.pascalType;
-import pascalTypes.pascalVar;
+import pascalTypes.standard_type;
+import pascalTypes.standard_var;
 import pascalTypes.string;
 import pascalTypes.types;
 import preProcessing.PreProcessedOnly.PreprocessedFunction;
@@ -156,8 +156,8 @@ public class CodeProcessor implements Runnable {
 		}
 	}
 
-	public ArrayList<pascalType> parseArgs(String s) {
-		ArrayList<pascalType> result = new ArrayList<pascalType>();
+	public ArrayList<standard_type> parseArgs(String s) {
+		ArrayList<standard_type> result = new ArrayList<standard_type>();
 		if (!(s.contains("(") && s.contains(")")))
 			return result;
 		String theString = s.substring(1, s.length());
@@ -165,11 +165,11 @@ public class CodeProcessor implements Runnable {
 		String[] argSplit = StaticMethods.splitNoQuotes(theString, split);
 		for (String s2 : argSplit) {
 			s2 = s2.trim().toLowerCase();
-			pascalVar v = getVar(s2);
+			standard_var v = getVar(s2);
 			if (v != null)
 				result.add(v);
 			else {
-				pascalType p = parseConst(s2);
+				standard_type p = parseConst(s2);
 				if (p != null)
 					result.add(p);
 				else if (isPlugin(s2))
@@ -196,11 +196,11 @@ public class CodeProcessor implements Runnable {
 		return false;
 	}
 
-	public pascalVar getVar(String s) {
+	public standard_var getVar(String s) {
 		return variables.get(s);
 	}
 
-	private pascalType parseConst(String s) {
+	private standard_type parseConst(String s) {
 		if (s.startsWith("'") && s.endsWith("'"))
 			return new string_token(s.substring(1, s.length() - 1));
 		else
@@ -216,28 +216,28 @@ public class CodeProcessor implements Runnable {
 	}
 
 	private boolean isPlugin(String s) {
-		ArrayList<pascalType> args;
+		ArrayList<standard_type> args;
 		if (s.contains("(") && s.contains(")"))
 			args = parseArgs(s.substring(s.indexOf('('), StaticMethods
 					.lastIndex(s, ')') + 1));
 		else
-			args = new ArrayList<pascalType>();
+			args = new ArrayList<standard_type>();
 		Class<pascalPlugin> foundPlugin = getPlugin(s);
 		if (foundPlugin == null)
 			return false;
 		return StaticMethods.argsMatch(args, foundPlugin);
 	}
 
-	public pascalType getPluginVal(String name, ArrayList<pascalType> args) {
+	public standard_type getPluginVal(String name, ArrayList<standard_type> args) {
 		Class<pascalPlugin> foundPlugin = getPlugin(name);
 		return getPluginVal(foundPlugin, args);
 	}
 
-	public pascalType getPluginVal(Class<pascalPlugin> foundPlugin,
+	public standard_type getPluginVal(Class<pascalPlugin> foundPlugin,
 			ArrayList args) {
 		Object o = null;
 		try {
-			Class c = new ArrayList<pascalType>().getClass();
+			Class c = new ArrayList<standard_type>().getClass();
 			Constructor con = foundPlugin.getConstructor(c);
 			try {
 				o = con.newInstance(new Object[] { args });
@@ -254,24 +254,24 @@ public class CodeProcessor implements Runnable {
 			throw new RuntimeException("Required method not found");
 		}
 		try {
-			return (pascalType) m.invoke(o);
+			return (standard_type) m.invoke(o);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to invoke method");
 		}
 
 	}
 
-	public pascalType getPluginVal(String s) throws Exception {
+	public standard_type getPluginVal(String s) throws Exception {
 		if (!isPlugin(s))
 			throw new IllegalArgumentException(
 					"check before accessing a plugin");
-		ArrayList<pascalType> args = parseArgs(s.substring(s.indexOf('('),
+		ArrayList<standard_type> args = parseArgs(s.substring(s.indexOf('('),
 				StaticMethods.lastIndex(s, ')') + 1));
 		Class<pascalPlugin> foundPlugin = getPlugin(s);
 		return getPluginVal(s, args);
 	}
 
-	private pascalType getFunctionVal(String s2) {
+	private standard_type getFunctionVal(String s2) {
 		// TODO dat
 		return null;
 	}
@@ -307,14 +307,14 @@ public class CodeProcessor implements Runnable {
 		}
 	}
 
-	public pascalType getValue(String text) {
+	public standard_type getValue(String text) {
 		types x = getExpressionType(text);
 		if (x == null)
 			return null;
 		switch (x) {
 		case VarChar:
 		case VarString:
-			pascalType p = getVar(text);
+			standard_type p = getVar(text);
 			if (p != null)
 				return p;
 		case Char:
@@ -386,7 +386,7 @@ public class CodeProcessor implements Runnable {
 	public types getExpressionType(String expression) {
 		if (isPlugin(expression))
 			return getPluginReturnType(getPlugin(expression));
-		pascalType p = parseConst(expression);
+		standard_type p = parseConst(expression);
 		if (p != null)
 			return p.getType();
 		p = getVar(expression);

@@ -2,7 +2,7 @@ package preprocessed;
 
 import java.util.TreeMap;
 
-import pascalTypes.pascalVar;
+import pascalTypes.standard_var;
 
 public class variable_declaration {
 	public String name;
@@ -13,7 +13,7 @@ public class variable_declaration {
 		this.name = name;
 	}
 
-	public void initialize(TreeMap<String, pascalVar> variables) {
-		variables.put(name, new pascalVar(type));
+	public void initialize(TreeMap<String, standard_var> variables) {
+		variables.put(name, new standard_var(type));
 	}
 }
