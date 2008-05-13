@@ -23,9 +23,13 @@ import tokens.assignment_token;
 import tokens.begin_end_token;
 import tokens.colon_token;
 import tokens.comma_token;
+import tokens.do_token;
+import tokens.if_token;
 import tokens.parenthesized_token;
 import tokens.semicolon_token;
+import tokens.then_token;
 import tokens.token;
+import tokens.while_token;
 import tokens.word_token;
 
 public class pascal_program {
@@ -44,7 +48,7 @@ public class pascal_program {
 	}
 
 	private function_declaration get_function_declaration(ListIterator<token> t) {
-		function_declaration unfinished_function=new function_declaration();
+		function_declaration unfinished_function = new function_declaration();
 		token next;
 		String function_type = get_word_value(t);
 		boolean is_procedure = false;
@@ -98,26 +102,20 @@ public class pascal_program {
 
 	executable get_next_command(ListIterator<token> token_iterator) {
 		token next = token_iterator.next();
-		if(next instanceof i)
-		if (next instanceof word_token) {
+		if (next instanceof if_token) {
+			returns_value<Boolean> condition = get_next_returns_value(token_iterator);
+			assert (token_iterator.next() instanceof then_token);
+			executable command = get_next_command(token_iterator);
+			return new if_statement(condition, command);
+		} else if(next instanceof while_token) {
+			returns_value<Boolean> condition = get_next_returns_value(token_iterator);
+			assert (token_iterator.next() instanceof do_token);
+			executable command = get_next_command(token_iterator);
+			return new while_statement(condition, command);
+		}else if(next instanceof word_token) {
 			String name = get_word_value(next);
 			next = token_iterator.next();
 			if (next instanceof parenthesized_token) {
-				if (name.equals("if")) {
-					returns_value<Boolean> condition = get_next_returns_value(((parenthesized_token) next).insides
-							.listIterator());
-					next = token_iterator.next();
-					assert (next instanceof word_token);
-					assert ((word_token) next).name.equals("then");
-					executable command = get_next_command(token_iterator);
-					return new if_statement(condition, command);
-				} else if (name.equals("while")) {
-					returns_value<Boolean> condition = get_next_returns_value(((parenthesized_token) next).insides
-							.listIterator());
-					assert (get_word_value(token_iterator).equals("do"));
-					executable command = get_next_command(token_iterator);
-					return new while_statement(condition, command);
-				}
 				LinkedList<returns_value> arguments = get_arguments_for_call((parenthesized_token) next);
 				assert (token_iterator.next() instanceof semicolon_token);
 				if (plugins.containsKey(name)) {
