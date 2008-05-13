@@ -1,8 +1,8 @@
 package preprocessed;
 
-import pascalTypes.standard_type;
+import pascalTypes.pascal_type;
 
-public class variable_access<T> extends returns_value<T> {
+public class variable_access extends returns_value {
 	String variable_name;
 
 	public variable_access(String name) {
@@ -10,7 +10,7 @@ public class variable_access<T> extends returns_value<T> {
 	}
 
 	@Override
-	public standard_type<T> get_value(function_on_stack f) {
-		return (standard_type<T>) f.variables.get(variable_name);  //TODO a bug in java i should not have to cast.
+	public pascal_type get_value(function_on_stack f) {
+		return f.variables.get(variable_name);
 	}
 }

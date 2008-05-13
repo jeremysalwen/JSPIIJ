@@ -2,7 +2,7 @@ package preprocessed;
 
 import java.util.LinkedList;
 
-public class function_declaration implements Comparable<function_declaration> {
+public class function_declaration {
 	public function_header header;
 	public LinkedList<variable_declaration> local_variables;
 	public LinkedList<executable> instructions;
@@ -26,6 +26,4 @@ public class function_declaration implements Comparable<function_declaration> {
 		this.local_variables = local_variables;
 		this.instructions = instructions;
 	}
-
-
 }

@@ -8,6 +8,7 @@ import java.util.ListIterator;
 import java.util.TreeMap;
 
 import pascalTypes.pascalType;
+import pascalTypes.pascal_type;
 import preprocessed.executable;
 import preprocessed.function_call;
 import preprocessed.function_declaration;
@@ -35,7 +36,7 @@ import tokens.word_token;
 
 public class pascal_program {
 	public HashMap<function_header, function_declaration> functions;
-	public TreeMap<String, Class<pascalPlugin<pascalType>>> plugins;
+	public TreeMap<String, Class<pascalPlugin<? extends pascal_type>>> plugins;
 
 	public static void main(String[] args) {
 		new pascal_program(null);
@@ -126,7 +127,7 @@ public class pascal_program {
 				}
 			} else if (next instanceof operator_token
 					&& ((operator_token) next).type == operator_token.types.PERIOD) {
-				
+
 			}
 			if (next instanceof assignment_token) {
 
