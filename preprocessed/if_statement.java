@@ -1,18 +1,19 @@
 package preprocessed;
 
+import pascalTypes.standard_type;
 
 public class if_statement implements executable {
-	returns_value<Boolean> condition;
+	returns_value condition;
 	executable instruction;
-	public if_statement(returns_value<Boolean> condition, executable instruction) {
-		this.condition=condition;
-		this.instruction=instruction;
+
+	public if_statement(returns_value condition, executable instruction) {
+		this.condition = condition;
+		this.instruction = instruction;
 	}
-	
+
 	public void execute(function_on_stack f) {
-		if((condition.get_value(f)).get()) {
+		if (((Boolean) (condition.get_value(f))).booleanValue()) {
 			instruction.execute(f);
 		}
 	}
-
 }

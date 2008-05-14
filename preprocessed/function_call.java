@@ -1,10 +1,6 @@
 package preprocessed;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-
-import pascalTypes.pascal_type;
-import pascalTypes.standard_type;
 
 public class function_call extends returns_value {
 	String function_name;
@@ -17,8 +13,8 @@ public class function_call extends returns_value {
 	}
 
 	@Override
-	public pascal_type get_value(function_on_stack f) {
-		LinkedList<pascal_type> pascal_args = new LinkedList<pascal_type>();
+	public Object get_value(function_on_stack f) {
+		LinkedList<Object> pascal_args = new LinkedList<Object>();
 		for (returns_value v : arguments) {
 			pascal_args.add(v.get_value(f));
 		}

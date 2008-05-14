@@ -1,18 +1,26 @@
 package preprocessed;
 
-import pascalTypes.standard_var;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-public class variable_set<T> implements executable {
-	String name;
-	returns_value<T> value;
+import pascalTypes.custom_type;
 
-	public variable_set(String name, returns_value<T> value) {
+public class variable_set implements executable {
+	LinkedList<String> name = new LinkedList<String>();
+	returns_value value;
+
+	public variable_set(LinkedList<String> name, returns_value value) {
 		this.name = name;
 		this.value = value;
 	}
 
 	public void execute(function_on_stack f) {
-		((standard_var<T>) f.variables.get(name)).set(value.get_value(f).get());
+		ListIterator<String> i = name.listIterator();
+		Object p = f.variables.get(i.next());
+		for (String s;i.hasNext(); s=i.next()) {
+			p=((custom_type)p).
+		}
+		}
 	}
 
 }

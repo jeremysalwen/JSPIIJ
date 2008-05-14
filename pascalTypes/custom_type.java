@@ -1,17 +1,24 @@
 package pascalTypes;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import preprocessed.variable_declaration;
 
-public class custom_type implements pascal_type {
-	public custom_type(LinkedList<variable_declaration> types) {
-		
-		for (Entry<String, Class> e : types.entrySet()) {
-			value.put(e.getKey(), new standard_var(e.getValue()));
+public class custom_type extends Object {
+	HashMap<String, Object> values;
+
+	public custom_type(HashMap<String, Object> values) {
+		this.values = (HashMap<String, Object>) values.clone();
+	}
+
+	public custom_type(custom_type_declaration c) {
+		for (variable_declaration v : c.variable_types) {
+			v.initialize(values);
 		}
+	}
+
+	@Override
+	public Object clone() {
+		return new custom_type(values);
 	}
 }

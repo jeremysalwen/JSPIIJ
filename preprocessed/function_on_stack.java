@@ -1,18 +1,15 @@
 package preprocessed;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.TreeMap;
 
-import pascalTypes.pascal_type;
-import pascalTypes.standard_type;
-import pascalTypes.standard_var;
+import pascalTypes.custom_type;
+import pascalTypes.default_pascal_values;
 import processing.pascal_program;
 
 public class function_on_stack {
-	HashMap<String, standard_var> variables = new HashMap<String, standard_var>();
+	HashMap<String, Object> variables = new HashMap<String, Object>();
 	function_declaration prototype;
 	pascal_program program;
 
@@ -22,20 +19,21 @@ public class function_on_stack {
 			v.initialize(variables);
 		}
 		if (prototype.header.return_type != null) {
-			variables.put("result", new standard_var(
-					prototype.header.return_type));
+			variables.put("result", default_pascal_values
+					.get_default_value(prototype.header.return_type));
 		}
 		this.program = program;
 		this.prototype = declaration;
 	}
 
-	public pascal_type execute(LinkedList<pascal_type> arguments) {
-		ListIterator<pascal_type> i = arguments.listIterator();
-		for (pascal_type p = null; i.hasNext(); p = i.next()) {
-			this.variables.put(this.prototype.header.arguments.get(i
-					.previousIndex()).name, new standard_var(p));
+	public Object execute(LinkedList<Object> arguments) {
+		ListIterator<Object> i = arguments.listIterator();
+		for (Object p = null; i.hasNext(); p = i.next()) {
+			this.variables.put(this.prototype.header.arguments.get(
+					i.previousIndex()).get_name(),
+					p instanceof custom_type ? ((custom_type) p).clone() : p);
 		}
-		for(executable e:prototype.instructions) {
+		for (executable e : prototype.instructions) {
 			e.execute(this);
 		}
 		return this.variables.get("result");

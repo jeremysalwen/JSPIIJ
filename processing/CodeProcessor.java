@@ -9,21 +9,9 @@ import java.util.Stack;
 
 import javax.swing.JTextArea;
 
-import benland100.jcalc.input.Lexer;
-import benland100.jcalc.input.Parser;
-
-import main.Bool;
-import pascalTypes.Double;
-import pascalTypes.Int;
-import pascalTypes.VarChar;
-import pascalTypes.VarInt;
-import pascalTypes.VarString;
 import pascalTypes.standard_type;
 import pascalTypes.standard_var;
-import pascalTypes.string;
 import pascalTypes.types;
-import preProcessing.PreProcessedOnly.PreprocessedFunction;
-import utilities.variableStorage;
 
 public class CodeProcessor implements Runnable {
 	public Stack<variableStorage> FunctionVariables = new Stack<variableStorage>();

@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import pascalTypes.pascalType;
 import pascalTypes.pascal_type;
+import pascalTypes.standard_type;
 import preprocessed.executable;
 import preprocessed.function_call;
 import preprocessed.function_declaration;
@@ -79,7 +80,7 @@ public class pascal_program {
 					next = argument_iterator.next();
 				}
 				assert (argument_iterator.next() instanceof colon_token);
-				Class type = pascalType
+				Class type = standard_type
 						.get_java_type(get_word_value(argument_iterator));
 				for (String s : names) {
 					arguments.add(new variable_declaration(s, type));
@@ -89,7 +90,7 @@ public class pascal_program {
 		next = t.next();
 		Class return_type = null;
 		if (next instanceof colon_token) {
-			return_type = pascalType.get_java_type(get_word_value(t));
+			return_type = standard_type.get_java_type(get_word_value(t));
 		}
 		assert (t.next() instanceof semicolon_token);
 		next = t.next();
@@ -105,12 +106,12 @@ public class pascal_program {
 	executable get_next_command(ListIterator<token> token_iterator) {
 		token next = token_iterator.next();
 		if (next instanceof if_token) {
-			returns_value<Boolean> condition = get_next_returns_value(token_iterator);
+			returns_value condition = get_next_returns_value(token_iterator);
 			assert (token_iterator.next() instanceof then_token);
 			executable command = get_next_command(token_iterator);
 			return new if_statement(condition, command);
 		} else if (next instanceof while_token) {
-			returns_value<Boolean> condition = get_next_returns_value(token_iterator);
+			returns_value condition = get_next_returns_value(token_iterator);
 			assert (token_iterator.next() instanceof do_token);
 			executable command = get_next_command(token_iterator);
 			return new while_statement(condition, command);
