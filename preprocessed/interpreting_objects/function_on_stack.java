@@ -1,11 +1,14 @@
-package preprocessed;
+package preprocessed.interpreting_objects;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 import pascalTypes.custom_type;
-import pascalTypes.default_pascal_values;
+import pascalTypes.pascal_type_methods;
+import preprocessed.function_declaration;
+import preprocessed.variable_declaration;
+import preprocessed.instructions.executable;
 import processing.pascal_program;
 
 public class function_on_stack {
@@ -19,7 +22,7 @@ public class function_on_stack {
 			v.initialize(variables);
 		}
 		if (prototype.header.return_type != null) {
-			variables.put("result", default_pascal_values
+			variables.put("result", pascal_type_methods
 					.get_default_value(prototype.header.return_type));
 		}
 		this.program = program;

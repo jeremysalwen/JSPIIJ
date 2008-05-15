@@ -1,6 +1,8 @@
-package preprocessed;
+package preprocessed.instructions;
 
-import pascalTypes.standard_type;
+import preprocessed.interpreting_objects.function_on_stack;
+import preprocessed.interpreting_objects.returns_value;
+
 
 public class if_statement implements executable {
 	returns_value condition;

@@ -1,10 +1,7 @@
 package plugins;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
-import pascalTypes.pascal_type;
-import pascalTypes.standard_type;
 import processing.pascalPlugin;
 
 public class writeln extends pascalPlugin<Object> {
@@ -13,7 +10,7 @@ public class writeln extends pascalPlugin<Object> {
 	// put args above here, remember, no fields besides args
 
 	@SuppressWarnings("unchecked")
-	public writeln(LinkedList<pascal_type> arrayOfArgs) throws Exception {
+	public writeln(LinkedList<Object> arrayOfArgs) throws Exception {
 		super(arrayOfArgs);
 	}
 

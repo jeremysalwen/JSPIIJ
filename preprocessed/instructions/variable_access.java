@@ -1,6 +1,8 @@
-package preprocessed;
+package preprocessed.instructions;
 
-import pascalTypes.pascal_type;
+import preprocessed.interpreting_objects.function_on_stack;
+import preprocessed.interpreting_objects.returns_value;
+
 
 public class variable_access extends returns_value {
 	String variable_name;
@@ -10,7 +12,7 @@ public class variable_access extends returns_value {
 	}
 
 	@Override
-	public pascal_type get_value(function_on_stack f) {
+	public Object get_value(function_on_stack f) {
 		return f.variables.get(variable_name);
 	}
 }

@@ -1,6 +1,9 @@
-package preprocessed;
+package preprocessed.instructions;
 
 import java.util.LinkedList;
+
+import preprocessed.interpreting_objects.function_on_stack;
+import preprocessed.interpreting_objects.returns_value;
 
 public class function_call extends returns_value {
 	String function_name;

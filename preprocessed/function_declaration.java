@@ -2,6 +2,8 @@ package preprocessed;
 
 import java.util.LinkedList;
 
+import preprocessed.instructions.executable;
+
 public class function_declaration {
 	public function_header header;
 	public LinkedList<variable_declaration> local_variables;

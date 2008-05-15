@@ -1,6 +1,7 @@
-package preprocessed;
+package preprocessed.instructions;
 
-import pascalTypes.standard_type;
+import preprocessed.interpreting_objects.function_on_stack;
+import preprocessed.interpreting_objects.returns_value;
 
 public class while_statement implements executable {
 	returns_value condition;
@@ -13,7 +14,7 @@ public class while_statement implements executable {
 
 	@Override
 	public void execute(function_on_stack f) {
-		while (((standard_type<Boolean>) condition.get_value(f)).get()) {
+		while ((Boolean) condition.get_value(f)) {
 			command.execute(f);
 		}
 	}

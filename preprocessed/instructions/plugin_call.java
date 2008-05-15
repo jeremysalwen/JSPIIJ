@@ -1,11 +1,11 @@
-package preprocessed;
+package preprocessed.instructions;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import pascalTypes.pascal_type;
-import pascalTypes.standard_type;
+import preprocessed.interpreting_objects.function_on_stack;
+import preprocessed.interpreting_objects.returns_value;
 import processing.pascalPlugin;
 
 public class plugin_call extends returns_value {
@@ -18,19 +18,18 @@ public class plugin_call extends returns_value {
 	}
 
 	@Override
-	public pascal_type get_value(function_on_stack f) {
-		ArrayList<pascal_type> pascal_args = new ArrayList<pascal_type>(
-				arguments.size());
+	public Object get_value(function_on_stack f) {
+		LinkedList<Object> pascal_args = new LinkedList<Object>();
 		for (returns_value r : arguments) {
 			pascal_args.add(r.get_value(f));
 		}
-		Class<pascalPlugin<? extends pascal_type>> plugin_class = f.program.plugins
+		Class<pascalPlugin> plugin_class = f.program.plugins
 				.get(name);
 		try {
 			Object o = plugin_class.getDeclaredConstructor(ArrayList.class)
 					.newInstance(pascal_args);
 			Method m = plugin_class.getMethod("process");
-			return (pascal_type) m.invoke(o, new Object[0]);
+			return m.invoke(o, new Object[0]);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Error invoking plugin call");

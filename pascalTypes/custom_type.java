@@ -5,7 +5,7 @@ import java.util.HashMap;
 import preprocessed.variable_declaration;
 
 public class custom_type extends Object {
-	HashMap<String, Object> values;
+	public HashMap<String, Object> values;
 
 	public custom_type(HashMap<String, Object> values) {
 		this.values = (HashMap<String, Object>) values.clone();

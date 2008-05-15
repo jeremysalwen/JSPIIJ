@@ -5,22 +5,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.TreeMap;
 
-import pascalTypes.pascalType;
-import pascalTypes.pascal_type;
-import pascalTypes.standard_type;
-import preprocessed.executable;
-import preprocessed.function_call;
+import pascalTypes.pascal_type_methods;
 import preprocessed.function_declaration;
 import preprocessed.function_header;
-import preprocessed.if_statement;
-import preprocessed.plugin_call;
-import preprocessed.returns_value;
 import preprocessed.variable_declaration;
-import preprocessed.variable_set;
-import preprocessed.while_statement;
-import sun.org.mozilla.javascript.internal.Function;
+import preprocessed.instructions.executable;
+import preprocessed.instructions.function_call;
+import preprocessed.instructions.if_statement;
+import preprocessed.instructions.plugin_call;
+import preprocessed.instructions.variable_set;
+import preprocessed.instructions.while_statement;
+import preprocessed.interpreting_objects.returns_value;
 import tokens.assignment_token;
 import tokens.begin_end_token;
 import tokens.colon_token;
@@ -37,7 +33,7 @@ import tokens.word_token;
 
 public class pascal_program {
 	public HashMap<function_header, function_declaration> functions;
-	public TreeMap<String, Class<pascalPlugin<? extends pascal_type>>> plugins;
+	public HashMap<String, Class<pascalPlugin>> plugins;
 
 	public static void main(String[] args) {
 		new pascal_program(null);
@@ -46,7 +42,7 @@ public class pascal_program {
 	public pascal_program(LinkedList<token> tokens) {
 		ListIterator<token> token_iterator=tokens.listIterator();
 		while(token_iterator.hasNext()) {
-			token_iterator.
+			//TODO lol
 		}
 	}
 
@@ -80,7 +76,7 @@ public class pascal_program {
 					next = argument_iterator.next();
 				}
 				assert (argument_iterator.next() instanceof colon_token);
-				Class type = standard_type
+				Class type = pascal_type_methods
 						.get_java_type(get_word_value(argument_iterator));
 				for (String s : names) {
 					arguments.add(new variable_declaration(s, type));
