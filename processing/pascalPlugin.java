@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import pascalTypes.custom_type;
-import pascalTypes.pascal_type_methods;
+import pascal_types.custom_type;
+import pascal_types.pascal_type_methods;
 
 public abstract class pascalPlugin<T> {
 	public abstract T process();

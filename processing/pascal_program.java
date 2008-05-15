@@ -6,17 +6,18 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import pascalTypes.pascal_type_methods;
+import pascal_types.pascal_type_methods;
 import preprocessed.function_declaration;
 import preprocessed.function_header;
 import preprocessed.variable_declaration;
+import preprocessed.variable_identifier;
 import preprocessed.instructions.executable;
-import preprocessed.instructions.function_call;
 import preprocessed.instructions.if_statement;
-import preprocessed.instructions.plugin_call;
 import preprocessed.instructions.variable_set;
 import preprocessed.instructions.while_statement;
-import preprocessed.interpreting_objects.returns_value;
+import preprocessed.instructions.returns_value.function_call;
+import preprocessed.instructions.returns_value.plugin_call;
+import preprocessed.instructions.returns_value.returns_value;
 import tokens.assignment_token;
 import tokens.begin_end_token;
 import tokens.colon_token;
@@ -40,9 +41,9 @@ public class pascal_program {
 	}
 
 	public pascal_program(LinkedList<token> tokens) {
-		ListIterator<token> token_iterator=tokens.listIterator();
-		while(token_iterator.hasNext()) {
-			//TODO lol
+		ListIterator<token> token_iterator = tokens.listIterator();
+		while (token_iterator.hasNext()) {
+			// TODO lol
 		}
 	}
 
@@ -60,7 +61,6 @@ public class pascal_program {
 					.println("unknown function type passed to get_function_declaration");
 		}
 		String name = ((word_token) t.next()).name;
-
 		LinkedList<variable_declaration> arguments = new LinkedList<variable_declaration>();
 		next = t.next();
 		if (next instanceof parenthesized_token) {
@@ -86,7 +86,7 @@ public class pascal_program {
 		next = t.next();
 		Class return_type = null;
 		if (next instanceof colon_token) {
-			return_type = standard_type.get_java_type(get_word_value(t));
+			return_type = pascal_type_methods.get_java_type(get_word_value(t));
 		}
 		assert (t.next() instanceof semicolon_token);
 		next = t.next();
@@ -97,6 +97,7 @@ public class pascal_program {
 		while (body_iterator.hasNext()) {
 			commands.add(get_next_command(body_iterator));
 		}
+		unfinished_function.instructions = commands;
 	}
 
 	executable get_next_command(ListIterator<token> token_iterator) {
@@ -127,7 +128,6 @@ public class pascal_program {
 
 			}
 			if (next instanceof assignment_token) {
-
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
 				assert_next_semicolon(token_iterator);
 				return new variable_set(name, value_to_assign);
@@ -137,6 +137,10 @@ public class pascal_program {
 
 	void assert_next_semicolon(ListIterator<token> i) {
 		assert (i.next() instanceof semicolon_token);
+	}
+
+	variable_identifier get_next_var_identifier(ListIterator<token> i) {
+
 	}
 
 	returns_value get_single_value(parenthesized_token t) {
@@ -157,7 +161,7 @@ public class pascal_program {
 	}
 
 	returns_value get_next_returns_value(ListIterator<token> iterator) {
-
+		return null; // TODO
 	}
 
 	String get_word_value(token t) {

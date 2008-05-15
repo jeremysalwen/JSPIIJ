@@ -9,9 +9,9 @@ import java.util.Stack;
 
 import javax.swing.JTextArea;
 
-import pascalTypes.standard_type;
-import pascalTypes.standard_var;
-import pascalTypes.types;
+import pascal_types.standard_type;
+import pascal_types.standard_var;
+import pascal_types.types;
 
 public class CodeProcessor implements Runnable {
 	public Stack<variableStorage> FunctionVariables = new Stack<variableStorage>();
