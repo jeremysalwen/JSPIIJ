@@ -3,9 +3,9 @@ package preprocessed.instructions;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import pascalTypes.custom_type;
+import pascal_types.custom_type;
+import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.interpreting_objects.function_on_stack;
-import preprocessed.interpreting_objects.returns_value;
 
 public class variable_set implements executable {
 	LinkedList<String> name = new LinkedList<String>();

@@ -1,4 +1,4 @@
-package pascalTypes;
+package pascal_types;
 
 import java.util.HashMap;
 

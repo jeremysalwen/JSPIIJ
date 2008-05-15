@@ -4,17 +4,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import pascalTypes.custom_type;
-import pascalTypes.pascal_type_methods;
+import pascal_types.custom_type;
+import pascal_types.pascal_type_methods;
 import preprocessed.function_declaration;
 import preprocessed.variable_declaration;
 import preprocessed.instructions.executable;
 import processing.pascal_program;
 
 public class function_on_stack {
-	HashMap<String, Object> variables = new HashMap<String, Object>();
+	public HashMap<String, Object> variables = new HashMap<String, Object>();
 	function_declaration prototype;
-	pascal_program program;
+	public pascal_program program;
 
 	public function_on_stack(pascal_program program,
 			function_declaration declaration) {

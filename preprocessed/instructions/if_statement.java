@@ -1,7 +1,7 @@
 package preprocessed.instructions;
 
+import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.interpreting_objects.function_on_stack;
-import preprocessed.interpreting_objects.returns_value;
 
 
 public class if_statement implements executable {

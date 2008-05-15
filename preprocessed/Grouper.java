@@ -17,6 +17,7 @@ import tokens.if_token;
 import tokens.integer_token;
 import tokens.operator_token;
 import tokens.parenthesized_token;
+import tokens.period_token;
 import tokens.semicolon_token;
 import tokens.string_token;
 import tokens.then_token;
@@ -41,13 +42,14 @@ public class Grouper {
 		try {
 			do {
 				grouper_token top_of_stack = stack_of_groupers.peek();
+				token next_token = null;
 				switch (tokenizer.nextToken()) {
 				case StreamTokenizer.TT_EOF:
 					leave_do_loop = true;
 					break;
 				case StreamTokenizer.TT_WORD:
 					if (tokenizer.sval.equals("begin")) {
-						stack_of_groupers.push(new begin_end_token());
+						next_token = new begin_end_token();
 					} else if (tokenizer.sval.equals("end")) {
 						if (!(stack_of_groupers.pop() instanceof begin_end_token)) {
 							throw new grouping_exception(
@@ -58,13 +60,13 @@ public class Grouper {
 						}
 						stack_of_groupers.peek().add_token(top_of_stack);
 					} else if (tokenizer.sval.equals("if")) {
-						top_of_stack.add_token(new if_token());
+						next_token = new if_token();
 					} else if (tokenizer.sval.equals("then")) {
-						top_of_stack.add_token(new then_token());
+						next_token = new then_token();
 					} else if (tokenizer.sval.equals("while")) {
-						top_of_stack.add_token(new while_token());
+						next_token = new while_token();
 					} else if (tokenizer.sval.equals("do")) {
-						top_of_stack.add_token(new do_token());
+						next_token = new do_token();
 					} else if (tokenizer.sval.equals("and")) {
 						temp_type = operator_token.types.AND;
 					} else if (tokenizer.sval.equals("or")) {
@@ -80,28 +82,25 @@ public class Grouper {
 					} else if (tokenizer.sval.equals("mod")) {
 						temp_type = operator_token.types.MOD;
 					} else {
-						top_of_stack.add_token(new word_token(tokenizer.sval));
+						next_token = new word_token(tokenizer.sval);
 					}
 					break;
 				case StreamTokenizer.TT_NUMBER:
 					if (((int) tokenizer.nval) == tokenizer.nval) {
-						top_of_stack.add_token(new integer_token(
-								(int) tokenizer.nval));
+						next_token = new integer_token((int) tokenizer.nval);
 					} else {
-						top_of_stack
-								.add_token(new double_token(tokenizer.nval));
+						next_token = new double_token(tokenizer.nval);
 					}
 					break;
 				case ';':
-					top_of_stack.add_token(new semicolon_token());
+					next_token = new semicolon_token();
 					break;
 				case '.':
-					temp_type = operator_token.types.PERIOD;
-					break;
+					next_token = new period_token();
 				case '\'':
-					top_of_stack.add_token(new string_token(tokenizer.sval));
+					next_token = new string_token(tokenizer.sval);
 				case '(':
-					top_of_stack.add_token(new parenthesized_token());
+					next_token = new parenthesized_token();
 				case ')':
 					if (!(stack_of_groupers.pop() instanceof parenthesized_token)) {
 						throw new grouping_exception(
@@ -118,10 +117,10 @@ public class Grouper {
 				case ':':
 					int next = tokenizer.nextToken();
 					if (next == '=') {
-						top_of_stack.add_token(new assignment_token());
+						next_token = new assignment_token();
 					} else {
 						tokenizer.pushBack();
-						top_of_stack.add_token(new colon_token());
+						next_token = new colon_token();
 					}
 				case '/':
 					temp_type = operator_token.types.DIVIDE;
@@ -159,9 +158,10 @@ public class Grouper {
 					break;
 				}
 				if (temp_type != null) {
-					top_of_stack.add_token(new operator_token(temp_type));
+					next_token = new operator_token(temp_type);
 					temp_type = null;
 				}
+				top_of_stack.add_token(next_token);
 			} while (!leave_do_loop);
 		} catch (IOException e) {
 		}
