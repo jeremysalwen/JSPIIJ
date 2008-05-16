@@ -29,6 +29,7 @@ import tokens.parenthesized_token;
 import tokens.semicolon_token;
 import tokens.then_token;
 import tokens.token;
+import tokens.operator_types;
 import tokens.while_token;
 import tokens.word_token;
 
@@ -124,7 +125,7 @@ public class pascal_program {
 					return new function_call(name, arguments);
 				}
 			} else if (next instanceof operator_token
-					&& ((operator_token) next).type == operator_token.types.PERIOD) {
+					&& ((operator_token) next).type == operator_types) {
 
 			}
 			if (next instanceof assignment_token) {

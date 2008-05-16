@@ -22,6 +22,7 @@ import tokens.semicolon_token;
 import tokens.string_token;
 import tokens.then_token;
 import tokens.token;
+import tokens.operator_types;
 import tokens.while_token;
 import tokens.word_token;
 import exceptions.grouping_exception;
@@ -36,7 +37,7 @@ public class Grouper {
 		tokenizer.slashStarComments(true);
 		tokenizer.ordinaryChar('\"');
 		boolean leave_do_loop = false;
-		operator_token.types temp_type = null;
+		operator_types temp_type = null;
 		Stack<grouper_token> stack_of_groupers = new Stack<grouper_token>();
 		stack_of_groupers.add(new base_grouper_token());
 		try {
@@ -68,19 +69,19 @@ public class Grouper {
 					} else if (tokenizer.sval.equals("do")) {
 						next_token = new do_token();
 					} else if (tokenizer.sval.equals("and")) {
-						temp_type = operator_token.types.AND;
+						temp_type = operator_types.AND;
 					} else if (tokenizer.sval.equals("or")) {
-						temp_type = operator_token.types.OR;
+						temp_type = operator_types.OR;
 					} else if (tokenizer.sval.equals("xor")) {
-						temp_type = operator_token.types.XOR;
+						temp_type = operator_types.XOR;
 					} else if (tokenizer.sval.equals("shl")) {
-						temp_type = operator_token.types.SHIFTLEFT;
+						temp_type = operator_types.SHIFTLEFT;
 					} else if (tokenizer.sval.equals("shr")) {
-						temp_type = operator_token.types.SHIFTRIGHT;
+						temp_type = operator_types.SHIFTRIGHT;
 					} else if (tokenizer.sval.equals("div")) {
-						temp_type = operator_token.types.DIV;
+						temp_type = operator_types.DIV;
 					} else if (tokenizer.sval.equals("mod")) {
-						temp_type = operator_token.types.MOD;
+						temp_type = operator_types.MOD;
 					} else {
 						next_token = new word_token(tokenizer.sval);
 					}
@@ -112,7 +113,7 @@ public class Grouper {
 					stack_of_groupers.peek().add_token(top_of_stack);
 					break;
 				case '=':
-					temp_type = operator_token.types.EQUALS;
+					temp_type = operator_types.EQUALS;
 					break;
 				case ':':
 					int next = tokenizer.nextToken();
@@ -123,37 +124,37 @@ public class Grouper {
 						next_token = new colon_token();
 					}
 				case '/':
-					temp_type = operator_token.types.DIVIDE;
+					temp_type = operator_types.DIVIDE;
 					break;
 				case '*':
-					temp_type = operator_token.types.MULTIPLY;
+					temp_type = operator_types.MULTIPLY;
 					break;
 				case '+':
-					temp_type = operator_token.types.PLUS;
+					temp_type = operator_types.PLUS;
 					break;
 				case '-':
-					temp_type = operator_token.types.MINUS;
+					temp_type = operator_types.MINUS;
 					break;
 				case '<':
 					next = tokenizer.nextToken();
 					switch (next) {
 					case '>':
-						temp_type = operator_token.types.NOTEQUAL;
+						temp_type = operator_types.NOTEQUAL;
 						break;
 					case '=':
-						temp_type = operator_token.types.LESSEQ;
+						temp_type = operator_types.LESSEQ;
 						break;
 					default:
 						tokenizer.pushBack();
-						temp_type = operator_token.types.LESSTHAN;
+						temp_type = operator_types.LESSTHAN;
 					}
 					break;
 				case '>':
 					if (tokenizer.nextToken() == '=') {
-						temp_type = operator_token.types.GREATEREQ;
+						temp_type = operator_types.GREATEREQ;
 					} else {
 						tokenizer.pushBack();
-						temp_type = operator_token.types.GREATERTHAN;
+						temp_type = operator_types.GREATERTHAN;
 					}
 					break;
 				}

@@ -48,24 +48,24 @@ public class CodeProcessor implements Runnable {
 					String variableName = line.substring(0, i);
 					if (getVar(variableName) != null)
 						if (line.endsWith(";")) {
-							types valueType = getExpressionType(line.substring(
+							operator_types valueType = getExpressionType(line.substring(
 									i + 2, line.length() - 1));
 							switch (getVar(variableName).getType()) {
 							case VarChar:
-								if (valueType.equals(types.Char)
-										|| valueType.equals(types.VarChar))
+								if (valueType.equals(operator_types.Char)
+										|| valueType.equals(operator_types.VarChar))
 									return true;
 							case VarInt:
-								if (valueType.equals(types.Int)
-										|| valueType.equals(types.VarInt))
+								if (valueType.equals(operator_types.Int)
+										|| valueType.equals(operator_types.VarInt))
 									return true;
 							case VarString:
-								if (valueType.equals(types.string)
-										|| valueType.equals(types.VarString))
+								if (valueType.equals(operator_types.string)
+										|| valueType.equals(operator_types.VarString))
 									return true;
 							case VarDouble:
-								if (valueType.equals(types.Double)
-										|| valueType.equals(types.VarDouble))
+								if (valueType.equals(operator_types.Double)
+										|| valueType.equals(operator_types.VarDouble))
 									return true;
 							}
 						}
@@ -171,7 +171,7 @@ public class CodeProcessor implements Runnable {
 					}
 				else if (isFunction(s2))
 					result.add(getFunctionVal(s2));
-				else if (getExpressionType(s2).equals(types.Double))
+				else if (getExpressionType(s2).equals(operator_types.Double))
 					result.add(getValue(s2));
 			}
 		}
@@ -296,7 +296,7 @@ public class CodeProcessor implements Runnable {
 	}
 
 	public standard_type getValue(String text) {
-		types x = getExpressionType(text);
+		operator_types x = getExpressionType(text);
 		if (x == null)
 			return null;
 		switch (x) {
@@ -358,10 +358,10 @@ public class CodeProcessor implements Runnable {
 		return null;
 	}
 
-	public types getPluginReturnType(Class<pascalPlugin> type) {
+	public operator_types getPluginReturnType(Class<pascalPlugin> type) {
 		try {
 
-			return types.valueOf(type.getMethod("process", new Class[0])
+			return operator_types.valueOf(type.getMethod("process", new Class[0])
 					.getReturnType().getSimpleName());
 		} catch (Exception e) {
 			System.out.println("error!");
@@ -371,7 +371,7 @@ public class CodeProcessor implements Runnable {
 		}
 	}
 
-	public types getExpressionType(String expression) {
+	public operator_types getExpressionType(String expression) {
 		if (isPlugin(expression))
 			return getPluginReturnType(getPlugin(expression));
 		standard_type p = parseConst(expression);
@@ -382,7 +382,7 @@ public class CodeProcessor implements Runnable {
 			return p.getType();
 		try {
 			new Lexer(expression, this);
-			return types.Double;
+			return operator_types.Double;
 		} catch (Exception e) {
 		}
 		return null;

@@ -1,13 +1,9 @@
 package tokens;
 
 public class operator_token implements token {
-	public static enum types {
-		MULTIPLY, DIVIDE, PLUS, MINUS, NOT, AND, OR, XOR, SHIFTLEFT, SHIFTRIGHT, LESSTHAN, GREATERTHAN, EQUALS, LESSEQ, GREATEREQ, NOTEQUAL, DIV, MOD,
-	};
+	public operator_types type;
 
-	public types type;
-
-	public operator_token(types t) {
+	public operator_token(operator_types t) {
 		this.type = t;
 	}
 }
