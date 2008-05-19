@@ -19,8 +19,7 @@ public class binary_operator_evaluation extends returns_value {
 	public Object get_value(function_on_stack f) {
 		Object value1 = operon1.get_value(f);
 		Object value2 = operon2.get_value(f);
-		Class GCF = get_GCF(value1, value2);
-		if (GCF == String.class) {
+		if (value1 instanceof String || value2 instanceof String) {
 			String val1 = value1.toString();
 			String val2 = value2.toString();
 			switch (operator_type) {
@@ -31,46 +30,93 @@ public class binary_operator_evaluation extends returns_value {
 			default:
 				return null;
 			}
-		} else if (GCF == Integer.class) {
-			int val1 = ((Number) value1).intValue();
-			int val2 = ((Number) value2).intValue();
+		} else if (value1 instanceof Double || value2 instanceof Double
+				|| value1 instanceof Float || value2 instanceof Float) {
+			double d1 = ((Number) value1).doubleValue();
+			double d2 = ((Number) value2).doubleValue();
 			switch (operator_type) {
 			case DIV:
-				return val1 / val2;
+				return ((int) d1) / ((int) d2);
 			case DIVIDE:
-				return val1 / val2;
+				return d1 / d2;
+			case EQUALS:
+				return d1 == d2;
 			case GREATEREQ:
-				return val1 >= val2;
-			}
-		}
-	}
-
-	Class get_GCF(Object o1, Object o2) {
-		if (o1 instanceof String || o2 instanceof String) {
-			return String.class;
-		}
-		if (o1 instanceof Number) {
-			if (!(o2 instanceof Number)) {
+				return d1 >= d2;
+			case GREATERTHAN:
+				return d1 > d2;
+			case LESSEQ:
+				return d1 <= d2;
+			case LESSTHAN:
+				return d1 < d2;
+			case MINUS:
+				return d1 - d2;
+			case MOD:
+				return d1 % d2;
+			case MULTIPLY:
+				return d1 * d2;
+			case NOTEQUAL:
+				return d1 != d2;
+			case PLUS:
+				return d1 + d2;
+			default:
 				return null;
 			}
-			/* keep order here */
-			if (o2 instanceof Double || o1 instanceof Double) {
-				return Double.class;
+		} else if (value1 instanceof Number && value2 instanceof Number) {
+			long l1 = ((Number) value1).longValue();
+			long l2 = ((Number) value2).longValue();
+			switch (operator_type) {
+			case DIV:
+			case DIVIDE:
+				return l1 / l2;
+			case EQUALS:
+				return l1 = l2;
+			case GREATEREQ:
+				return l1 >= l2;
+			case GREATERTHAN:
+				return l1 > l2;
+			case LESSEQ:
+				return l1 <= l2;
+			case LESSTHAN:
+				return l1 < l2;
+			case MINUS:
+				return l1 - l2;
+			case MOD:
+				return l1 % l2;
+			case MULTIPLY:
+				return l1 * l2;
+			case NOTEQUAL:
+				return l1 != l2;
+			case PLUS:
+				return l1 + l2;
+			case SHIFTLEFT:
+				return l1 << l2;
+			case SHIFTRIGHT:
+				return l1 >> l2;
+			case XOR:
+				return l1 ^ l2;
+			default:
+				return null;
 			}
-			if (o2 instanceof Float || o1 instanceof Float) {
-				return Float.class;
+		} else if (value1 instanceof Boolean && value2 instanceof Boolean) {
+			boolean b1 = (Boolean) value1;
+			boolean b2 = (Boolean) value2;
+			switch (operator_type) {
+			case AND:
+				return b1 && b2;
+			case EQUALS:
+				return b1 == b2;
+			case NOTEQUAL:
+				return b1 != b2;
+			case OR:
+				return b1 || b2;
+			case XOR:
+				return b1 ^ b2;
+			default:
+				return null;
 			}
-			if (o2 instanceof Long || o1 instanceof Long) {
-				return Long.class;
-			}
-			if (o2 instanceof Integer || o1 instanceof Integer) {
-				return Integer.class;
-			}
+		} else {
 			return null;
 		}
-		if (o1 instanceof Character && o2 instanceof Character) {
-			return Character.class;
-		}
-		return null;
 	}
 }
