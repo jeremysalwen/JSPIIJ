@@ -18,6 +18,7 @@ import preprocessed.instructions.returns_value.function_call;
 import preprocessed.instructions.returns_value.plugin_call;
 import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.interpreting_objects.variables.variable_identifier;
+import sun.security.acl.WorldGroupImpl;
 import tokens.assignment_token;
 import tokens.begin_end_token;
 import tokens.colon_token;
@@ -26,6 +27,7 @@ import tokens.do_token;
 import tokens.if_token;
 import tokens.operator_token;
 import tokens.parenthesized_token;
+import tokens.period_token;
 import tokens.semicolon_token;
 import tokens.then_token;
 import tokens.token;
@@ -124,16 +126,23 @@ public class pascal_program {
 				} else {
 					return new function_call(name, arguments);
 				}
-			} else if (next instanceof operator_token
-					&& ((operator_token) next).type == operator_types) {
-
 			}
+			// at this point assuming it is a variable identifier.
+
 			if (next instanceof assignment_token) {
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
 				assert_next_semicolon(token_iterator);
-				return new variable_set(name, value_to_assign);
+				return new variable_set(identifier, value_to_assign);
 			}
+			System.err
+					.println("Could not identify what token "
+							+ next
+							+ " was, because I assumed it was a variable declaration, failing all other matches");
 		}
+		System.err
+				.println("Could not identify token "
+						+ next
+						+ ", because it did not match any of the criteria for an instruction");
 	}
 
 	void assert_next_semicolon(ListIterator<token> i) {
@@ -141,7 +150,17 @@ public class pascal_program {
 	}
 
 	variable_identifier get_next_var_identifier(ListIterator<token> i) {
-
+		token next = i.next();
+		variable_identifier identifier = new variable_identifier();
+		identifier.add(((word_token) next).name);
+		next = i.next();
+		while (next instanceof period_token) {
+			next = i.next();
+			assert (next instanceof word_token);
+			identifier.add(((word_token) next).name);
+			next = i.next();
+		}
+		return identifier;
 	}
 
 	returns_value get_single_value(parenthesized_token t) {
