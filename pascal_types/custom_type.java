@@ -27,4 +27,9 @@ public class custom_type implements contains_variables {
 	public Object get_var(String name) {
 		return values.get(name);
 	}
+
+	@Override
+	public void set_var(String name, Object val) {
+		values.put(name, val);
+	}
 }

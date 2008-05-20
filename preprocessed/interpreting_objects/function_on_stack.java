@@ -47,4 +47,9 @@ public class function_on_stack implements contains_variables {
 	public Object get_var(String name) {
 		return variables.get(name);
 	}
+
+	@Override
+	public void set_var(String name, Object val) {
+		variables.put(name, val);
+	}
 }
