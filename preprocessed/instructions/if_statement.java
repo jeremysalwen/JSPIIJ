@@ -3,7 +3,6 @@ package preprocessed.instructions;
 import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.interpreting_objects.function_on_stack;
 
-
 public class if_statement implements executable {
 	returns_value condition;
 	executable instruction;
@@ -17,5 +16,10 @@ public class if_statement implements executable {
 		if (((Boolean) (condition.get_value(f))).booleanValue()) {
 			instruction.execute(f);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "if [" + condition.toString() + "] then [\n" + instruction + ']';
 	}
 }

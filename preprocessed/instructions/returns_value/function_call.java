@@ -23,4 +23,10 @@ public class function_call extends returns_value {
 		return new function_on_stack(f.program, f.program.functions
 				.get(function_name)).execute(pascal_args);
 	}
+
+	@Override
+	public String toString() {
+		return "call function [" + function_name + "] with args [" + arguments
+				+ "] as args";
+	}
 }

@@ -7,10 +7,21 @@ public class variable_identifier extends LinkedList<String> {
 	public boolean equals(Object o) {
 		return super.equals(o);
 	}
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (String s : this) {
+			builder.append(s).append('.');
+		}
+		return builder.toString();
+	}
+
 	/**
 	 * 
 	 */

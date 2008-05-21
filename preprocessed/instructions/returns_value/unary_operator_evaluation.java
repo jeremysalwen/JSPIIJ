@@ -40,4 +40,8 @@ public class unary_operator_evaluation extends returns_value {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "operator [" + type + "] on [" + operon + ']';
+	}
 }

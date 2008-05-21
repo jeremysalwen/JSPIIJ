@@ -6,7 +6,6 @@ import preprocessed.interpreting_objects.function_on_stack;
 import preprocessed.interpreting_objects.variables.contains_variables;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 
-
 public class variable_access extends returns_value {
 	variable_identifier variable_name;
 
@@ -22,5 +21,10 @@ public class variable_access extends returns_value {
 				.get_var(iterator.next()))
 			;
 		return v.get_var(iterator.next());
+	}
+
+	@Override
+	public String toString() {
+		return "get_variable[" + variable_name + ']';
 	}
 }

@@ -14,9 +14,13 @@ import preprocessed.instructions.executable;
 import preprocessed.instructions.if_statement;
 import preprocessed.instructions.variable_set;
 import preprocessed.instructions.while_statement;
+import preprocessed.instructions.returns_value.binary_operator_evaluation;
+import preprocessed.instructions.returns_value.constant_access;
 import preprocessed.instructions.returns_value.function_call;
 import preprocessed.instructions.returns_value.plugin_call;
 import preprocessed.instructions.returns_value.returns_value;
+import preprocessed.instructions.returns_value.unary_operator_evaluation;
+import preprocessed.instructions.returns_value.variable_access;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 import sun.security.acl.WorldGroupImpl;
 import tokens.assignment_token;
@@ -24,11 +28,14 @@ import tokens.begin_end_token;
 import tokens.colon_token;
 import tokens.comma_token;
 import tokens.do_token;
+import tokens.double_token;
 import tokens.if_token;
+import tokens.integer_token;
 import tokens.operator_token;
 import tokens.parenthesized_token;
 import tokens.period_token;
 import tokens.semicolon_token;
+import tokens.string_token;
 import tokens.then_token;
 import tokens.token;
 import tokens.operator_types;
@@ -126,18 +133,15 @@ public class pascal_program {
 				} else {
 					return new function_call(name, arguments);
 				}
-			}
-			// at this point assuming it is a variable identifier.
-
-			if (next instanceof assignment_token) {
+			} else {
+				// at this point assuming it is a variable identifier.
+				token_iterator.previous();
+				variable_identifier identifier = get_next_var_identifier(token_iterator);
+				assert (next instanceof assignment_token);
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
 				assert_next_semicolon(token_iterator);
 				return new variable_set(identifier, value_to_assign);
 			}
-			System.err
-					.println("Could not identify what token "
-							+ next
-							+ " was, because I assumed it was a variable declaration, failing all other matches");
 		}
 		System.err
 				.println("Could not identify token "
@@ -181,7 +185,47 @@ public class pascal_program {
 	}
 
 	returns_value get_next_returns_value(ListIterator<token> iterator) {
-		return null; // TODO
+		token next = iterator.next();
+		if (next instanceof operator_token) {
+			assert ((operator_token) next).can_be_unary();
+			return new unary_operator_evaluation(
+					get_next_returns_value(iterator),
+					((operator_token) next).type);
+		}
+		returns_value result = null;
+		if (next instanceof parenthesized_token) {
+			result = get_single_value((parenthesized_token) next);
+		} else if (next instanceof integer_token) {
+			result = new constant_access(((integer_token) next).value);
+		} else if (next instanceof double_token) {
+			result = new constant_access(((double_token) next).value);
+		} else if (next instanceof string_token) {
+			result = new constant_access(((string_token) next).value);
+		} else if (next instanceof word_token) {
+			String name = ((word_token) next).name;
+			next = iterator.next();
+			if (next instanceof parenthesized_token) {
+				LinkedList<returns_value> arguments = get_arguments_for_call((parenthesized_token) next);
+				assert_next_semicolon(iterator);
+				if (plugins.containsKey(name)) {
+					result = new plugin_call(name, arguments);
+				} else {
+					result = new function_call(name, arguments);
+				}
+			} else {
+				iterator.previous();
+				result = new variable_access(get_next_var_identifier(iterator));
+			}
+		}
+		assert (result != null);
+		next = iterator.next();
+		if (next instanceof operator_token) {
+			return new binary_operator_evaluation(result,
+					get_next_returns_value(iterator),
+					((operator_token) next).type);
+		} else {
+			return result;
+		}
 	}
 
 	String get_word_value(token t) {

@@ -8,11 +8,11 @@ import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascalPlugin;
 
 public class plugin_call extends returns_value {
-	String name;
+	String plugin_name;
 	LinkedList<returns_value> arguments;
 
-	public plugin_call(String name, LinkedList<returns_value> arguments) {
-		this.name = name;
+	public plugin_call(String plugin_name, LinkedList<returns_value> arguments) {
+		this.plugin_name = plugin_name;
 		this.arguments = arguments;
 	}
 
@@ -22,8 +22,7 @@ public class plugin_call extends returns_value {
 		for (returns_value r : arguments) {
 			pascal_args.add(r.get_value(f));
 		}
-		Class<pascalPlugin> plugin_class = f.program.plugins
-				.get(name);
+		Class<pascalPlugin> plugin_class = f.program.plugins.get(plugin_name);
 		try {
 			Object o = plugin_class.getDeclaredConstructor(ArrayList.class)
 					.newInstance(pascal_args);
@@ -36,4 +35,8 @@ public class plugin_call extends returns_value {
 		}
 	}
 
+	public String toString() {
+		return "call plugin [" + plugin_name + "] with args [" + arguments
+				+ "] as args";
+	}
 }

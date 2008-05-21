@@ -25,4 +25,8 @@ public class variable_set implements executable {
 		v.set_var(iterator.next(), value.get_value(f));
 	}
 
+	@Override
+	public String toString() {
+		return "set [" + name + "] to [" + value + "]\n";
+	}
 }

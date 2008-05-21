@@ -19,4 +19,8 @@ public class while_statement implements executable {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "while [" + condition + "] do [" + command + ']';
+	}
 }

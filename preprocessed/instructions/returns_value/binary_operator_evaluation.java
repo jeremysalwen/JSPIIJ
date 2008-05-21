@@ -119,4 +119,9 @@ public class binary_operator_evaluation extends returns_value {
 			return null;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return operon1 + " [" + operator_type + "] " + operon2;
+	}
 }
