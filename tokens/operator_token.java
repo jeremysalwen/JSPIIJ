@@ -17,4 +17,9 @@ public class operator_token implements token {
 			return false;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return type.toString();
+	}
 }
