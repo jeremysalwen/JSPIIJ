@@ -6,12 +6,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import exceptions.grouping_exception;
+
 import pascal_types.pascal_type_methods;
+import preprocessed.Grouper;
 import preprocessed.function_declaration;
 import preprocessed.function_header;
 import preprocessed.variable_declaration;
 import preprocessed.instructions.executable;
 import preprocessed.instructions.if_statement;
+import preprocessed.instructions.instruction_grouper;
 import preprocessed.instructions.variable_set;
 import preprocessed.instructions.while_statement;
 import preprocessed.instructions.returns_value.binary_operator_evaluation;
@@ -22,7 +26,6 @@ import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.instructions.returns_value.unary_operator_evaluation;
 import preprocessed.instructions.returns_value.variable_access;
 import preprocessed.interpreting_objects.variables.variable_identifier;
-import sun.security.acl.WorldGroupImpl;
 import tokens.assignment_token;
 import tokens.begin_end_token;
 import tokens.colon_token;
@@ -38,7 +41,6 @@ import tokens.semicolon_token;
 import tokens.string_token;
 import tokens.then_token;
 import tokens.token;
-import tokens.operator_types;
 import tokens.while_token;
 import tokens.word_token;
 
@@ -46,8 +48,14 @@ public class pascal_program {
 	public HashMap<function_header, function_declaration> functions;
 	public HashMap<String, Class<pascalPlugin>> plugins;
 
-	public static void main(String[] args) {
-		new pascal_program(null);
+	public static void main(String[] args) throws grouping_exception {
+		System.out
+				.println(new pascal_program().get_next_command(new Grouper(
+						"if x=5 then begin x:=7; y:=5*2+3; end").tokens
+						.listIterator()));
+	}
+
+	public pascal_program() {
 	}
 
 	public pascal_program(LinkedList<token> tokens) {
@@ -114,7 +122,8 @@ public class pascal_program {
 		token next = token_iterator.next();
 		if (next instanceof if_token) {
 			returns_value condition = get_next_returns_value(token_iterator);
-			assert (token_iterator.next() instanceof then_token);
+			boolean next_then = token_iterator.next() instanceof then_token;
+			assert (next_then);
 			executable command = get_next_command(token_iterator);
 			return new if_statement(condition, command);
 		} else if (next instanceof while_token) {
@@ -122,7 +131,17 @@ public class pascal_program {
 			assert (token_iterator.next() instanceof do_token);
 			executable command = get_next_command(token_iterator);
 			return new while_statement(condition, command);
+		} else if (next instanceof begin_end_token) {
+			instruction_grouper begin_end_preprocessed = new instruction_grouper();
+			ListIterator<token> begin_end_iterator = ((begin_end_token) next).insides
+					.listIterator();
+			while (begin_end_iterator.hasNext()) {
+				begin_end_preprocessed
+						.add_command(get_next_command(begin_end_iterator));
+			}
+			return begin_end_preprocessed;
 		} else if (next instanceof word_token) {
+
 			String name = get_word_value(next);
 			next = token_iterator.next();
 			if (next instanceof parenthesized_token) {
@@ -136,8 +155,10 @@ public class pascal_program {
 			} else {
 				// at this point assuming it is a variable identifier.
 				token_iterator.previous();
+				token_iterator.previous();
 				variable_identifier identifier = get_next_var_identifier(token_iterator);
-				assert (next instanceof assignment_token);
+				boolean next_assignment = token_iterator.next() instanceof assignment_token;
+				assert (next_assignment);
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
 				assert_next_semicolon(token_iterator);
 				return new variable_set(identifier, value_to_assign);
@@ -147,10 +168,12 @@ public class pascal_program {
 				.println("Could not identify token "
 						+ next
 						+ ", because it did not match any of the criteria for an instruction");
+		return null;
 	}
 
 	void assert_next_semicolon(ListIterator<token> i) {
-		assert (i.next() instanceof semicolon_token);
+		boolean next_semicolon=i.next() instanceof semicolon_token;
+		assert (next_semicolon);
 	}
 
 	variable_identifier get_next_var_identifier(ListIterator<token> i) {
@@ -164,6 +187,7 @@ public class pascal_program {
 			identifier.add(((word_token) next).name);
 			next = i.next();
 		}
+		i.previous();
 		return identifier;
 	}
 
@@ -214,6 +238,7 @@ public class pascal_program {
 				}
 			} else {
 				iterator.previous();
+				iterator.previous();
 				result = new variable_access(get_next_var_identifier(iterator));
 			}
 		}
@@ -224,6 +249,7 @@ public class pascal_program {
 					get_next_returns_value(iterator),
 					((operator_token) next).type);
 		} else {
+			iterator.previous();
 			return result;
 		}
 	}

@@ -41,16 +41,17 @@ public class Grouper {
 		Stack<grouper_token> stack_of_groupers = new Stack<grouper_token>();
 		stack_of_groupers.add(new base_grouper_token());
 		try {
-			do {
-				grouper_token top_of_stack = stack_of_groupers.peek();
+			grouper_token top_of_stack;
+			do_loop_break: do {
+				top_of_stack = stack_of_groupers.peek();
 				token next_token = null;
 				switch (tokenizer.nextToken()) {
 				case StreamTokenizer.TT_EOF:
-					leave_do_loop = true;
-					break;
+					break do_loop_break;
 				case StreamTokenizer.TT_WORD:
 					if (tokenizer.sval.equals("begin")) {
-						next_token = new begin_end_token();
+						stack_of_groupers.push(new begin_end_token());
+						continue do_loop_break;
 					} else if (tokenizer.sval.equals("end")) {
 						if (!(stack_of_groupers.pop() instanceof begin_end_token)) {
 							throw new grouping_exception(
@@ -60,6 +61,7 @@ public class Grouper {
 									grouping_exception.grouping_exception_types.EXTRA_END);
 						}
 						stack_of_groupers.peek().add_token(top_of_stack);
+						continue do_loop_break;
 					} else if (tokenizer.sval.equals("if")) {
 						next_token = new if_token();
 					} else if (tokenizer.sval.equals("then")) {
@@ -111,7 +113,7 @@ public class Grouper {
 								grouping_exception.grouping_exception_types.EXTRA_END_PARENS);
 					}
 					stack_of_groupers.peek().add_token(top_of_stack);
-					break;
+					continue do_loop_break;
 				case '=':
 					temp_type = operator_types.EQUALS;
 					break;
@@ -123,6 +125,7 @@ public class Grouper {
 						tokenizer.pushBack();
 						next_token = new colon_token();
 					}
+					break;
 				case '/':
 					temp_type = operator_types.DIVIDE;
 					break;
@@ -178,5 +181,14 @@ public class Grouper {
 			}
 		}
 		tokens = ((base_grouper_token) stack_of_groupers.peek()).tokens;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder s = new StringBuilder();
+		for (token t : tokens) {
+			s.append(t).append(' ');
+		}
+		return s.toString();
 	}
 }

@@ -122,6 +122,6 @@ public class binary_operator_evaluation extends returns_value {
 
 	@Override
 	public String toString() {
-		return operon1 + " [" + operator_type + "] " + operon2;
+		return "[" + operon1 + "] " + operator_type + " [" + operon2 + ']';
 	}
 }
