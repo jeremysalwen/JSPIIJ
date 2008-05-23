@@ -3,7 +3,7 @@ package preprocessed.instructions.returns_value;
 import preprocessed.interpreting_objects.function_on_stack;
 import tokens.operator_types;
 
-public class binary_operator_evaluation extends returns_value {
+public class binary_operator_evaluation implements returns_value {
 	operator_types operator_type;
 	returns_value operon1;
 	returns_value operon2;

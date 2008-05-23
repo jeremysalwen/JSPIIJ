@@ -20,8 +20,6 @@ public abstract class pascalPlugin<T> {
 			throw new Exception("Could not find calling class", e);
 		}
 		Field[] fields = callingClass.getFields();
-		// if (!StaticMethods.argsMatch(arrayOfArgs, callingClass))
-		// throw new IllegalArgumentException("Args array does not match");
 		ListIterator<Object> i = arrayOfArgs.listIterator();
 		for (Object p = null; i.hasNext(); p = i.next()) {
 			if (pascal_type_methods.is_primative_wrapper(p)) {

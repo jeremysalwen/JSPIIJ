@@ -2,9 +2,10 @@ package preprocessed.instructions.returns_value;
 
 import java.util.LinkedList;
 
+import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.function_on_stack;
 
-public class function_call extends returns_value {
+public class function_call implements returns_value, executable {
 	String function_name;
 	LinkedList<returns_value> arguments;
 
@@ -28,5 +29,10 @@ public class function_call extends returns_value {
 	public String toString() {
 		return "call function [" + function_name + "] with args [" + arguments
 				+ "] as args";
+	}
+
+	@Override
+	public void execute(function_on_stack f) {
+		get_value(f);
 	}
 }

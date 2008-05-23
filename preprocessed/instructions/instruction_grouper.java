@@ -25,7 +25,7 @@ public class instruction_grouper implements executable {
 	public String toString() {
 		StringBuilder builder = new StringBuilder("begin\n");
 		for (executable e : instructions) {
-			builder.append(e).append('\n');
+			builder.append(e);
 		}
 		builder.append("end\n");
 		return builder.toString();

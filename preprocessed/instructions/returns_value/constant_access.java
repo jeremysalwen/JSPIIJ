@@ -2,7 +2,7 @@ package preprocessed.instructions.returns_value;
 
 import preprocessed.interpreting_objects.function_on_stack;
 
-public class constant_access extends returns_value {
+public class constant_access implements returns_value {
 	final Object constant_value;
 
 	public constant_access(Object o) {

@@ -4,7 +4,7 @@ import exceptions.wrong_type_for_operator_exception;
 import preprocessed.interpreting_objects.function_on_stack;
 import tokens.operator_types;
 
-public class unary_operator_evaluation extends returns_value {
+public class unary_operator_evaluation implements returns_value {
 	public operator_types type;
 	public returns_value operon;
 

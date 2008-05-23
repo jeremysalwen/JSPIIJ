@@ -6,7 +6,7 @@ import preprocessed.interpreting_objects.function_on_stack;
 import preprocessed.interpreting_objects.variables.contains_variables;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 
-public class variable_access extends returns_value {
+public class variable_access implements returns_value {
 	variable_identifier variable_name;
 
 	public variable_access(variable_identifier name) {

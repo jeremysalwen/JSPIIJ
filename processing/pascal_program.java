@@ -69,7 +69,7 @@ public class pascal_program {
 		function_declaration unfinished_function = new function_declaration();
 		token next;
 		String function_type = get_word_value(t);
-		boolean is_procedure = false;
+		boolean is_procedure;
 		if (function_type.equals("procedure")) {
 			is_procedure = true;
 		} else if (function_type.equals("function")) {
@@ -93,7 +93,8 @@ public class pascal_program {
 					names.add(((word_token) argument_iterator.next()).name);
 					next = argument_iterator.next();
 				}
-				assert (argument_iterator.next() instanceof colon_token);
+				next = argument_iterator.next();
+				assert (next instanceof colon_token);
 				Class type = pascal_type_methods
 						.get_java_type(get_word_value(argument_iterator));
 				for (String s : names) {
@@ -106,7 +107,7 @@ public class pascal_program {
 		if (next instanceof colon_token) {
 			return_type = pascal_type_methods.get_java_type(get_word_value(t));
 		}
-		assert (t.next() instanceof semicolon_token);
+		assert_next_semicolon(t);
 		next = t.next();
 		assert (next instanceof begin_end_token);
 		begin_end_token body = (begin_end_token) next;
@@ -116,19 +117,21 @@ public class pascal_program {
 			commands.add(get_next_command(body_iterator));
 		}
 		unfinished_function.instructions = commands;
+		return unfinished_function;
 	}
 
 	executable get_next_command(ListIterator<token> token_iterator) {
 		token next = token_iterator.next();
 		if (next instanceof if_token) {
 			returns_value condition = get_next_returns_value(token_iterator);
-			boolean next_then = token_iterator.next() instanceof then_token;
-			assert (next_then);
+			next = token_iterator.next();
+			assert (next instanceof then_token);
 			executable command = get_next_command(token_iterator);
 			return new if_statement(condition, command);
 		} else if (next instanceof while_token) {
 			returns_value condition = get_next_returns_value(token_iterator);
-			assert (token_iterator.next() instanceof do_token);
+			next = token_iterator.next();
+			assert (next instanceof do_token);
 			executable command = get_next_command(token_iterator);
 			return new while_statement(condition, command);
 		} else if (next instanceof begin_end_token) {
@@ -157,8 +160,8 @@ public class pascal_program {
 				token_iterator.previous();
 				token_iterator.previous();
 				variable_identifier identifier = get_next_var_identifier(token_iterator);
-				boolean next_assignment = token_iterator.next() instanceof assignment_token;
-				assert (next_assignment);
+				next = token_iterator.next();
+				assert (next instanceof assignment_token);
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
 				assert_next_semicolon(token_iterator);
 				return new variable_set(identifier, value_to_assign);
@@ -172,8 +175,8 @@ public class pascal_program {
 	}
 
 	void assert_next_semicolon(ListIterator<token> i) {
-		boolean next_semicolon=i.next() instanceof semicolon_token;
-		assert (next_semicolon);
+		token next = i.next();
+		assert (next instanceof semicolon_token);
 	}
 
 	variable_identifier get_next_var_identifier(ListIterator<token> i) {
@@ -203,7 +206,8 @@ public class pascal_program {
 		LinkedList<returns_value> result = new LinkedList<returns_value>();
 		while (iterator.hasNext()) {
 			result.add(get_next_returns_value(iterator));
-			assert (iterator.next() instanceof comma_token);
+			token next = iterator.next();
+			assert (next instanceof comma_token);
 		}
 		return result;
 	}
