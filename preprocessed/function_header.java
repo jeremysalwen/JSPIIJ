@@ -5,11 +5,11 @@ import java.util.Map.Entry;
 
 public class function_header {
 	public String name;
-	public Class return_type;
+	public Object return_type;  //holds Class of wrapper type or custom type declaration.  Lame non-hack
 	public LinkedList<variable_declaration> arguments;
 
 	public function_header(String name,
-			LinkedList<variable_declaration> arguments, Class return_type) {
+			LinkedList<variable_declaration> arguments, Object return_type) {
 		this.name = name;
 		this.arguments = arguments;
 		this.return_type = return_type;

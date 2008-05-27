@@ -11,7 +11,7 @@ public class parenthesized_token implements grouper_token, token {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder('(');
+		StringBuilder builder = new StringBuilder("(");
 		for (token t : insides) {
 			builder.append(t).append(' ');
 		}

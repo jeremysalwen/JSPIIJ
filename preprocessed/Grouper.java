@@ -10,6 +10,7 @@ import tokens.assignment_token;
 import tokens.base_grouper_token;
 import tokens.begin_end_token;
 import tokens.colon_token;
+import tokens.comma_token;
 import tokens.do_token;
 import tokens.double_token;
 import tokens.grouper_token;
@@ -33,10 +34,9 @@ public class Grouper {
 	public Grouper(String text) throws grouping_exception {
 		StringReader reader = new StringReader(text);
 		StreamTokenizer tokenizer = new StreamTokenizer(reader);
-		tokenizer.slashSlashComments(true);
+		//tokenizer.slashSlashComments(true);
 		tokenizer.slashStarComments(true);
 		tokenizer.ordinaryChar('\"');
-		boolean leave_do_loop = false;
 		operator_types temp_type = null;
 		Stack<grouper_token> stack_of_groupers = new Stack<grouper_token>();
 		stack_of_groupers.add(new base_grouper_token());
@@ -103,7 +103,8 @@ public class Grouper {
 				case '\'':
 					next_token = new string_token(tokenizer.sval);
 				case '(':
-					next_token = new parenthesized_token();
+					stack_of_groupers.push(new parenthesized_token());
+					continue do_loop_break;
 				case ')':
 					if (!(stack_of_groupers.pop() instanceof parenthesized_token)) {
 						throw new grouping_exception(
@@ -160,13 +161,15 @@ public class Grouper {
 						temp_type = operator_types.GREATERTHAN;
 					}
 					break;
+				case ',':
+					next_token = new comma_token();
 				}
 				if (temp_type != null) {
 					next_token = new operator_token(temp_type);
 					temp_type = null;
 				}
 				top_of_stack.add_token(next_token);
-			} while (!leave_do_loop);
+			} while (true);
 		} catch (IOException e) {
 		}
 		if (stack_of_groupers.size() != 1) {

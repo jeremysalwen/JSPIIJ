@@ -21,21 +21,4 @@ public class pascal_type_methods {
 		return (o instanceof Double || o instanceof Integer
 				|| o instanceof String || o instanceof Boolean || o instanceof Long);
 	}
-
-	public static Class get_java_type(String name) {
-		name = name.intern();
-		if (name == "integer") {
-			return Integer.class;
-		}
-		if (name == "string") {
-			return String.class;
-		}
-		if (name == "float") {
-			return Double.class;
-		}
-		if (name == "boolean") {
-			return Boolean.class;
-		}
-		return null;
-	}
 }

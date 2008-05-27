@@ -14,7 +14,7 @@ public class variable_declaration {
 		return name;
 	}
 
-	public variable_declaration(String name, Class type) {
+	public variable_declaration(String name, Object type) {
 		this.name = name;
 		this.type = type;
 		is_custom_declaration = false;

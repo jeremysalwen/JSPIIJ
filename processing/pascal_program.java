@@ -8,6 +8,7 @@ import java.util.ListIterator;
 
 import exceptions.grouping_exception;
 
+import pascal_types.custom_type_declaration;
 import pascal_types.pascal_type_methods;
 import preprocessed.Grouper;
 import preprocessed.function_declaration;
@@ -35,6 +36,7 @@ import tokens.double_token;
 import tokens.if_token;
 import tokens.integer_token;
 import tokens.operator_token;
+import tokens.operator_types;
 import tokens.parenthesized_token;
 import tokens.period_token;
 import tokens.semicolon_token;
@@ -45,14 +47,16 @@ import tokens.while_token;
 import tokens.word_token;
 
 public class pascal_program {
+	public HashMap<String, custom_type_declaration> custom_types;
 	public HashMap<function_header, function_declaration> functions;
 	public HashMap<String, Class<pascalPlugin>> plugins;
 
 	public static void main(String[] args) throws grouping_exception {
 		System.out
-				.println(new pascal_program().get_next_command(new Grouper(
-						"if x=5 then begin x:=7; y:=5*2+3; end").tokens
-						.listIterator()));
+				.println(new pascal_program()
+						.get_next_command(new Grouper(
+								"if x=5 then begin x:=7; y:=getstuff(5, x, 2 + 1 - y); end").tokens
+								.listIterator()));
 	}
 
 	public pascal_program() {
@@ -65,11 +69,35 @@ public class pascal_program {
 		}
 	}
 
+	private custom_type_declaration get_custom_type_declaration(
+			ListIterator<token> i) {
+		String tmp = get_word_value(i);
+		assert (tmp.equals("type"));
+		while (true) {
+
+			String name = get_word_value(i);
+			token next = i.next();
+			assert (next instanceof operator_token);
+			assert ((operator_token) next).type == operator_types.EQUALS;
+			tmp = get_word_value(i);
+			assert (tmp.equals("record"));
+			while (true) {
+				LinkedList<variable_declaration> variable_declarations = new LinkedList<variable_declaration>();
+				String next_name = get_word_value(i);
+				next = i.next();
+				assert (next instanceof colon_token);
+				variable_declarations.add(new variable_declaration(next_name,
+						get_java_type(get_word_value(i))));
+			}
+			
+		}
+	}
+
 	private function_declaration get_function_declaration(ListIterator<token> t) {
 		function_declaration unfinished_function = new function_declaration();
 		token next;
 		String function_type = get_word_value(t);
-		boolean is_procedure;
+		boolean is_procedure = false;
 		if (function_type.equals("procedure")) {
 			is_procedure = true;
 		} else if (function_type.equals("function")) {
@@ -95,17 +123,17 @@ public class pascal_program {
 				}
 				next = argument_iterator.next();
 				assert (next instanceof colon_token);
-				Class type = pascal_type_methods
-						.get_java_type(get_word_value(argument_iterator));
+				Object type = get_java_type(get_word_value(argument_iterator));
 				for (String s : names) {
 					arguments.add(new variable_declaration(s, type));
 				}
 			}
 		}
 		next = t.next();
-		Class return_type = null;
-		if (next instanceof colon_token) {
-			return_type = pascal_type_methods.get_java_type(get_word_value(t));
+		Object return_type = null;
+		assert (is_procedure ^ next instanceof colon_token);
+		if (!is_procedure && next instanceof colon_token) {
+			return_type = get_java_type(get_word_value(t));
 		}
 		assert_next_semicolon(t);
 		next = t.next();
@@ -117,6 +145,8 @@ public class pascal_program {
 			commands.add(get_next_command(body_iterator));
 		}
 		unfinished_function.instructions = commands;
+		unfinished_function.header = new function_header(name, arguments,
+				return_type);
 		return unfinished_function;
 	}
 
@@ -275,21 +305,39 @@ public class pascal_program {
 			}
 		});
 		ArrayList<Class> classes = new ArrayList<Class>();
-		ClassLoader c = ClassLoader.getSystemClassLoader();
+		ClassLoader classloader = ClassLoader.getSystemClassLoader();
 		for (File f : pluginarray)
 			try {
 				String name = f.getName().substring(0,
 						f.getName().indexOf(".class"));
-				classes.add(c.loadClass("plugins." + name));
+				Class<?> plugin_class = classloader
+						.loadClass("plugins." + name);
+				if (plugin_class.isAssignableFrom(pascalPlugin.class)) {
+					classes.add(plugin_class);
+				}
 			} catch (ClassNotFoundException ex) {
 				ex.printStackTrace();
 			}
-		for (Class c2 : classes)
-			if (!StaticMethods.isSubClass(c2, pascalPlugin.class))
-				classes.remove(c2);
-		for (Class c3 : classes) {
-			plugins.put(c3.getSimpleName(), c3);
-			System.out.println(c3.getName());
+		for (Class c : classes) {
+			plugins.put(c.getSimpleName(), c);
+			System.out.println(c.getName());
 		}
+	}
+
+	public Object get_java_type(String name) {
+		name = name.intern();
+		if (name == "integer") {
+			return Integer.class;
+		}
+		if (name == "string") {
+			return String.class;
+		}
+		if (name == "float") {
+			return Double.class;
+		}
+		if (name == "boolean") {
+			return Boolean.class;
+		}
+		return custom_types.get(name);
 	}
 }
