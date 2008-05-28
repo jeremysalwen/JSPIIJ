@@ -28,7 +28,7 @@ public class function_call implements returns_value, executable {
 	@Override
 	public String toString() {
 		return "call function [" + function_name + "] with args [" + arguments
-				+ "] as args";
+				+ ']';
 	}
 
 	@Override

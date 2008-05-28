@@ -6,10 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import exceptions.grouping_exception;
-
 import pascal_types.custom_type_declaration;
-import pascal_types.pascal_type_methods;
 import preprocessed.Grouper;
 import preprocessed.function_declaration;
 import preprocessed.function_header;
@@ -45,6 +42,7 @@ import tokens.then_token;
 import tokens.token;
 import tokens.while_token;
 import tokens.word_token;
+import exceptions.grouping_exception;
 
 public class pascal_program {
 	public HashMap<String, custom_type_declaration> custom_types;
@@ -60,6 +58,8 @@ public class pascal_program {
 	}
 
 	public pascal_program() {
+		plugins = new HashMap<String, Class<pascalPlugin>>();
+		loadPlugins();
 	}
 
 	public pascal_program(LinkedList<token> tokens) {
@@ -89,7 +89,7 @@ public class pascal_program {
 				variable_declarations.add(new variable_declaration(next_name,
 						get_java_type(get_word_value(i))));
 			}
-			
+
 		}
 	}
 
@@ -213,12 +213,10 @@ public class pascal_program {
 		token next = i.next();
 		variable_identifier identifier = new variable_identifier();
 		identifier.add(((word_token) next).name);
-		next = i.next();
-		while (next instanceof period_token) {
+		while (i.hasNext() && (next = i.next()) instanceof period_token) {
 			next = i.next();
 			assert (next instanceof word_token);
 			identifier.add(((word_token) next).name);
-			next = i.next();
 		}
 		i.previous();
 		return identifier;
@@ -261,31 +259,38 @@ public class pascal_program {
 			result = new constant_access(((string_token) next).value);
 		} else if (next instanceof word_token) {
 			String name = ((word_token) next).name;
-			next = iterator.next();
-			if (next instanceof parenthesized_token) {
-				LinkedList<returns_value> arguments = get_arguments_for_call((parenthesized_token) next);
-				assert_next_semicolon(iterator);
-				if (plugins.containsKey(name)) {
-					result = new plugin_call(name, arguments);
+			if (iterator.hasNext()) {
+				next = iterator.next();
+				if (next instanceof parenthesized_token) {
+					LinkedList<returns_value> arguments = get_arguments_for_call((parenthesized_token) next);
+					if (plugins.containsKey(name)) {
+						result = new plugin_call(name, arguments);
+					} else {
+						result = new function_call(name, arguments);
+					}
 				} else {
-					result = new function_call(name, arguments);
+					iterator.previous();
+					iterator.previous();
+					result = new variable_access(
+							get_next_var_identifier(iterator));
 				}
 			} else {
-				iterator.previous();
 				iterator.previous();
 				result = new variable_access(get_next_var_identifier(iterator));
 			}
 		}
 		assert (result != null);
-		next = iterator.next();
-		if (next instanceof operator_token) {
-			return new binary_operator_evaluation(result,
-					get_next_returns_value(iterator),
-					((operator_token) next).type);
-		} else {
-			iterator.previous();
-			return result;
+		if (iterator.hasNext()) {
+			next = iterator.next();
+			if (next instanceof operator_token) {
+				result = new binary_operator_evaluation(result,
+						get_next_returns_value(iterator),
+						((operator_token) next).type);
+			} else {
+				iterator.previous();
+			}
 		}
+		return result;
 	}
 
 	String get_word_value(token t) {

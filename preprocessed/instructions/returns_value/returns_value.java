@@ -1,6 +1,5 @@
 package preprocessed.instructions.returns_value;
 
-import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.function_on_stack;
 
 
