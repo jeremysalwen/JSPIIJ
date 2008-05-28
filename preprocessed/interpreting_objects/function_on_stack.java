@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import pascal_types.custom_type;
+import pascal_types.custom_type_declaration;
 import pascal_types.pascal_type_methods;
 import preprocessed.function_declaration;
 import preprocessed.variable_declaration;
@@ -23,8 +24,19 @@ public class function_on_stack implements contains_variables {
 			v.initialize(variables);
 		}
 		if (prototype.header.return_type != null) {
-			variables.put("result", pascal_type_methods
-					.get_default_value(prototype.header.return_type));
+			if (!(prototype.header.return_type instanceof Class)) {
+				variables
+						.put(
+								"result",
+								pascal_type_methods
+										.get_default_value((Class) prototype.header.return_type));
+			} else if (prototype.header.return_type instanceof custom_type_declaration) {
+				variables
+						.put(
+								"result",
+								((custom_type_declaration) prototype.header.return_type)
+										.new_var());
+			}
 		}
 		this.program = program;
 		this.prototype = declaration;
