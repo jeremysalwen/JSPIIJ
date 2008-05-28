@@ -1,12 +1,16 @@
 package preprocessed;
 
 import java.util.LinkedList;
-import java.util.Map.Entry;
 
 public class function_header {
 	public String name;
-	public Object return_type;  //holds Class of wrapper type or custom type declaration.  Lame non-hack
+	public Object return_type; // holds Class of wrapper type or custom type
+	// declaration. Lame non-hack
 	public LinkedList<variable_declaration> arguments;
+
+	public function_header() {
+		arguments = new LinkedList<variable_declaration>();
+	}
 
 	public function_header(String name,
 			LinkedList<variable_declaration> arguments, Object return_type) {

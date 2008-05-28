@@ -18,6 +18,7 @@ public class function_on_stack implements contains_variables {
 	function_declaration prototype;
 	public pascal_program program;
 
+	@SuppressWarnings("unchecked")
 	public function_on_stack(pascal_program program,
 			function_declaration declaration) {
 		for (variable_declaration v : declaration.local_variables) {
