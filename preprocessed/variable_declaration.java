@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import pascal_types.custom_type_declaration;
 import pascal_types.pascal_type_methods;
+import preprocessed.interpreting_objects.variables.contains_variables;
 
 public class variable_declaration {
 	private String name;
@@ -32,6 +33,16 @@ public class variable_declaration {
 					.get_default_value((Class) type));
 		} else {
 			variable_map.put(name, ((custom_type_declaration) type).new_var());
+		}
+	}
+
+	public void initialize(contains_variables v) {
+		if (!is_custom_declaration) {
+			v
+					.set_var(name, pascal_type_methods
+							.get_default_value((Class) type));
+		} else {
+			v.set_var(name, ((custom_type_declaration) type).new_var());
 		}
 	}
 }

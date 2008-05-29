@@ -8,7 +8,7 @@ import preprocessed.interpreting_objects.variables.contains_variables;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 
 public class variable_set implements executable {
-	variable_identifier name = new variable_identifier();
+	variable_identifier name;
 	returns_value value;
 
 	public variable_set(variable_identifier name, returns_value value) {

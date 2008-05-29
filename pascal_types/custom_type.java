@@ -14,7 +14,7 @@ public class custom_type implements contains_variables {
 
 	public custom_type(custom_type_declaration c) {
 		for (variable_declaration v : c.variable_types) {
-			v.initialize(values);
+			v.initialize(this);
 		}
 	}
 

@@ -24,6 +24,7 @@ import tokens.string_token;
 import tokens.then_token;
 import tokens.token;
 import tokens.operator_types;
+import tokens.var_token;
 import tokens.while_token;
 import tokens.word_token;
 import exceptions.grouping_exception;
@@ -34,7 +35,7 @@ public class Grouper {
 	public Grouper(String text) throws grouping_exception {
 		StringReader reader = new StringReader(text);
 		StreamTokenizer tokenizer = new StreamTokenizer(reader);
-		//tokenizer.slashSlashComments(true);
+		// tokenizer.slashSlashComments(true);
 		tokenizer.slashStarComments(true);
 		tokenizer.ordinaryChar('\"');
 		operator_types temp_type = null;
@@ -49,10 +50,11 @@ public class Grouper {
 				case StreamTokenizer.TT_EOF:
 					break do_loop_break;
 				case StreamTokenizer.TT_WORD:
-					if (tokenizer.sval.equals("begin")) {
+					tokenizer.sval = tokenizer.sval.intern();
+					if (tokenizer.sval == "begin") {
 						stack_of_groupers.push(new begin_end_token());
 						continue do_loop_break;
-					} else if (tokenizer.sval.equals("end")) {
+					} else if (tokenizer.sval == "end") {
 						if (!(stack_of_groupers.pop() instanceof begin_end_token)) {
 							throw new grouping_exception(
 									grouping_exception.grouping_exception_types.MISMATCHED_PARENS);
@@ -62,27 +64,31 @@ public class Grouper {
 						}
 						stack_of_groupers.peek().add_token(top_of_stack);
 						continue do_loop_break;
-					} else if (tokenizer.sval.equals("if")) {
+					} else if (tokenizer.sval == "if") {
 						next_token = new if_token();
-					} else if (tokenizer.sval.equals("then")) {
+					} else if (tokenizer.sval == "then") {
 						next_token = new then_token();
-					} else if (tokenizer.sval.equals("while")) {
+					} else if (tokenizer.sval == "while") {
 						next_token = new while_token();
-					} else if (tokenizer.sval.equals("do")) {
+					} else if (tokenizer.sval == "do") {
 						next_token = new do_token();
-					} else if (tokenizer.sval.equals("and")) {
+					} else if (tokenizer.sval == "and") {
 						temp_type = operator_types.AND;
-					} else if (tokenizer.sval.equals("or")) {
+					} else if (tokenizer.sval == "not") {
+						temp_type = operator_types.NOT;
+					} else if (tokenizer.sval == "or") {
 						temp_type = operator_types.OR;
-					} else if (tokenizer.sval.equals("xor")) {
+					} else if (tokenizer.sval == "var") {
+						next_token = new var_token();
+					} else if (tokenizer.sval == "xor") {
 						temp_type = operator_types.XOR;
-					} else if (tokenizer.sval.equals("shl")) {
+					} else if (tokenizer.sval == "shl") {
 						temp_type = operator_types.SHIFTLEFT;
-					} else if (tokenizer.sval.equals("shr")) {
+					} else if (tokenizer.sval == "shr") {
 						temp_type = operator_types.SHIFTRIGHT;
-					} else if (tokenizer.sval.equals("div")) {
+					} else if (tokenizer.sval == "div") {
 						temp_type = operator_types.DIV;
-					} else if (tokenizer.sval.equals("mod")) {
+					} else if (tokenizer.sval == "mod") {
 						temp_type = operator_types.MOD;
 					} else {
 						next_token = new word_token(tokenizer.sval);

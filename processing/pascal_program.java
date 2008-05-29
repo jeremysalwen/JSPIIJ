@@ -40,6 +40,7 @@ import tokens.semicolon_token;
 import tokens.string_token;
 import tokens.then_token;
 import tokens.token;
+import tokens.var_token;
 import tokens.while_token;
 import tokens.word_token;
 import exceptions.grouping_exception;
@@ -69,6 +70,24 @@ public class pascal_program {
 		}
 	}
 
+	private void add_next_declaration(ListIterator<token> i) {
+		token next = i.next();
+		if (next instanceof word_token) {
+			String name = get_word_value(next).intern();
+			if (name == "procedure" || name == "function") {
+				function_header header = get_function_header(i,
+						(name == "procedure"));
+				LinkedList<executable> commands = get_function_body(i);
+				function_declaration declaration=new function_declaration();
+declaration.header=header;
+declaration.instructions=commands;
+declaration.local_variables=
+			}
+
+		}
+
+	}
+
 	private void add_custom_type_declaration(ListIterator<token> i) {
 		custom_type_declaration result = new custom_type_declaration();
 		String tmp = get_word_value(i);
@@ -92,21 +111,11 @@ public class pascal_program {
 		custom_types.put(name, result);
 	}
 
-	private function_header get_function_header(ListIterator<token> i) {
+	private function_header get_function_header(ListIterator<token> i,
+			boolean is_procedure) {
 		function_header unfinished_header = new function_header();
-		token next;
-		String function_type = get_word_value(i);
-		boolean is_procedure = false;
-		if (function_type.equals("procedure")) {
-			is_procedure = true;
-		} else if (function_type.equals("function")) {
-			is_procedure = false;
-		} else {
-			System.err
-					.println("unknown function type passed to get_function_declaration");
-		}
 		unfinished_header.name = get_word_value(i);
-		next = i.next();
+		token next = i.next();
 		if (next instanceof parenthesized_token) {
 			parenthesized_token arguments_token = (parenthesized_token) next;
 			ListIterator<token> argument_iterator = arguments_token.insides
@@ -135,11 +144,18 @@ public class pascal_program {
 			return_type = get_java_type(get_word_value(i));
 		}
 		assert_next_semicolon(i);
-		return new function_header(name, arguments, return_type);
+		return unfinished_header;
 	}
 
-	private function_declaration get_function_declaration(ListIterator<token> t) {
-		function_declaration unfinished_function = new function_declaration();
+	private LinkedList<variable_declaration> get_variable_declarations(
+			ListIterator<token> i) {
+		LinkedList<variable_declaration> result = new LinkedList<variable_declaration>();
+		if (i.next() instanceof var_token) {
+
+		}
+	}
+
+	private LinkedList<executable> get_function_body(ListIterator<token> t) {
 		token next = t.next();
 		assert (next instanceof begin_end_token);
 		begin_end_token body = (begin_end_token) next;
@@ -148,8 +164,7 @@ public class pascal_program {
 		while (body_iterator.hasNext()) {
 			commands.add(get_next_command(body_iterator));
 		}
-		unfinished_function.instructions = commands;
-		return unfinished_function;
+		return commands;
 	}
 
 	executable get_next_command(ListIterator<token> token_iterator) {

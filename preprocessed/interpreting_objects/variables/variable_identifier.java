@@ -3,6 +3,10 @@ package preprocessed.interpreting_objects.variables;
 import java.util.LinkedList;
 
 public class variable_identifier extends LinkedList<String> {
+	public variable_identifier() {
+		super();
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o);

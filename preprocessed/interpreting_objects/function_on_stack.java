@@ -46,14 +46,14 @@ public class function_on_stack implements contains_variables {
 	public Object execute(LinkedList<Object> arguments) {
 		ListIterator<Object> i = arguments.listIterator();
 		for (Object p = null; i.hasNext(); p = i.next()) {
-			this.variables.put(this.prototype.header.arguments.get(
+			this.variables.put(prototype.header.arguments.get(
 					i.previousIndex()).get_name(),
 					p instanceof custom_type ? ((custom_type) p).clone() : p);
 		}
 		for (executable e : prototype.instructions) {
 			e.execute(this);
 		}
-		return this.variables.get("result");
+		return get_var("result");
 	}
 
 	@Override
