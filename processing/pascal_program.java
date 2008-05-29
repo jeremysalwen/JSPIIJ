@@ -151,7 +151,7 @@ declaration.local_variables=
 			ListIterator<token> i) {
 		LinkedList<variable_declaration> result = new LinkedList<variable_declaration>();
 		if (i.next() instanceof var_token) {
-
+			
 		}
 	}
 
