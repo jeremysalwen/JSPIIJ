@@ -151,7 +151,18 @@ declaration.local_variables=
 			ListIterator<token> i) {
 		LinkedList<variable_declaration> result = new LinkedList<variable_declaration>();
 		if (i.next() instanceof var_token) {
-			
+			LinkedList<variable_declaration> variables = new LinkedList<variable_declaration>();
+			token next = i.next();
+			while (next instanceof word_token) {
+				next = i.next();
+				LinkedList<String> names = new LinkedList<String>();
+				while (next instanceof comma_token) {
+					names.add(get_word_value(i));
+					next = i.next();
+				}
+				assert (next instanceof colon_token);
+				
+			}
 		}
 	}
 

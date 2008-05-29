@@ -19,11 +19,13 @@ import tokens.integer_token;
 import tokens.operator_token;
 import tokens.parenthesized_token;
 import tokens.period_token;
+import tokens.record_token;
 import tokens.semicolon_token;
 import tokens.string_token;
 import tokens.then_token;
 import tokens.token;
 import tokens.operator_types;
+import tokens.type_token;
 import tokens.var_token;
 import tokens.while_token;
 import tokens.word_token;
@@ -80,6 +82,10 @@ public class Grouper {
 						temp_type = operator_types.OR;
 					} else if (tokenizer.sval == "var") {
 						next_token = new var_token();
+					} else if (tokenizer.sval == "record") {
+						next_token = new record_token();
+					} else if (tokenizer.sval == "type") {
+						next_token = new type_token();
 					} else if (tokenizer.sval == "xor") {
 						temp_type = operator_types.XOR;
 					} else if (tokenizer.sval == "shl") {
