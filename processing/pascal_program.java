@@ -30,16 +30,21 @@ import tokens.colon_token;
 import tokens.comma_token;
 import tokens.do_token;
 import tokens.double_token;
+import tokens.end_token;
+import tokens.function_token;
 import tokens.if_token;
 import tokens.integer_token;
 import tokens.operator_token;
 import tokens.operator_types;
 import tokens.parenthesized_token;
 import tokens.period_token;
+import tokens.procedure_token;
+import tokens.record_token;
 import tokens.semicolon_token;
 import tokens.string_token;
 import tokens.then_token;
 import tokens.token;
+import tokens.type_token;
 import tokens.var_token;
 import tokens.while_token;
 import tokens.word_token;
@@ -72,41 +77,45 @@ public class pascal_program {
 
 	private void add_next_declaration(ListIterator<token> i) {
 		token next = i.next();
+		if (next instanceof procedure_token || next instanceof function_token) {
+			function_header header = get_function_header(i,
+					(next instanceof procedure_token));
+			LinkedList<variable_declaration> local_variables = null;
+			next = i.next();
+			if (next instanceof var_token) {
+				local_variables = get_variable_declarations(i);
+			} else {
+				i.previous();
+			}
+			LinkedList<executable> commands = get_function_body(i);
+			function_declaration declaration = new function_declaration();
+			declaration.header = header;
+			declaration.instructions = commands;
+			declaration.local_variables = local_variables == null ? new LinkedList<variable_declaration>()
+					: local_variables;
+			functions.put(header, declaration);
+			return;
+		}
+		if (next instanceof type_token) {
+			add_custom_type_declaration(i);
+		}
 		if (next instanceof word_token) {
 			String name = get_word_value(next).intern();
-			if (name == "procedure" || name == "function") {
-				function_header header = get_function_header(i,
-						(name == "procedure"));
-				LinkedList<executable> commands = get_function_body(i);
-				function_declaration declaration=new function_declaration();
-declaration.header=header;
-declaration.instructions=commands;
-declaration.local_variables=
-			}
-
 		}
 
 	}
 
 	private void add_custom_type_declaration(ListIterator<token> i) {
 		custom_type_declaration result = new custom_type_declaration();
-		String tmp = get_word_value(i);
-		assert (tmp.equals("type"));
 		String name = get_word_value(i);
 		token next = i.next();
 		assert (next instanceof operator_token);
 		assert ((operator_token) next).type == operator_types.EQUALS;
-		tmp = get_word_value(i);
-		assert (tmp.equals("record"));
-		String next_name = get_word_value(i);
-		while (!next_name.equals("end")) {
-			next = i.next();
-			assert (next instanceof colon_token);
-			result.add_variable_declaration(new variable_declaration(next_name,
-					get_java_type(get_word_value(i))));
-			assert_next_semicolon(i);
-			next_name = get_word_value(i);
-		}
+		next = i.next();
+		assert (next instanceof record_token);
+		result.variable_types = get_variable_declarations(i);
+		next = i.next();
+		assert (next instanceof end_token);
 		assert_next_semicolon(i);
 		custom_types.put(name, result);
 	}
@@ -150,20 +159,31 @@ declaration.local_variables=
 	private LinkedList<variable_declaration> get_variable_declarations(
 			ListIterator<token> i) {
 		LinkedList<variable_declaration> result = new LinkedList<variable_declaration>();
-		if (i.next() instanceof var_token) {
-			LinkedList<variable_declaration> variables = new LinkedList<variable_declaration>();
-			token next = i.next();
-			while (next instanceof word_token) {
+		/*
+		 * reusing it, so it is further out of scope than necessary
+		 */
+		LinkedList<String> names = new LinkedList<String>();
+		token next = i.next();
+		while (next instanceof word_token) {
+			next = i.next();
+			while (next instanceof comma_token) {
+				names.add(get_word_value(i));
 				next = i.next();
-				LinkedList<String> names = new LinkedList<String>();
-				while (next instanceof comma_token) {
-					names.add(get_word_value(i));
-					next = i.next();
-				}
-				assert (next instanceof colon_token);
-				
 			}
+			assert (next instanceof colon_token);
+			Object type = get_java_type(get_word_value(i));
+			assert_next_semicolon(i);
+			for (String s : names) {
+				result.add(new variable_declaration(s, type));
+				/*
+				 * TODO make sure this works
+				 */
+			}
+			names.clear(); // reusing the linked list object
+			next = i.next();
 		}
+		i.previous();
+		return result;
 	}
 
 	private LinkedList<executable> get_function_body(ListIterator<token> t) {

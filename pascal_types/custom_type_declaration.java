@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import preprocessed.variable_declaration;
 
 public class custom_type_declaration {
-	LinkedList<variable_declaration> variable_types;
+	public LinkedList<variable_declaration> variable_types;
 
 	public custom_type_declaration() {
 		variable_types = new LinkedList<variable_declaration>();

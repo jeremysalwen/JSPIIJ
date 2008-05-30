@@ -13,12 +13,15 @@ import tokens.colon_token;
 import tokens.comma_token;
 import tokens.do_token;
 import tokens.double_token;
+import tokens.end_token;
+import tokens.function_token;
 import tokens.grouper_token;
 import tokens.if_token;
 import tokens.integer_token;
 import tokens.operator_token;
 import tokens.parenthesized_token;
 import tokens.period_token;
+import tokens.procedure_token;
 import tokens.record_token;
 import tokens.semicolon_token;
 import tokens.string_token;
@@ -57,15 +60,13 @@ public class Grouper {
 						stack_of_groupers.push(new begin_end_token());
 						continue do_loop_break;
 					} else if (tokenizer.sval == "end") {
-						if (!(stack_of_groupers.pop() instanceof begin_end_token)) {
-							throw new grouping_exception(
-									grouping_exception.grouping_exception_types.MISMATCHED_PARENS);
-						} else if (stack_of_groupers.size() == 0) {
-							throw new grouping_exception(
-									grouping_exception.grouping_exception_types.EXTRA_END);
+						if (stack_of_groupers.size() > 0
+								&& stack_of_groupers.peek() instanceof begin_end_token) {
+							stack_of_groupers.pop();
+							stack_of_groupers.peek().add_token(top_of_stack);
+							continue do_loop_break;
 						}
-						stack_of_groupers.peek().add_token(top_of_stack);
-						continue do_loop_break;
+						next_token = new end_token();
 					} else if (tokenizer.sval == "if") {
 						next_token = new if_token();
 					} else if (tokenizer.sval == "then") {
@@ -96,7 +97,12 @@ public class Grouper {
 						temp_type = operator_types.DIV;
 					} else if (tokenizer.sval == "mod") {
 						temp_type = operator_types.MOD;
+					} else if (tokenizer.sval == "procedure") {
+						next_token = new procedure_token();
+					} else if (tokenizer.sval == "function") {
+						next_token = new function_token();
 					} else {
+
 						next_token = new word_token(tokenizer.sval);
 					}
 					break;
