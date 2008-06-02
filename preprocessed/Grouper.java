@@ -118,8 +118,10 @@ public class Grouper {
 					break;
 				case '.':
 					next_token = new period_token();
+					break;
 				case '\'':
 					next_token = new string_token(tokenizer.sval);
+					break;
 				case '(':
 					stack_of_groupers.push(new parenthesized_token());
 					continue do_loop_break;

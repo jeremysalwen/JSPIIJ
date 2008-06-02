@@ -21,11 +21,13 @@ public class function_on_stack implements contains_variables {
 	@SuppressWarnings("unchecked")
 	public function_on_stack(pascal_program program,
 			function_declaration declaration) {
-		for (variable_declaration v : declaration.local_variables) {
+		this.prototype = declaration;
+		this.program = program;
+		for (variable_declaration v : prototype.local_variables) {
 			v.initialize(variables);
 		}
 		if (prototype.header.return_type != null) {
-			if (!(prototype.header.return_type instanceof Class)) {
+			if (prototype.header.return_type instanceof Class) {
 				variables
 						.put(
 								"result",
@@ -46,8 +48,8 @@ public class function_on_stack implements contains_variables {
 	public Object execute(LinkedList<Object> arguments) {
 		ListIterator<Object> i = arguments.listIterator();
 		for (Object p = null; i.hasNext(); p = i.next()) {
-			this.variables.put(prototype.header.arguments.get(
-					i.previousIndex()).get_name(),
+			this.variables.put(prototype.header.arguments
+					.get(i.previousIndex()).get_name(),
 					p instanceof custom_type ? ((custom_type) p).clone() : p);
 		}
 		for (executable e : prototype.instructions) {

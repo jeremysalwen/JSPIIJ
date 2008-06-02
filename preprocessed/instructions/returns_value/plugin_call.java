@@ -26,7 +26,7 @@ public class plugin_call implements returns_value, executable {
 		Class<pascalPlugin> plugin_class = (Class<pascalPlugin>) f.program.plugins
 				.get(plugin_name);
 		try {
-			Object o = plugin_class.getDeclaredConstructor(ArrayList.class)
+			Object o = plugin_class.getDeclaredConstructor(LinkedList.class)
 					.newInstance(pascal_args);
 			Method m = plugin_class.getMethod("process");
 			return m.invoke(o, new Object[0]);

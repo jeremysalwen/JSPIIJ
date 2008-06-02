@@ -21,6 +21,7 @@ public class function_call implements returns_value, executable {
 		for (returns_value v : arguments) {
 			pascal_args.add(v.get_value(f));
 		}
+		assert (f.program.functions.containsKey(function_name));
 		return new function_on_stack(f.program, f.program.functions
 				.get(function_name)).execute(pascal_args);
 	}

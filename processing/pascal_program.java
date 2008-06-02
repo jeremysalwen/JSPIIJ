@@ -51,27 +51,36 @@ import tokens.word_token;
 import exceptions.grouping_exception;
 
 public class pascal_program {
+	function_declaration main;
 	public HashMap<String, custom_type_declaration> custom_types;
 	public HashMap<function_header, function_declaration> functions;
 	public HashMap<String, Class<pascalPlugin>> plugins;
 
 	public static void main(String[] args) throws grouping_exception {
-		System.out
-				.println(new pascal_program()
-						.get_next_command(new Grouper(
-								"if x=5 then begin x:=7; y:=getstuff(5, x, 2 + 1 - y); end").tokens
-								.listIterator()));
+		new pascal_program(
+				new Grouper(
+						"var x:integer; begin writeln('hi there'); x:=2+5; end;").tokens)
+				.run();
+	}
+
+	public void run() {
+		main.instantiate(this).execute(new LinkedList<Object>());
 	}
 
 	public pascal_program() {
 		plugins = new HashMap<String, Class<pascalPlugin>>();
+		functions = new HashMap<function_header, function_declaration>();
 		loadPlugins();
+		main = new function_declaration();
+		main.header = new function_header("main",
+				new LinkedList<variable_declaration>(), null);
 	}
 
 	public pascal_program(LinkedList<token> tokens) {
+		this();
 		ListIterator<token> token_iterator = tokens.listIterator();
 		while (token_iterator.hasNext()) {
-			// TODO lol
+			add_next_declaration(token_iterator);
 		}
 	}
 
@@ -98,11 +107,17 @@ public class pascal_program {
 		}
 		if (next instanceof type_token) {
 			add_custom_type_declaration(i);
+			return;
 		}
-		if (next instanceof word_token) {
-			String name = get_word_value(next).intern();
+		if (next instanceof begin_end_token) {
+			i.previous();
+			main.instructions = get_function_body(i);
+			return;
 		}
-
+		if (next instanceof var_token) {
+			main.local_variables = get_variable_declarations(i);
+			return;
+		}
 	}
 
 	private void add_custom_type_declaration(ListIterator<token> i) {
@@ -282,8 +297,10 @@ public class pascal_program {
 		LinkedList<returns_value> result = new LinkedList<returns_value>();
 		while (iterator.hasNext()) {
 			result.add(get_next_returns_value(iterator));
-			token next = iterator.next();
-			assert (next instanceof comma_token);
+			if (iterator.hasNext()) {
+				token next = iterator.next();
+				assert (next instanceof comma_token);
+			}
 		}
 		return result;
 	}
@@ -363,9 +380,9 @@ public class pascal_program {
 			try {
 				String name = f.getName().substring(0,
 						f.getName().indexOf(".class"));
-				Class<?> plugin_class = classloader
+				Class<? extends pascalPlugin> plugin_class = (Class<? extends pascalPlugin>) classloader
 						.loadClass("plugins." + name);
-				if (plugin_class.isAssignableFrom(pascalPlugin.class)) {
+				if (pascalPlugin.class.isAssignableFrom(plugin_class)) {
 					classes.add(plugin_class);
 				}
 			} catch (ClassNotFoundException ex) {
