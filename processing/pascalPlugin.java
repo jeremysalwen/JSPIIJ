@@ -21,7 +21,9 @@ public abstract class pascalPlugin<T> {
 		}
 		Field[] fields = callingClass.getFields();
 		ListIterator<Object> i = arrayOfArgs.listIterator();
-		for (Object p = null; i.hasNext(); p = i.next()) {
+		while (i.hasNext()) {
+			Object p = null;
+			p = i.next();
 			if (pascal_type_methods.is_primative_wrapper(p)) {
 				if (p.getClass() == fields[i.previousIndex()].getType()) {
 					fields[i.previousIndex()].set(this, p);

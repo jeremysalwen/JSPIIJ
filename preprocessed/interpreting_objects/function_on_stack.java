@@ -23,8 +23,10 @@ public class function_on_stack implements contains_variables {
 			function_declaration declaration) {
 		this.prototype = declaration;
 		this.program = program;
-		for (variable_declaration v : prototype.local_variables) {
-			v.initialize(variables);
+		if (prototype.local_variables != null) {
+			for (variable_declaration v : prototype.local_variables) {
+				v.initialize(variables);
+			}
 		}
 		if (prototype.header.return_type != null) {
 			if (prototype.header.return_type instanceof Class) {

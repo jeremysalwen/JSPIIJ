@@ -70,7 +70,7 @@ public class binary_operator_evaluation implements returns_value {
 			case DIVIDE:
 				return l1 / l2;
 			case EQUALS:
-				return l1 = l2;
+				return (l1 == l2);
 			case GREATEREQ:
 				return l1 >= l2;
 			case GREATERTHAN:

@@ -13,6 +13,5 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		new Frame(r);
 	}
 }

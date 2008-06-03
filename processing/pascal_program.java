@@ -57,10 +57,10 @@ public class pascal_program {
 	public HashMap<String, Class<pascalPlugin>> plugins;
 
 	public static void main(String[] args) throws grouping_exception {
-		new pascal_program(
-				new Grouper(
-						"var x:integer; begin writeln('hi there'); x:=2+5; end;").tokens)
-				.run();
+		new pascal_program(new Grouper("var x:integer;" + " begin" + " x:=2+5;"
+				+ " if((x mod 7)=0) then writeln('hi there'+returnfive(4));" + " end;"
+				+ " function returnfive(x:integer): integer;" + " begin "
+				+ "result:=5;" + " end;").tokens).run();
 	}
 
 	public void run() {
@@ -152,7 +152,6 @@ public class pascal_program {
 					names.add(((word_token) argument_iterator.next()).name);
 					next = argument_iterator.next();
 				}
-				next = argument_iterator.next();
 				assert (next instanceof colon_token);
 				Object type = get_java_type(get_word_value(argument_iterator));
 				for (String s : names) {
@@ -162,10 +161,9 @@ public class pascal_program {
 			}
 		}
 		next = i.next();
-		Object return_type = null;
 		assert (is_procedure ^ next instanceof colon_token);
 		if (!is_procedure && next instanceof colon_token) {
-			return_type = get_java_type(get_word_value(i));
+			unfinished_header.return_type = get_java_type(get_word_value(i));
 		}
 		assert_next_semicolon(i);
 		return unfinished_header;
