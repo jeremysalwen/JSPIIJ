@@ -40,7 +40,7 @@ public class function_on_stack implements contains_variables {
 						.put(
 								"result",
 								((custom_type_declaration) prototype.header.return_type)
-										.new_var());
+										.get_new());
 			}
 		}
 		this.program = program;

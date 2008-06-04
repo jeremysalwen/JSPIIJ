@@ -1,5 +1,7 @@
 package preprocessed.instructions.returns_value;
 
+import pascal_types.pascal_type;
+import preprocessed.function_declaration;
 import preprocessed.interpreting_objects.function_on_stack;
 import tokens.operator_types;
 
@@ -123,5 +125,44 @@ public class binary_operator_evaluation implements returns_value {
 	@Override
 	public String toString() {
 		return "[" + operon1 + "] " + operator_type + " [" + operon2 + ']';
+	}
+
+	@Override
+	public pascal_type get_type(function_declaration f) {
+		pascal_type type1 = operon1.get_type(f);
+		pascal_type type2 = operon2.get_type(f);
+		switch (operator_type) {
+		case AND:
+		case EQUALS:
+		case GREATEREQ:
+		case GREATERTHAN:
+		case LESSEQ:
+		case LESSTHAN:
+		case NOT:
+		case NOTEQUAL:
+		case OR:
+			return new pascal_type(Boolean.class);
+		case DIV:
+		case MOD:
+		case SHIFTLEFT:
+		case SHIFTRIGHT:
+			return new pascal_type(Integer.class);
+		case DIVIDE:
+		case MINUS:
+		case MULTIPLY:
+		case PLUS:
+			if (type1.is_floating_point() || type2.is_floating_point()) {
+				return new pascal_type(Double.class);
+			} else {
+				return new pascal_type(Integer.class);
+			}
+		case XOR:
+			if (type1.is_boolean()) {
+				return new pascal_type(Boolean.class);
+			} else {
+				return type1;
+			}
+		}
+		return null;
 	}
 }

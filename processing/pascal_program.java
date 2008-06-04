@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import pascal_types.custom_type_declaration;
+import pascal_types.pascal_type;
 import preprocessed.Grouper;
 import preprocessed.function_declaration;
 import preprocessed.function_header;
@@ -58,9 +59,9 @@ public class pascal_program {
 
 	public static void main(String[] args) throws grouping_exception {
 		new pascal_program(new Grouper("var x:integer;" + " begin" + " x:=2+5;"
-				+ " if((x mod 7)=0) then writeln('hi there'+returnfive(4));" + " end;"
-				+ " function returnfive(x:integer): integer;" + " begin "
-				+ "result:=5;" + " end;").tokens).run();
+				+ " if((x mod 7)=0) then writeln('hi there'+returnfive(4));"
+				+ " end;" + " function returnfive(x:integer): integer;"
+				+ " begin " + "result:=5;" + " end;").tokens).run();
 	}
 
 	public void run() {
@@ -153,7 +154,7 @@ public class pascal_program {
 					next = argument_iterator.next();
 				}
 				assert (next instanceof colon_token);
-				Object type = get_java_type(get_word_value(argument_iterator));
+				pascal_type type = get_java_type(get_word_value(argument_iterator));
 				for (String s : names) {
 					unfinished_header.arguments.add(new variable_declaration(s,
 							type));
@@ -184,7 +185,7 @@ public class pascal_program {
 				next = i.next();
 			}
 			assert (next instanceof colon_token);
-			Object type = get_java_type(get_word_value(i));
+			pascal_type type = get_java_type(get_word_value(i));
 			assert_next_semicolon(i);
 			for (String s : names) {
 				result.add(new variable_declaration(s, type));
@@ -392,20 +393,20 @@ public class pascal_program {
 		}
 	}
 
-	public Object get_java_type(String name) {
+	public pascal_type get_java_type(String name) {
 		name = name.intern();
+		Class c = null;
 		if (name == "integer") {
-			return Integer.class;
+			c = Integer.class;
+		} else if (name == "string") {
+			c = String.class;
+		} else if (name == "float") {
+			c = Double.class;
+		} else if (name == "boolean") {
+			c = Boolean.class;
+		} else if (c == null) {
+			return new pascal_type(custom_types.get(name));
 		}
-		if (name == "string") {
-			return String.class;
-		}
-		if (name == "float") {
-			return Double.class;
-		}
-		if (name == "boolean") {
-			return Boolean.class;
-		}
-		return custom_types.get(name);
+		return new pascal_type(c);
 	}
 }

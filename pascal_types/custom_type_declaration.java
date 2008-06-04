@@ -15,7 +15,7 @@ public class custom_type_declaration {
 		variable_types.add(v);
 	}
 
-	public custom_type new_var() {
+	public custom_type get_new() {
 		return new custom_type(this);
 	}
 }
