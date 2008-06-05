@@ -2,9 +2,11 @@ package preprocessed;
 
 import java.util.LinkedList;
 
+import pascal_types.pascal_type;
+
 public class function_header {
 	public String name;
-	public Object return_type; // holds Class of wrapper type or custom type
+	public pascal_type return_type; // holds Class of wrapper type or custom type
 	// declaration. Lame non-hack
 	public LinkedList<variable_declaration> arguments;
 

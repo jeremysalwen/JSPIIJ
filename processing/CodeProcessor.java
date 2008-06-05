@@ -121,7 +121,7 @@ public class CodeProcessor implements Runnable {
 
 	String currentLine;
 
-	public ArrayList<Class<pascalPlugin>> plugins = new ArrayList<Class<pascalPlugin>>();
+	public ArrayList<Class<pascal_plugin>> plugins = new ArrayList<Class<pascal_plugin>>();
 
 	public variableStorage variables = new variableStorage();
 
@@ -210,18 +210,18 @@ public class CodeProcessor implements Runnable {
 					.lastIndex(s, ')') + 1));
 		else
 			args = new ArrayList<standard_type>();
-		Class<pascalPlugin> foundPlugin = getPlugin(s);
+		Class<pascal_plugin> foundPlugin = getPlugin(s);
 		if (foundPlugin == null)
 			return false;
 		return StaticMethods.argsMatch(args, foundPlugin);
 	}
 
 	public standard_type getPluginVal(String name, ArrayList<standard_type> args) {
-		Class<pascalPlugin> foundPlugin = getPlugin(name);
+		Class<pascal_plugin> foundPlugin = getPlugin(name);
 		return getPluginVal(foundPlugin, args);
 	}
 
-	public standard_type getPluginVal(Class<pascalPlugin> foundPlugin,
+	public standard_type getPluginVal(Class<pascal_plugin> foundPlugin,
 			ArrayList args) {
 		Object o = null;
 		try {
@@ -255,7 +255,7 @@ public class CodeProcessor implements Runnable {
 					"check before accessing a plugin");
 		ArrayList<standard_type> args = parseArgs(s.substring(s.indexOf('('),
 				StaticMethods.lastIndex(s, ')') + 1));
-		Class<pascalPlugin> foundPlugin = getPlugin(s);
+		Class<pascal_plugin> foundPlugin = getPlugin(s);
 		return getPluginVal(s, args);
 	}
 
@@ -287,7 +287,7 @@ public class CodeProcessor implements Runnable {
 				ex.printStackTrace();
 			}
 		for (Class c2 : classes)
-			if (!StaticMethods.isSubClass(c2, pascalPlugin.class))
+			if (!StaticMethods.isSubClass(c2, pascal_plugin.class))
 				classes.remove(c2);
 		for (Class c3 : classes) {
 			plugins.add(c3);
@@ -358,7 +358,7 @@ public class CodeProcessor implements Runnable {
 		return null;
 	}
 
-	public operator_types getPluginReturnType(Class<pascalPlugin> type) {
+	public operator_types getPluginReturnType(Class<pascal_plugin> type) {
 		try {
 
 			return operator_types.valueOf(type.getMethod("process", new Class[0])
@@ -388,14 +388,14 @@ public class CodeProcessor implements Runnable {
 		return null;
 	}
 
-	public Class<pascalPlugin> getPlugin(String expression) {
+	public Class<pascal_plugin> getPlugin(String expression) {
 		String supposedName;
 		if (expression.contains("("))
 			supposedName = expression.substring(0, expression.indexOf('('));
 		else
 			supposedName = expression;
-		Class<pascalPlugin> foundPlugin = null;
-		for (Class<pascalPlugin> p : plugins)
+		Class<pascal_plugin> foundPlugin = null;
+		for (Class<pascal_plugin> p : plugins)
 			if (supposedName.equalsIgnoreCase(p.getSimpleName()))
 				foundPlugin = p;
 		return foundPlugin;

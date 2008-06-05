@@ -1,9 +1,10 @@
 package preprocessed.instructions.returns_value;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
+import pascal_types.pascal_type;
+import preprocessed.function_declaration;
 import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascalPlugin;
@@ -45,5 +46,10 @@ public class plugin_call implements returns_value, executable {
 	@Override
 	public void execute(function_on_stack f) {
 		get_value(f);
+	}
+
+	@Override
+	public pascal_type get_type(function_declaration f) {
+		return 
 	}
 }

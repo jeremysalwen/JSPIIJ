@@ -1,6 +1,7 @@
 package processing;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -55,7 +56,7 @@ public class pascal_program {
 	function_declaration main;
 	public HashMap<String, custom_type_declaration> custom_types;
 	public HashMap<function_header, function_declaration> functions;
-	public HashMap<String, Class<pascalPlugin>> plugins;
+	public HashMap<function_header, Method> plugins;
 
 	public static void main(String[] args) throws grouping_exception {
 		new pascal_program(new Grouper("var x:integer;" + " begin" + " x:=2+5;"
@@ -69,7 +70,7 @@ public class pascal_program {
 	}
 
 	public pascal_program() {
-		plugins = new HashMap<String, Class<pascalPlugin>>();
+		plugins = new HashMap<String, Class<pascal_plugin>>();
 		functions = new HashMap<function_header, function_declaration>();
 		loadPlugins();
 		main = new function_declaration();
@@ -373,23 +374,20 @@ public class pascal_program {
 				return pathname.getName().endsWith(".class");
 			}
 		});
-		ArrayList<Class> classes = new ArrayList<Class>();
 		ClassLoader classloader = ClassLoader.getSystemClassLoader();
-		for (File f : pluginarray)
+		for(File f:pluginarray) {
 			try {
-				String name = f.getName().substring(0,
-						f.getName().indexOf(".class"));
-				Class<? extends pascalPlugin> plugin_class = (Class<? extends pascalPlugin>) classloader
-						.loadClass("plugins." + name);
-				if (pascalPlugin.class.isAssignableFrom(plugin_class)) {
-					classes.add(plugin_class);
+				Class c=classloader.loadClass("plugins."+f.getName());
+				if(pascal_plugin.class.isAssignableFrom(c)) {
+					for(Method m: c.getMethods()) {
+						plugins.put(key, value)
+					}
 				}
-			} catch (ClassNotFoundException ex) {
-				ex.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
-		for (Class c : classes) {
-			plugins.put(c.getSimpleName(), c);
-			System.out.println(c.getName());
+			
+			
 		}
 	}
 

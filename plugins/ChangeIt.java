@@ -2,9 +2,9 @@ package plugins;
 
 import java.util.LinkedList;
 
-import processing.pascalPlugin;
+import processing.pascal_plugin;
 
-public class ChangeIt extends pascalPlugin<Object> {
+public class ChangeIt extends pascal_plugin<Object> {
 	public String text;
 
 	@SuppressWarnings("unchecked")

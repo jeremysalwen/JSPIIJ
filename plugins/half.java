@@ -2,9 +2,9 @@ package plugins;
 
 import java.util.LinkedList;
 
-import processing.pascalPlugin;
+import processing.pascal_plugin;
 
-public class half extends pascalPlugin<Double> {
+public class half extends pascal_plugin<Double> {
 	public double d;
 	public double d2;
 

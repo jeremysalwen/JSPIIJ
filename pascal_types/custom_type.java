@@ -7,6 +7,7 @@ import preprocessed.interpreting_objects.variables.contains_variables;
 
 public class custom_type implements contains_variables {
 	public HashMap<String, Object> values;
+	public custom_type_declaration type;
 
 	public custom_type(HashMap<String, Object> values) {
 		this.values = (HashMap<String, Object>) values.clone();
@@ -16,6 +17,7 @@ public class custom_type implements contains_variables {
 		for (variable_declaration v : c.variable_types) {
 			v.initialize(this);
 		}
+		this.type = c;
 	}
 
 	@Override

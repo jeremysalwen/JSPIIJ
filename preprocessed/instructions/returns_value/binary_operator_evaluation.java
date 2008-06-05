@@ -141,28 +141,19 @@ public class binary_operator_evaluation implements returns_value {
 		case NOT:
 		case NOTEQUAL:
 		case OR:
-			return new pascal_type(Boolean.class);
+			return pascal_type.BOOLEAN;
 		case DIV:
 		case MOD:
 		case SHIFTLEFT:
 		case SHIFTRIGHT:
-			return new pascal_type(Integer.class);
 		case DIVIDE:
 		case MINUS:
 		case MULTIPLY:
 		case PLUS:
-			if (type1.is_floating_point() || type2.is_floating_point()) {
-				return new pascal_type(Double.class);
-			} else {
-				return new pascal_type(Integer.class);
-			}
 		case XOR:
-			if (type1.is_boolean()) {
-				return new pascal_type(Boolean.class);
-			} else {
-				return type1;
-			}
+			return type1.get_GCF_type(type2);
+		default:
+			return null;
 		}
-		return null;
 	}
 }

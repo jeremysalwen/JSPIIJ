@@ -2,9 +2,9 @@ package plugins;
 
 import java.util.LinkedList;
 
-import processing.pascalPlugin;
+import processing.pascal_plugin;
 
-public class writeln extends pascalPlugin<Object> {
+public class writeln extends pascal_plugin<Object> {
 	public String text;
 
 	// put args above here, remember, no fields besides args
