@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="H:/Jeremy&apos;s java/serp-1.14.2.zip"/>
+	<classpathentry kind="lib" path="serp-1.14.2.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

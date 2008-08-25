@@ -1,19 +1,10 @@
 package plugins;
 
-import java.util.LinkedList;
-
 import processing.pascal_plugin;
 
-public class half extends pascal_plugin<Double> {
-	public double d;
-	public double d2;
+public class half implements pascal_plugin {
 
-	public half(LinkedList<Object> arrayOfArgs) throws Exception {
-		super(arrayOfArgs);
-	}
-
-	@Override
-	public Double process() {
+	public static Double half(double d, double d2) {
 		return (d2 + d) / 2;
 	}
 

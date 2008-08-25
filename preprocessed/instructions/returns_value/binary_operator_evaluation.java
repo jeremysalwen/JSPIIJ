@@ -1,8 +1,8 @@
 package preprocessed.instructions.returns_value;
 
-import pascal_types.pascal_type;
 import preprocessed.function_declaration;
 import preprocessed.interpreting_objects.function_on_stack;
+import processing.pascal_program;
 import tokens.operator_types;
 
 public class binary_operator_evaluation implements returns_value {
@@ -17,7 +17,6 @@ public class binary_operator_evaluation implements returns_value {
 		this.operon2 = operon2;
 	}
 
-	@Override
 	public Object get_value(function_on_stack f) {
 		Object value1 = operon1.get_value(f);
 		Object value2 = operon2.get_value(f);
@@ -127,10 +126,9 @@ public class binary_operator_evaluation implements returns_value {
 		return "[" + operon1 + "] " + operator_type + " [" + operon2 + ']';
 	}
 
-	@Override
-	public pascal_type get_type(function_declaration f) {
-		pascal_type type1 = operon1.get_type(f);
-		pascal_type type2 = operon2.get_type(f);
+	public Class get_type(pascal_program p, function_declaration f) {
+		Class type1 = operon1.getClass();
+		Class type2 = operon2.getClass();
 		switch (operator_type) {
 		case AND:
 		case EQUALS:
@@ -141,7 +139,7 @@ public class binary_operator_evaluation implements returns_value {
 		case NOT:
 		case NOTEQUAL:
 		case OR:
-			return pascal_type.BOOLEAN;
+			return Boolean.class;
 		case DIV:
 		case MOD:
 		case SHIFTLEFT:
@@ -151,9 +149,31 @@ public class binary_operator_evaluation implements returns_value {
 		case MULTIPLY:
 		case PLUS:
 		case XOR:
-			return type1.get_GCF_type(type2);
+			return get_GCF(type1,type2);
 		default:
 			return null;
 		}
+	}
+
+	public static Class get_GCF(Class one, Class two) {
+		if (one==String.class || two==String.class) {
+			return String.class;
+		}
+		if (one==Double.class || two==Double.class) {
+			return Double.class;
+		}
+		if (one==Float.class || two==Float.class) {
+			return Float.class;
+		}
+		if (one==Long.class || two==Long.class) {
+			return Long.class;
+		}
+		if (one==Integer.class || two==Integer.class) {
+			return Integer.class;
+		}
+		if (one==Boolean.class || two==Boolean.class) {
+			return Boolean.class;
+		}
+		return null;
 	}
 }

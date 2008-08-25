@@ -12,7 +12,6 @@ public class while_statement implements executable {
 		this.command = command;
 	}
 
-	@Override
 	public void execute(function_on_stack f) {
 		while ((Boolean) condition.get_value(f)) {
 			command.execute(f);

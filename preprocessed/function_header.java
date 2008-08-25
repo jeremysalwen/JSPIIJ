@@ -2,44 +2,55 @@ package preprocessed;
 
 import java.util.LinkedList;
 
-import pascal_types.pascal_type;
-
 public class function_header {
 	public String name;
-	public pascal_type return_type; // holds Class of wrapper type or custom type
-	// declaration. Lame non-hack
-	public LinkedList<variable_declaration> arguments;
+	public LinkedList<Class> arguments;
 
 	public function_header() {
-		arguments = new LinkedList<variable_declaration>();
+		arguments = new LinkedList<Class>();
 	}
 
 	public function_header(String name,
-			LinkedList<variable_declaration> arguments, Object return_type) {
+			LinkedList<Class> arguments, Class return_type) {
 		this.name = name;
 		this.arguments = arguments;
-		this.return_type = return_type;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
-		int result = arguments.hashCode();
-		result *= 31;
-		result ^= name.hashCode();
-		result *= 31;
-		result ^= return_type.hashCode();
+		final int PRIME = 31;
+		int result = 1;
+		result = PRIME * result + ((arguments == null) ? 0 : arguments.hashCode());
+		result = PRIME * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this) {
+		if (this == obj)
 			return true;
-		}
-		if (obj instanceof function_header) {
-			function_header f = (function_header) obj;
-			return (f.arguments.equals(arguments) && f.name.equals(name) && f.return_type == return_type);
-		}
-		return false;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final function_header other = (function_header) obj;
+		if (arguments == null) {
+			if (other.arguments != null)
+				return false;
+		} else if (!arguments.equals(other.arguments))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
+
 }

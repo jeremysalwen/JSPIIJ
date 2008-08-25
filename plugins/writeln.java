@@ -1,22 +1,11 @@
 package plugins;
 
-import java.util.LinkedList;
-
 import processing.pascal_plugin;
 
-public class writeln extends pascal_plugin<Object> {
-	public String text;
+public class writeln implements pascal_plugin {
 
-	// put args above here, remember, no fields besides args
-
-	@SuppressWarnings("unchecked")
-	public writeln(LinkedList<Object> arrayOfArgs) throws Exception {
-		super(arrayOfArgs);
-	}
-
-	public Object process() {
+	public static void writeln(String text) {
 		System.out.println(text);
-		return null;
 	}
 
 }
