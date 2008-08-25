@@ -16,7 +16,7 @@ public class function_on_stack implements contains_variables {
 	public pascal_program program;
 
 	public function_on_stack(pascal_program program,
-		function_declaration declaration, Object[] arguments) {
+			function_declaration declaration, Object[] arguments) {
 		this.prototype = declaration;
 		this.program = program;
 		if (prototype.local_variables != null) {
@@ -24,13 +24,12 @@ public class function_on_stack implements contains_variables {
 				v.initialize(variables);
 			}
 		}
-		for(int i=0; i<arguments.length; i++) {
-			prototype.argument_names.ge
+		for (int i = 0; i < arguments.length; i++) {
+			variables.put(prototype.argument_names.get(i), arguments[i]);
 		}
 		if (declaration.return_type != null) {
 			try {
-				variables.put("result", declaration.return_type
-						.newInstance());
+				variables.put("result", declaration.return_type.newInstance());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -40,7 +39,6 @@ public class function_on_stack implements contains_variables {
 	}
 
 	public Object execute() {
-		for(String name:)
 		for (executable e : prototype.instructions) {
 			e.execute(this);
 		}

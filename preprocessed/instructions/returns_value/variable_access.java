@@ -15,7 +15,7 @@ public class variable_access implements returns_value {
 		this.variable_name = name;
 	}
 
-	public Object get_value(function_on_stack f) { //fix dix
+	public Object get_value(function_on_stack f) { // fix dix
 		ListIterator<String> iterator = variable_name.listIterator();
 		contains_variables v = f;
 		for (int i = 0; i < variable_name.size() - 1; v = (contains_variables) v
@@ -30,7 +30,7 @@ public class variable_access implements returns_value {
 	}
 
 	public Class get_type(pascal_program p, function_declaration f) {
-		//TODO
+		// TODO
 		return null;
 	}
 }

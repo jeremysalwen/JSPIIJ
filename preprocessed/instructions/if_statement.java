@@ -5,6 +5,7 @@ import preprocessed.interpreting_objects.function_on_stack;
 
 public class if_statement implements executable {
 	returns_value condition;
+
 	executable instruction;
 
 	public if_statement(returns_value condition, executable instruction) {

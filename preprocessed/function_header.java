@@ -4,31 +4,37 @@ import java.util.LinkedList;
 
 public class function_header {
 	public String name;
+
 	public LinkedList<Class> arguments;
 
 	public function_header() {
 		arguments = new LinkedList<Class>();
 	}
 
-	public function_header(String name,
-			LinkedList<Class> arguments, Class return_type) {
+	public function_header(String name, LinkedList<Class> arguments,
+			Class return_type) {
 		this.name = name;
 		this.arguments = arguments;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
 		final int PRIME = 31;
 		int result = 1;
-		result = PRIME * result + ((arguments == null) ? 0 : arguments.hashCode());
+		result = PRIME * result
+				+ ((arguments == null) ? 0 : arguments.hashCode());
 		result = PRIME * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override

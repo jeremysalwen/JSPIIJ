@@ -8,6 +8,7 @@ import exceptions.wrong_type_for_operator_exception;
 
 public class unary_operator_evaluation implements returns_value {
 	public operator_types type;
+
 	public returns_value operon;
 
 	public unary_operator_evaluation(returns_value operon,
@@ -46,8 +47,8 @@ public class unary_operator_evaluation implements returns_value {
 		return "operator [" + type + "] on [" + operon + ']';
 	}
 
-	public Class get_type(pascal_program p,function_declaration f) {
-		return operon.get_type(p,f);
+	public Class get_type(pascal_program p, function_declaration f) {
+		return operon.get_type(p, f);
 	}
 
 }

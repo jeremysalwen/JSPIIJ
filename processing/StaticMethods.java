@@ -19,8 +19,6 @@ public class StaticMethods {
 		return -1;
 	}
 
-
-
 	public static String[] split(String s, String[] regexs) {
 		ArrayList<String> result = new ArrayList<String>();
 		String total = "";

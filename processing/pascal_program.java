@@ -3,16 +3,14 @@ package processing;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 import pascal_types.custom_type_declaration;
 import preprocessed.Grouper;
 import preprocessed.abstract_function;
-import preprocessed.dummy_declaration;
 import preprocessed.function_declaration;
-import preprocessed.function_header;
 import preprocessed.plugin_declaration;
 import preprocessed.variable_declaration;
 import preprocessed.instructions.executable;
@@ -20,10 +18,9 @@ import preprocessed.instructions.if_statement;
 import preprocessed.instructions.instruction_grouper;
 import preprocessed.instructions.variable_set;
 import preprocessed.instructions.while_statement;
-import preprocessed.instructions.returns_value.abstract_function_cal;
+import preprocessed.instructions.returns_value.abstract_function_call;
 import preprocessed.instructions.returns_value.binary_operator_evaluation;
 import preprocessed.instructions.returns_value.constant_access;
-import preprocessed.instructions.returns_value.plugin_call;
 import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.instructions.returns_value.unary_operator_evaluation;
 import preprocessed.instructions.returns_value.variable_access;
@@ -153,7 +150,7 @@ public class pascal_program {
 	}
 
 	private void get_arguments_for_declaration(ListIterator<token> i,
-			boolean is_procedure, LinkedList<String> names, LinkedList<Class> types) {  //need to get rid of tiss and function_header class
+			boolean is_procedure, List<String> names, List<Class> types) {  //need to get rid of tiss and function_header class
 		token next=i.next();
 		if (next instanceof parenthesized_token) {
 			parenthesized_token arguments_token = (parenthesized_token) next;
@@ -260,7 +257,7 @@ public class pascal_program {
 			if (next instanceof parenthesized_token) {
 				returns_value[] arguments = get_arguments_for_call((parenthesized_token) next);
 				assert_next_semicolon(token_iterator);
-				return new abstract_function_cal(name,arguments);
+				return new abstract_function_call(name,arguments);
 			} else {
 				// at this point assuming it is a variable identifier.
 				token_iterator.previous();
@@ -340,7 +337,7 @@ public class pascal_program {
 			if (iterator.hasNext()) {
 				next = iterator.next();
 				if (next instanceof parenthesized_token) {
-					return new abstract_function_cal(name,get_arguments_for_call((parenthesized_token)next));
+					return new abstract_function_call(name,get_arguments_for_call((parenthesized_token)next));
 				} else {
 					iterator.previous();
 					iterator.previous();

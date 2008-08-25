@@ -7,7 +7,7 @@ public class point implements contains_variables {
 	double x;
 	int y;
 
-	@Override
+
 	public Object get_var(String name) {
 		name = name.intern();
 		if (name == "x") {
@@ -19,7 +19,6 @@ public class point implements contains_variables {
 		return null;
 	}
 
-	@Override
 	public void set_var(String name, Object val) {
 		if (name.equals("x")) {
 			x = (Double) val;

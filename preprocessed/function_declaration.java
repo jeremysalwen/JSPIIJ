@@ -8,18 +8,24 @@ import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascal_program;
 
-public class function_declaration extends abstract_function{
+public class function_declaration extends abstract_function {
 	public String name;
+
 	public Class return_type;
+
 	public List<variable_declaration> local_variables;
+
 	public List<executable> instructions;
+
 	public List<String> argument_names;
+
 	public List<Class> argument_types;
+
 	public function_declaration() { /* WARNING, INCOMPLETE CONSTRUCTION */
 		local_variables = new ArrayList<variable_declaration>();
 		instructions = new ArrayList<executable>();
-		argument_names=new ArrayList<String>();
-		argument_types=new ArrayList<Class>();
+		argument_names = new ArrayList<String>();
+		argument_types = new ArrayList<Class>();
 	}
 
 	public void add_local_variable(variable_declaration v) {
@@ -49,7 +55,8 @@ public class function_declaration extends abstract_function{
 
 	@Override
 	public Object call(pascal_program program, LinkedList arguments) {
-		return new function_on_stack(program, this,arguments.toArray()).execute();
+		return new function_on_stack(program, this, arguments.toArray())
+				.execute();
 	}
 
 	@Override

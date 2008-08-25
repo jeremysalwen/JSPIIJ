@@ -5,6 +5,7 @@ import preprocessed.interpreting_objects.function_on_stack;
 
 public class while_statement implements executable {
 	returns_value condition;
+
 	executable command;
 
 	public while_statement(returns_value condition, executable command) {

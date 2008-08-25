@@ -1,4 +1,5 @@
 package main;
+
 import java.awt.Robot;
 
 public class Main {
