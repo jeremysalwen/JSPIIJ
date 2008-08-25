@@ -1,8 +1,6 @@
 package preprocessed.interpreting_objects;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ListIterator;
 
 import preprocessed.function_declaration;
 import preprocessed.variable_declaration;
@@ -26,6 +24,9 @@ public class function_on_stack implements contains_variables {
 				v.initialize(variables);
 			}
 		}
+		for(int i=0; i<arguments.length; i++) {
+			prototype.argument_names.ge
+		}
 		if (declaration.return_type != null) {
 			try {
 				variables.put("result", declaration.return_type
@@ -39,19 +40,7 @@ public class function_on_stack implements contains_variables {
 	}
 
 	public Object execute() {
-		ListIterator<variable_declaration> i = prototype.local_variables.listIterator();
-		for (variable_declaration p = null; i.hasNext(); p = i.next()) {
-			try {
-				this.variables.put(prototype.variable_names[i.previousIndex()], p
-						.type.newInstance());
-			} catch (InstantiationException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IllegalAccessException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
+		for(String name:)
 		for (executable e : prototype.instructions) {
 			e.execute(this);
 		}

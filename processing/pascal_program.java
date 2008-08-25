@@ -20,7 +20,7 @@ import preprocessed.instructions.if_statement;
 import preprocessed.instructions.instruction_grouper;
 import preprocessed.instructions.variable_set;
 import preprocessed.instructions.while_statement;
-import preprocessed.instructions.returns_value.abstract_function_call;
+import preprocessed.instructions.returns_value.abstract_function_cal;
 import preprocessed.instructions.returns_value.binary_operator_evaluation;
 import preprocessed.instructions.returns_value.constant_access;
 import preprocessed.instructions.returns_value.plugin_call;
@@ -260,7 +260,7 @@ public class pascal_program {
 			if (next instanceof parenthesized_token) {
 				returns_value[] arguments = get_arguments_for_call((parenthesized_token) next);
 				assert_next_semicolon(token_iterator);
-				return new abstract_function_call(name,arguments);
+				return new abstract_function_cal(name,arguments);
 			} else {
 				// at this point assuming it is a variable identifier.
 				token_iterator.previous();
@@ -340,7 +340,7 @@ public class pascal_program {
 			if (iterator.hasNext()) {
 				next = iterator.next();
 				if (next instanceof parenthesized_token) {
-					return new abstract_function_call(name,get_arguments_for_call((parenthesized_token)next));
+					return new abstract_function_cal(name,get_arguments_for_call((parenthesized_token)next));
 				} else {
 					iterator.previous();
 					iterator.previous();
