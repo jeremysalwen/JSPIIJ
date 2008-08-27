@@ -3,9 +3,11 @@ package preprocessed;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 
+import tokens.EOF_token;
 import tokens.assignment_token;
 import tokens.base_grouper_token;
 import tokens.begin_end_token;
@@ -35,7 +37,7 @@ import tokens.word_token;
 import exceptions.grouping_exception;
 
 public class Grouper {
-	public LinkedList<token> tokens;
+	public Queue<token> tokens;
 
 	public Grouper(String text) throws grouping_exception {
 		StringReader reader = new StringReader(text);
@@ -53,6 +55,7 @@ public class Grouper {
 				token next_token = null;
 				switch (tokenizer.nextToken()) {
 				case StreamTokenizer.TT_EOF:
+					top_of_stack.add_token(new EOF_token());
 					break do_loop_break;
 				case StreamTokenizer.TT_WORD:
 					tokenizer.sval = tokenizer.sval.intern();
@@ -63,7 +66,7 @@ public class Grouper {
 						if (stack_of_groupers.size() > 0
 								&& stack_of_groupers.peek() instanceof begin_end_token) {
 							stack_of_groupers.pop();
-							stack_of_groupers.peek().add_token(top_of_stack);
+							top_of_stack.add_token(new EOF_token());
 							continue do_loop_break;
 						}
 						next_token = new end_token();
@@ -123,7 +126,9 @@ public class Grouper {
 					next_token = new string_token(tokenizer.sval);
 					break;
 				case '(':
-					stack_of_groupers.push(new parenthesized_token());
+					parenthesized_token p_token = new parenthesized_token();
+					top_of_stack.add_token(p_token);
+					stack_of_groupers.push(p_token);
 					continue do_loop_break;
 				case ')':
 					if (!(stack_of_groupers.pop() instanceof parenthesized_token)) {
@@ -133,7 +138,7 @@ public class Grouper {
 						throw new grouping_exception(
 								grouping_exception.grouping_exception_types.EXTRA_END_PARENS);
 					}
-					stack_of_groupers.peek().add_token(top_of_stack);
+					top_of_stack.add_token(new EOF_token());
 					continue do_loop_break;
 				case '=':
 					temp_type = operator_types.EQUALS;

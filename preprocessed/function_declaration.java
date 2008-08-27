@@ -8,7 +8,7 @@ import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascal_program;
 
-public class function_declaration extends abstract_function implements declares_variables {
+public class function_declaration extends abstract_function {
 	public String name;
 
 	public Class return_type;
@@ -37,8 +37,8 @@ public class function_declaration extends abstract_function implements declares_
 	}
 
 	public function_declaration(
-			LinkedList<variable_declaration> local_variables,
-			LinkedList<executable> instructions) {
+			List<variable_declaration> local_variables,
+			List<executable> instructions) {
 		this.local_variables = local_variables;
 		this.instructions = instructions;
 	}
@@ -54,7 +54,7 @@ public class function_declaration extends abstract_function implements declares_
 	}
 
 	@Override
-	public Object call(pascal_program program, LinkedList arguments) {
+	public Object call(pascal_program program, List arguments) {
 		return new function_on_stack(program, this, arguments.toArray())
 				.execute();
 	}

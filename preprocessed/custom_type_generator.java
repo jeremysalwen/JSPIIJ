@@ -2,7 +2,9 @@ package preprocessed;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import preprocessed.interpreting_objects.variables.contains_variables;
 import serp.bytecode.BCClass;
@@ -16,7 +18,7 @@ import serp.bytecode.Project;
 public class custom_type_generator {
 	public static void main(String[] args) {
 		custom_type_generator c = new custom_type_generator(new File("C:\\"));
-		LinkedList<variable_declaration> variables = new LinkedList<variable_declaration>();
+		List<variable_declaration> variables = new ArrayList<variable_declaration>();
 		variables.add(new variable_declaration("double_field", double.class));
 		variables.add(new variable_declaration("integer_field", int.class));
 		c.output_class("blah", variables);
@@ -30,7 +32,7 @@ public class custom_type_generator {
 	}
 
 	public void output_class(String name,
-			LinkedList<variable_declaration> variables) {
+			List<variable_declaration> variables) {
 		Project p = new Project();
 		BCClass c = p.loadClass("java.lang.Object");
 		c.setName(name);
@@ -45,7 +47,6 @@ public class custom_type_generator {
 		add_constructor(c);
 		add_get_var(c);
 		add_set_var(c);
-		add_prototype_getter(c);
 		try {
 			c.write(new File(output.getAbsolutePath() + name + ".class"));
 		} catch (IOException e) {
@@ -198,18 +199,5 @@ public class custom_type_generator {
 		}
 		set_var_code.calculateMaxLocals();
 		set_var_code.calculateMaxStack();
-	}
-
-	void add_prototype_getter(BCClass b) {
-		BCMethod get_prototype = b.declareMethod("prototype", Class.class,
-				new Class[] {});
-		get_prototype.makePublic();
-		Code get_prototype_code = get_prototype.getCode(true);
-		get_prototype_code.aload().setThis();
-		get_prototype_code.invokevirtual().setMethod("getClass", Class.class,
-				new Class[] {});
-		get_prototype_code.areturn();
-		get_prototype_code.calculateMaxLocals();
-		get_prototype_code.calculateMaxStack();
 	}
 }

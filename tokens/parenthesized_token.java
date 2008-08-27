@@ -1,9 +1,10 @@
 package tokens;
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 public class parenthesized_token implements grouper_token, token {
-	public LinkedList<token> insides = new LinkedList<token>();
+	public Queue<token> insides = new LinkedList<token>();
 
 	public void add_token(token t) {
 		insides.add(t);

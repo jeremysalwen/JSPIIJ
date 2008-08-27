@@ -1,6 +1,6 @@
 package exceptions;
 
-public class grouping_exception extends Exception {
+public class grouping_exception extends RuntimeException {
 	/**
 	 * 
 	 */

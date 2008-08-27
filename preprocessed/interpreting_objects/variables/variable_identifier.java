@@ -1,8 +1,9 @@
 package preprocessed.interpreting_objects.variables;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class variable_identifier extends LinkedList<String> {
+public class variable_identifier extends ArrayList<String> {
 	public variable_identifier() {
 		super();
 	}

@@ -2,6 +2,7 @@ package processing;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,7 +69,7 @@ public class pascal_program {
 	}
 
 	public void run() {
-		main.call(this, new LinkedList());
+		main.call(this, new ArrayList());
 	}
 
 	public pascal_program() {
@@ -76,10 +77,10 @@ public class pascal_program {
 		loadPlugins();
 		main = new function_declaration();
 		main.name = "main";
-		main.argument_types = new LinkedList<Class>();
+		main.argument_types = new ArrayList<Class>();
 	}
 
-	public pascal_program(LinkedList<token> tokens) {
+	public pascal_program(List<token> tokens) {
 		this();
 		ListIterator<token> token_iterator = tokens.listIterator();
 		while (token_iterator.hasNext()) {
@@ -105,18 +106,18 @@ public class pascal_program {
 				}
 			}
 			assert_next_semicolon(i);
-			LinkedList<variable_declaration> local_variables = null;
+			List<variable_declaration> local_variables = null;
 			next = i.next();
 			if (next instanceof var_token) {
 				local_variables = get_variable_declarations(i);
 			} else {
 				i.previous();
 			}
-			LinkedList<executable> commands = get_function_body(i);
+			List<executable> commands = get_function_body(i);
 
 			declaration.instructions = commands;
 
-			declaration.local_variables = local_variables == null ? new LinkedList<variable_declaration>()
+			declaration.local_variables = local_variables == null ? new ArrayList<variable_declaration>()
 					: local_variables;
 			callable_functions.put(declaration, declaration);
 			return;
@@ -190,13 +191,13 @@ public class pascal_program {
 		}
 	}
 
-	private LinkedList<variable_declaration> get_variable_declarations(
+	private List<variable_declaration> get_variable_declarations(
 			ListIterator<token> i) {
-		LinkedList<variable_declaration> result = new LinkedList<variable_declaration>();
+		List<variable_declaration> result = new ArrayList<variable_declaration>();
 		/*
 		 * reusing it, so it is further out of scope than necessary
 		 */
-		LinkedList<String> names = new LinkedList<String>();
+		List<String> names = new ArrayList<String>();
 		token next = i.next();
 		while (next instanceof word_token) {
 			next = i.next();
@@ -212,7 +213,7 @@ public class pascal_program {
 				for (String s : names) {
 					result.add(new variable_declaration(s, type));
 					/*
-					 * TODO make sure this works
+					 * TODO make sure this conforms to pascal
 					 */
 				}
 			} catch (ClassNotFoundException e) {
@@ -225,12 +226,12 @@ public class pascal_program {
 		return result;
 	}
 
-	private LinkedList<executable> get_function_body(ListIterator<token> t) {
+	private List<executable> get_function_body(ListIterator<token> t) {
 		token next = t.next();
 		assert (next instanceof begin_end_token);
 		begin_end_token body = (begin_end_token) next;
 		ListIterator<token> body_iterator = body.insides.listIterator();
-		LinkedList<executable> commands = new LinkedList<executable>();
+		List<executable> commands = new ArrayList<executable>();
 		while (body_iterator.hasNext()) {
 			commands.add(get_next_command(body_iterator));
 		}
@@ -314,7 +315,7 @@ public class pascal_program {
 
 	returns_value[] get_arguments_for_call(parenthesized_token t) {
 		ListIterator<token> iterator = t.insides.listIterator();
-		LinkedList<returns_value> result = new LinkedList<returns_value>();
+		List<returns_value> result = new ArrayList<returns_value>();
 		while (iterator.hasNext()) {
 			result.add(get_next_returns_value(iterator));
 			if (iterator.hasNext()) {

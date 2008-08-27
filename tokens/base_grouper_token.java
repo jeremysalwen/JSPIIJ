@@ -1,9 +1,10 @@
 package tokens;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class base_grouper_token implements grouper_token {
-	public LinkedList<token> tokens = new LinkedList<token>();
+	public List<token> tokens = new ArrayList<token>();
 
 	public void add_token(token g) {
 		tokens.add(g);

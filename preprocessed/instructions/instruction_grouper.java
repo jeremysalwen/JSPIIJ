@@ -1,11 +1,12 @@
 package preprocessed.instructions;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import preprocessed.interpreting_objects.function_on_stack;
 
 public class instruction_grouper implements executable {
-	LinkedList<executable> instructions;
+	List<executable> instructions;
 
 	public instruction_grouper() {
 		instructions = new LinkedList<executable>();
