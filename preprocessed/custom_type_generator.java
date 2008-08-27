@@ -42,7 +42,19 @@ public class custom_type_generator {
 		for (variable_declaration v : variables) {
 			v.add_declaration(c);
 		}
-		BCMethod constructor = c.addDefaultConstructor();
+		add_constructor(c);
+		add_get_var(c);
+		add_set_var(c);
+		add_prototype_getter(c);
+		try {
+			c.write(new File(output.getAbsolutePath() + name + ".class"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	void add_constructor(BCClass b) {
+		BCMethod constructor = b.addDefaultConstructor();
 		constructor.removeCode();
 		Code constructor_code = constructor.getCode(true);
 		constructor_code.aload().setThis();
@@ -52,9 +64,9 @@ public class custom_type_generator {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		for (BCField f : c.getFields()) {
+		for (BCField f : b.getFields()) {
 			constructor_code.aload().setThis();
-			Class field_type = f.getType();
+			Class<?> field_type = f.getType();
 			if (field_type == double.class) {
 				constructor_code.constant().setValue(0.0D);
 			} else if (field_type == int.class) {
@@ -78,7 +90,10 @@ public class custom_type_generator {
 		constructor_code.vreturn();
 		constructor_code.calculateMaxLocals();
 		constructor_code.calculateMaxStack();
-		BCMethod get_var = c.declareMethod("get_var", Object.class,
+	}
+
+	void add_get_var(BCClass b) {
+		BCMethod get_var = b.declareMethod("get_var", Object.class,
 				new Class[] { String.class });
 		get_var.makePublic();
 		Code get_var_code = get_var.getCode(true);
@@ -87,7 +102,7 @@ public class custom_type_generator {
 				String.class, new Class[] {});
 		get_var_code.astore().setParam(0);
 		JumpInstruction previous_if = null;
-		for (BCField f : c.getFields()) {
+		for (BCField f : b.getFields()) {
 			Instruction code_block = get_var_code.constant().setValue(
 					f.getName());
 			if (previous_if != null) {
@@ -132,8 +147,10 @@ public class custom_type_generator {
 		get_var_code.areturn();
 		get_var_code.calculateMaxLocals();
 		get_var_code.calculateMaxStack();
+	}
 
-		BCMethod set_var = c.declareMethod("set_var", void.class, new Class[] {
+	void add_set_var(BCClass b) {
+		BCMethod set_var = b.declareMethod("set_var", void.class, new Class[] {
 				String.class, Object.class });
 		set_var.makePublic();
 		Code set_var_code = set_var.getCode(true);
@@ -141,8 +158,8 @@ public class custom_type_generator {
 		set_var_code.invokevirtual().setMethod(String.class, "intern",
 				String.class, new Class[] {});
 		set_var_code.astore().setParam(0);
-		previous_if = null;
-		for (BCField f : c.getFields()) {
+		JumpInstruction previous_if = null;
+		for (BCField f : b.getFields()) {
 			Instruction jump_to = set_var_code.constant().setValue(f.getName());
 			if (previous_if != null) {
 				previous_if.setTarget(jump_to);
@@ -181,11 +198,18 @@ public class custom_type_generator {
 		}
 		set_var_code.calculateMaxLocals();
 		set_var_code.calculateMaxStack();
+	}
 
-		try {
-			c.write(new File(output.getAbsolutePath() + name + ".class"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	void add_prototype_getter(BCClass b) {
+		BCMethod get_prototype = b.declareMethod("prototype", Class.class,
+				new Class[] {});
+		get_prototype.makePublic();
+		Code get_prototype_code = get_prototype.getCode(true);
+		get_prototype_code.aload().setThis();
+		get_prototype_code.invokevirtual().setMethod("getClass", Class.class,
+				new Class[] {});
+		get_prototype_code.areturn();
+		get_prototype_code.calculateMaxLocals();
+		get_prototype_code.calculateMaxStack();
 	}
 }

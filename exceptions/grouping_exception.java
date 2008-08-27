@@ -1,6 +1,11 @@
 package exceptions;
 
 public class grouping_exception extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5878580280861132626L;
+
 	public static enum grouping_exception_types {
 		MISMATCHED_PARENS, MISMATCHED_BEGIN_END, UNFINISHED_BEGIN_END, UNFINISHED_PARENS, EXTRA_END_PARENS, EXTRA_END,
 	};

@@ -56,8 +56,9 @@ public class pascal_program {
 
 	public HashMap<String, custom_type_declaration> custom_types;
 
-	public HashMap<abstract_function,abstract_function> callable_functions;  //plugins and functions
-
+	public HashMap<abstract_function, abstract_function> callable_functions; // plugins
+																				// and
+																				// functions
 
 	public static void main(String[] args) throws grouping_exception {
 		new pascal_program(new Grouper("var x:integer;" + " begin" + " x:=2+5;"
@@ -71,11 +72,11 @@ public class pascal_program {
 	}
 
 	public pascal_program() {
-		callable_functions = new HashMap<abstract_function,abstract_function>();
+		callable_functions = new HashMap<abstract_function, abstract_function>();
 		loadPlugins();
 		main = new function_declaration();
-		main.name="main";
-		main.argument_types=new LinkedList<Class>();
+		main.name = "main";
+		main.argument_types = new LinkedList<Class>();
 	}
 
 	public pascal_program(LinkedList<token> tokens) {
@@ -89,10 +90,11 @@ public class pascal_program {
 	private void add_next_declaration(ListIterator<token> i) {
 		token next = i.next();
 		if (next instanceof procedure_token || next instanceof function_token) {
-			boolean is_procedure= next instanceof procedure_token;
+			boolean is_procedure = next instanceof procedure_token;
 			function_declaration declaration = new function_declaration();
 			declaration.name = get_word_value(i);
-			get_arguments_for_declaration(i, is_procedure, declaration.argument_names, declaration.argument_types);
+			get_arguments_for_declaration(i, is_procedure,
+					declaration.argument_names, declaration.argument_types);
 			next = i.next();
 			assert (is_procedure ^ next instanceof colon_token);
 			if (!is_procedure && next instanceof colon_token) {
@@ -111,12 +113,12 @@ public class pascal_program {
 				i.previous();
 			}
 			LinkedList<executable> commands = get_function_body(i);
-			
+
 			declaration.instructions = commands;
-			
+
 			declaration.local_variables = local_variables == null ? new LinkedList<variable_declaration>()
 					: local_variables;
-			callable_functions.put(declaration,declaration);
+			callable_functions.put(declaration, declaration);
 			return;
 		}
 		if (next instanceof type_token) {
@@ -150,8 +152,16 @@ public class pascal_program {
 	}
 
 	private void get_arguments_for_declaration(ListIterator<token> i,
-			boolean is_procedure, List<String> names, List<Class> types) {  //need to get rid of tiss and function_header class
-		token next=i.next();
+			boolean is_procedure, List<String> names, List<Class> types) { // need
+																			// to
+																			// get
+																			// rid
+																			// of
+																			// tiss
+																			// and
+																			// function_header
+																			// class
+		token next = i.next();
 		if (next instanceof parenthesized_token) {
 			parenthesized_token arguments_token = (parenthesized_token) next;
 			ListIterator<token> argument_iterator = arguments_token.insides
@@ -159,7 +169,7 @@ public class pascal_program {
 			while (argument_iterator.hasNext()) {
 				names.add(((word_token) argument_iterator.next()).name);
 				next = argument_iterator.next();
-				int j=0;  //counts number added of this type
+				int j = 0; // counts number added of this type
 				while (next instanceof comma_token) {
 					names.add(((word_token) argument_iterator.next()).name);
 					next = argument_iterator.next();
@@ -169,7 +179,7 @@ public class pascal_program {
 				Class type;
 				try {
 					type = Class.forName(get_word_value(argument_iterator));
-					while(j>0) {
+					while (j > 0) {
 						types.add(type);
 						j--;
 					}
@@ -257,7 +267,7 @@ public class pascal_program {
 			if (next instanceof parenthesized_token) {
 				returns_value[] arguments = get_arguments_for_call((parenthesized_token) next);
 				assert_next_semicolon(token_iterator);
-				return new abstract_function_call(name,arguments);
+				return new abstract_function_call(name, arguments);
 			} else {
 				// at this point assuming it is a variable identifier.
 				token_iterator.previous();
@@ -337,7 +347,8 @@ public class pascal_program {
 			if (iterator.hasNext()) {
 				next = iterator.next();
 				if (next instanceof parenthesized_token) {
-					return new abstract_function_call(name,get_arguments_for_call((parenthesized_token)next));
+					return new abstract_function_call(name,
+							get_arguments_for_call((parenthesized_token) next));
 				} else {
 					iterator.previous();
 					iterator.previous();
@@ -380,20 +391,19 @@ public class pascal_program {
 			}
 		});
 		ClassLoader classloader = ClassLoader.getSystemClassLoader();
-		for(File f:pluginarray) {
+		for (File f : pluginarray) {
 			try {
-				Class c=classloader.loadClass("plugins."+f.getName());
-				if(pascal_plugin.class.isAssignableFrom(c)) {
-					for(Method m: c.getMethods()) {
-						abstract_function tmp=new plugin_declaration(m);
+				Class c = classloader.loadClass("plugins." + f.getName());
+				if (pascal_plugin.class.isAssignableFrom(c)) {
+					for (Method m : c.getMethods()) {
+						abstract_function tmp = new plugin_declaration(m);
 						this.callable_functions.put(tmp, tmp);
 					}
 				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
-			
-			
+
 		}
 	}
 }

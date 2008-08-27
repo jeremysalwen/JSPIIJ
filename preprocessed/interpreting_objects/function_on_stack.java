@@ -2,6 +2,7 @@ package preprocessed.interpreting_objects;
 
 import java.util.HashMap;
 
+import preprocessed.declares_variables;
 import preprocessed.function_declaration;
 import preprocessed.variable_declaration;
 import preprocessed.instructions.executable;
@@ -51,5 +52,9 @@ public class function_on_stack implements contains_variables {
 
 	public void set_var(String name, Object val) {
 		variables.put(name, val);
+	}
+
+	public declares_variables prototype() {
+		return prototype;
 	}
 }

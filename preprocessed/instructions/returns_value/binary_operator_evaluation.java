@@ -7,7 +7,9 @@ import tokens.operator_types;
 
 public class binary_operator_evaluation implements returns_value {
 	operator_types operator_type;
+
 	returns_value operon1;
+
 	returns_value operon2;
 
 	public binary_operator_evaluation(returns_value operon1,
@@ -149,29 +151,29 @@ public class binary_operator_evaluation implements returns_value {
 		case MULTIPLY:
 		case PLUS:
 		case XOR:
-			return get_GCF(type1,type2);
+			return get_GCF(type1, type2);
 		default:
 			return null;
 		}
 	}
 
 	public static Class get_GCF(Class one, Class two) {
-		if (one==String.class || two==String.class) {
+		if (one == String.class || two == String.class) {
 			return String.class;
 		}
-		if (one==Double.class || two==Double.class) {
+		if (one == Double.class || two == Double.class) {
 			return Double.class;
 		}
-		if (one==Float.class || two==Float.class) {
+		if (one == Float.class || two == Float.class) {
 			return Float.class;
 		}
-		if (one==Long.class || two==Long.class) {
+		if (one == Long.class || two == Long.class) {
 			return Long.class;
 		}
-		if (one==Integer.class || two==Integer.class) {
+		if (one == Integer.class || two == Integer.class) {
 			return Integer.class;
 		}
-		if (one==Boolean.class || two==Boolean.class) {
+		if (one == Boolean.class || two == Boolean.class) {
 			return Boolean.class;
 		}
 		return null;

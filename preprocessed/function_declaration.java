@@ -8,7 +8,7 @@ import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascal_program;
 
-public class function_declaration extends abstract_function {
+public class function_declaration extends abstract_function implements declares_variables {
 	public String name;
 
 	public Class return_type;
@@ -62,6 +62,10 @@ public class function_declaration extends abstract_function {
 	@Override
 	public Class get_return_type() {
 		return return_type;
+	}
+
+	public Class get_variable_type(String name) {
+		return argument_types.get(argument_names.indexOf(name));
 	}
 
 }

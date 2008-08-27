@@ -1,7 +1,5 @@
 package preprocessed.instructions.returns_value;
 
-import java.util.ListIterator;
-
 import preprocessed.function_declaration;
 import preprocessed.interpreting_objects.function_on_stack;
 import preprocessed.interpreting_objects.variables.contains_variables;
@@ -15,13 +13,12 @@ public class variable_access implements returns_value {
 		this.variable_name = name;
 	}
 
-	public Object get_value(function_on_stack f) { // fix dix
-		ListIterator<String> iterator = variable_name.listIterator();
-		contains_variables v = f;
-		for (int i = 0; i < variable_name.size() - 1; v = (contains_variables) v
-				.get_var(iterator.next()))
-			;
-		return v.get_var(iterator.next());
+	public Object get_value(function_on_stack f) {
+		Object v = f;
+		for (String s:variable_name) {
+			v=((contains_variables) v).get_var(s);
+		}
+		return v;
 	}
 
 	@Override
@@ -30,7 +27,15 @@ public class variable_access implements returns_value {
 	}
 
 	public Class get_type(pascal_program p, function_declaration f) {
-		// TODO
-		return null;
+		Class type=f.get_variable_type(variable_name.getFirst());
+		for(int i=1; i<variable_name.size(); i++) {
+			try {
+				type=type.getField(variable_name.get(i)).getType();
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return type;
 	}
 }

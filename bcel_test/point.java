@@ -5,8 +5,8 @@ import preprocessed.interpreting_objects.variables.contains_variables;
 public class point implements contains_variables {
 
 	double x;
-	int y;
 
+	int y;
 
 	public Object get_var(String name) {
 		name = name.intern();
@@ -28,4 +28,5 @@ public class point implements contains_variables {
 		}
 	}
 
+	
 }
