@@ -3,8 +3,6 @@ package preprocessed;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
-import java.util.List;
-import java.util.Queue;
 import java.util.Stack;
 
 import tokens.EOF_token;
@@ -37,9 +35,10 @@ import tokens.word_token;
 import exceptions.grouping_exception;
 
 public class Grouper {
-	public Queue<token> tokens;
+	public base_grouper_token tokens;
 
 	public Grouper(String text) throws grouping_exception {
+		tokens=new base_grouper_token();
 		StringReader reader = new StringReader(text);
 		StreamTokenizer tokenizer = new StreamTokenizer(reader);
 		// tokenizer.slashSlashComments(true);
@@ -47,7 +46,7 @@ public class Grouper {
 		tokenizer.ordinaryChar('\"');
 		operator_types temp_type = null;
 		Stack<grouper_token> stack_of_groupers = new Stack<grouper_token>();
-		stack_of_groupers.add(new base_grouper_token());
+		stack_of_groupers.add(tokens);
 		try {
 			grouper_token top_of_stack;
 			do_loop_break: do {
@@ -208,13 +207,13 @@ public class Grouper {
 				throw new grouping_exception(null);
 			}
 		}
-		tokens = ((base_grouper_token) stack_of_groupers.peek()).tokens;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		for (token t : tokens) {
+		token t;
+		while (!((t= tokens.get_next_token()) instanceof EOF_token)) {
 			s.append(t).append(' ');
 		}
 		return s.toString();

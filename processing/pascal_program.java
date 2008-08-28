@@ -4,9 +4,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 import pascal_types.custom_type_declaration;
 import preprocessed.Grouper;
@@ -26,7 +24,9 @@ import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.instructions.returns_value.unary_operator_evaluation;
 import preprocessed.instructions.returns_value.variable_access;
 import preprocessed.interpreting_objects.variables.variable_identifier;
+import tokens.EOF_token;
 import tokens.assignment_token;
+import tokens.base_grouper_token;
 import tokens.begin_end_token;
 import tokens.colon_token;
 import tokens.comma_token;
@@ -34,6 +34,7 @@ import tokens.do_token;
 import tokens.double_token;
 import tokens.end_token;
 import tokens.function_token;
+import tokens.grouper_token;
 import tokens.if_token;
 import tokens.integer_token;
 import tokens.operator_token;
@@ -57,9 +58,10 @@ public class pascal_program {
 
 	public HashMap<String, custom_type_declaration> custom_types;
 
-	public HashMap<abstract_function, abstract_function> callable_functions; // plugins
-																				// and
-																				// functions
+	/*
+	 * plugins and functions
+	 */
+	public HashMap<abstract_function, abstract_function> callable_functions;
 
 	public static void main(String[] args) throws grouping_exception {
 		new pascal_program(new Grouper("var x:integer;" + " begin" + " x:=2+5;"
@@ -80,23 +82,22 @@ public class pascal_program {
 		main.argument_types = new ArrayList<Class>();
 	}
 
-	public pascal_program(List<token> tokens) {
+	public pascal_program(base_grouper_token tokens) {
 		this();
-		ListIterator<token> token_iterator = tokens.listIterator();
-		while (token_iterator.hasNext()) {
-			add_next_declaration(token_iterator);
+		while (tokens.has_next()) {
+			add_next_declaration(tokens);
 		}
 	}
 
-	private void add_next_declaration(ListIterator<token> i) {
-		token next = i.next();
+	private void add_next_declaration(base_grouper_token i) {
+		token next = i.get_next_token_no_EOF();
 		if (next instanceof procedure_token || next instanceof function_token) {
 			boolean is_procedure = next instanceof procedure_token;
 			function_declaration declaration = new function_declaration();
 			declaration.name = get_word_value(i);
 			get_arguments_for_declaration(i, is_procedure,
 					declaration.argument_names, declaration.argument_types);
-			next = i.next();
+			next = i.get_next_token_no_EOF();
 			assert (is_procedure ^ next instanceof colon_token);
 			if (!is_procedure && next instanceof colon_token) {
 				try {
@@ -107,11 +108,11 @@ public class pascal_program {
 			}
 			assert_next_semicolon(i);
 			List<variable_declaration> local_variables = null;
-			next = i.next();
+			next = i.get_next_token_no_EOF();
 			if (next instanceof var_token) {
 				local_variables = get_variable_declarations(i);
 			} else {
-				i.previous();
+				i.push_back(next);
 			}
 			List<executable> commands = get_function_body(i);
 
@@ -127,7 +128,7 @@ public class pascal_program {
 			return;
 		}
 		if (next instanceof begin_end_token) {
-			i.previous();
+			i.push_back(next);
 			main.instructions = get_function_body(i);
 			return;
 		}
@@ -137,49 +138,49 @@ public class pascal_program {
 		}
 	}
 
-	private void add_custom_type_declaration(ListIterator<token> i) {
+	private void add_custom_type_declaration(grouper_token i) {
 		custom_type_declaration result = new custom_type_declaration();
 		String name = get_word_value(i);
-		token next = i.next();
+		token next = i.get_next_token_no_EOF();
 		assert (next instanceof operator_token);
 		assert ((operator_token) next).type == operator_types.EQUALS;
-		next = i.next();
+		next = i.get_next_token_no_EOF();
 		assert (next instanceof record_token);
 		result.variable_types = get_variable_declarations(i);
-		next = i.next();
+		next = i.get_next_token_no_EOF();
 		assert (next instanceof end_token);
 		assert_next_semicolon(i);
 		custom_types.put(name, result);
 	}
 
-	private void get_arguments_for_declaration(ListIterator<token> i,
+	private void get_arguments_for_declaration(grouper_token i,
 			boolean is_procedure, List<String> names, List<Class> types) { // need
-																			// to
-																			// get
-																			// rid
-																			// of
-																			// tiss
-																			// and
-																			// function_header
-																			// class
-		token next = i.next();
+		// to
+		// get
+		// rid
+		// of
+		// tiss
+		// and
+		// function_header
+		// class
+		token next = i.get_next_token_no_EOF();
 		if (next instanceof parenthesized_token) {
 			parenthesized_token arguments_token = (parenthesized_token) next;
-			ListIterator<token> argument_iterator = arguments_token.insides
-					.listIterator();
-			while (argument_iterator.hasNext()) {
-				names.add(((word_token) argument_iterator.next()).name);
-				next = argument_iterator.next();
+			next = arguments_token.get_next_token();
+			while (!(next instanceof EOF_token)) {
+				names.add(((word_token) next).name);
+				next = arguments_token.get_next_token();
 				int j = 0; // counts number added of this type
 				while (next instanceof comma_token) {
-					names.add(((word_token) argument_iterator.next()).name);
-					next = argument_iterator.next();
+					names
+							.add(((word_token) arguments_token.get_next_token()).name);
+					next = arguments_token.get_next_token();
 					j++;
 				}
 				assert (next instanceof colon_token);
 				Class type;
 				try {
-					type = Class.forName(get_word_value(argument_iterator));
+					type = Class.forName(get_word_value(arguments_token));
 					while (j > 0) {
 						types.add(type);
 						j--;
@@ -191,20 +192,20 @@ public class pascal_program {
 		}
 	}
 
-	private List<variable_declaration> get_variable_declarations(
-			ListIterator<token> i) {
+	private List<variable_declaration> get_variable_declarations(grouper_token i) {
 		List<variable_declaration> result = new ArrayList<variable_declaration>();
 		/*
 		 * reusing it, so it is further out of scope than necessary
 		 */
-		List<String> names = new ArrayList<String>();
-		token next = i.next();
-		while (next instanceof word_token) {
-			next = i.next();
-			while (next instanceof comma_token) {
+		List<String> names = new ArrayList<String>(1);
+		token next;
+		do {
+			next = i.get_next_token_no_EOF();
+			do {
 				names.add(get_word_value(i));
-				next = i.next();
-			}
+				next = i.get_next_token_no_EOF();
+			} while (next instanceof comma_token);
+			next = i.get_next_token_no_EOF();
 			assert (next instanceof colon_token);
 			Class type;
 			try {
@@ -220,61 +221,58 @@ public class pascal_program {
 				e.printStackTrace();
 			}
 			names.clear(); // reusing the linked list object
-			next = i.next();
-		}
-		i.previous();
+			next = i.peek_next_token();
+		} while (next instanceof word_token);
 		return result;
 	}
 
-	private List<executable> get_function_body(ListIterator<token> t) {
-		token next = t.next();
+	private List<executable> get_function_body(grouper_token t) {
+		token next = t.get_next_token_no_EOF();
 		assert (next instanceof begin_end_token);
 		begin_end_token body = (begin_end_token) next;
-		ListIterator<token> body_iterator = body.insides.listIterator();
 		List<executable> commands = new ArrayList<executable>();
-		while (body_iterator.hasNext()) {
-			commands.add(get_next_command(body_iterator));
+		while (body.has_next()) {
+			commands.add(get_next_command(body));
 		}
 		return commands;
 	}
 
-	executable get_next_command(ListIterator<token> token_iterator) {
-		token next = token_iterator.next();
+	executable get_next_command(grouper_token token_iterator) {
+		token next = token_iterator.get_next_token_no_EOF();
 		if (next instanceof if_token) {
 			returns_value condition = get_next_returns_value(token_iterator);
-			next = token_iterator.next();
+			next = token_iterator.get_next_token_no_EOF();
 			assert (next instanceof then_token);
 			executable command = get_next_command(token_iterator);
 			return new if_statement(condition, command);
 		} else if (next instanceof while_token) {
 			returns_value condition = get_next_returns_value(token_iterator);
-			next = token_iterator.next();
+			next = token_iterator.get_next_token_no_EOF();
 			assert (next instanceof do_token);
 			executable command = get_next_command(token_iterator);
 			return new while_statement(condition, command);
 		} else if (next instanceof begin_end_token) {
 			instruction_grouper begin_end_preprocessed = new instruction_grouper();
-			ListIterator<token> begin_end_iterator = ((begin_end_token) next).insides
-					.listIterator();
-			while (begin_end_iterator.hasNext()) {
+			begin_end_token cast_token = (begin_end_token) next;
+			while (cast_token.has_next()) {
 				begin_end_preprocessed
-						.add_command(get_next_command(begin_end_iterator));
+						.add_command(get_next_command(cast_token));
 			}
 			return begin_end_preprocessed;
 		} else if (next instanceof word_token) {
 
 			String name = get_word_value(next);
-			next = token_iterator.next();
+			next = token_iterator.peek_next_token_no_EOF();
 			if (next instanceof parenthesized_token) {
+				token_iterator.get_next_token_no_EOF();
 				returns_value[] arguments = get_arguments_for_call((parenthesized_token) next);
 				assert_next_semicolon(token_iterator);
 				return new abstract_function_call(name, arguments);
 			} else {
 				// at this point assuming it is a variable identifier.
-				token_iterator.previous();
-				token_iterator.previous();
-				variable_identifier identifier = get_next_var_identifier(token_iterator);
-				next = token_iterator.next();
+				variable_identifier identifier = get_next_var_identifier(name,
+						token_iterator);
+				next = token_iterator.get_next_token_no_EOF();
 				assert (next instanceof assignment_token);
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
 				assert_next_semicolon(token_iterator);
@@ -288,46 +286,44 @@ public class pascal_program {
 		return null;
 	}
 
-	void assert_next_semicolon(ListIterator<token> i) {
-		token next = i.next();
+	void assert_next_semicolon(grouper_token i) {
+		token next = i.get_next_token_no_EOF();
 		assert (next instanceof semicolon_token);
 	}
 
-	variable_identifier get_next_var_identifier(ListIterator<token> i) {
-		token next = i.next();
+	variable_identifier get_next_var_identifier(String initial, grouper_token i) {
+		token next = i.get_next_token_no_EOF();
 		variable_identifier identifier = new variable_identifier();
-		identifier.add(((word_token) next).name);
-		while (i.hasNext() && (next = i.next()) instanceof period_token) {
-			next = i.next();
+		identifier.add(initial);
+		while (i.peek_next_token() instanceof period_token) {
+			i.get_next_token();
+			next = i.get_next_token_no_EOF();
 			assert (next instanceof word_token);
 			identifier.add(((word_token) next).name);
 		}
-		i.previous();
 		return identifier;
 	}
 
 	returns_value get_single_value(parenthesized_token t) {
-		ListIterator<token> iterator = t.insides.listIterator();
-		returns_value result = get_next_returns_value(iterator);
-		assert (!iterator.hasNext());
+		returns_value result = get_next_returns_value(t);
+		assert (!t.has_next());
 		return result;
 	}
 
 	returns_value[] get_arguments_for_call(parenthesized_token t) {
-		ListIterator<token> iterator = t.insides.listIterator();
 		List<returns_value> result = new ArrayList<returns_value>();
-		while (iterator.hasNext()) {
-			result.add(get_next_returns_value(iterator));
-			if (iterator.hasNext()) {
-				token next = iterator.next();
+		while (t.has_next()) {
+			result.add(get_next_returns_value(t));
+			if (t.has_next()) {
+				token next = t.get_next_token_no_EOF();
 				assert (next instanceof comma_token);
 			}
 		}
 		return result.toArray(new returns_value[result.size()]);
 	}
 
-	returns_value get_next_returns_value(ListIterator<token> iterator) {
-		token next = iterator.next();
+	returns_value get_next_returns_value(grouper_token iterator) {
+		token next = iterator.get_next_token_no_EOF();
 		if (next instanceof operator_token) {
 			assert ((operator_token) next).can_be_unary();
 			return new unary_operator_evaluation(
@@ -345,32 +341,25 @@ public class pascal_program {
 			result = new constant_access(((string_token) next).value);
 		} else if (next instanceof word_token) {
 			String name = ((word_token) next).name;
-			if (iterator.hasNext()) {
-				next = iterator.next();
+			if (!((next = iterator.peek_next_token()) instanceof EOF_token)) {
 				if (next instanceof parenthesized_token) {
 					return new abstract_function_call(name,
 							get_arguments_for_call((parenthesized_token) next));
 				} else {
-					iterator.previous();
-					iterator.previous();
-					result = new variable_access(
-							get_next_var_identifier(iterator));
+					result = new variable_access(get_next_var_identifier(name,
+							iterator));
 				}
 			} else {
-				iterator.previous();
-				result = new variable_access(get_next_var_identifier(iterator));
+				result = new variable_access(get_next_var_identifier(name,
+						iterator));
 			}
 		}
 		assert (result != null);
-		if (iterator.hasNext()) {
-			next = iterator.next();
-			if (next instanceof operator_token) {
-				result = new binary_operator_evaluation(result,
-						get_next_returns_value(iterator),
-						((operator_token) next).type);
-			} else {
-				iterator.previous();
-			}
+		if ((next = iterator.peek_next_token()) instanceof operator_token) {
+			iterator.get_next_token_no_EOF();
+			result = new binary_operator_evaluation(result,
+					get_next_returns_value(iterator),
+					((operator_token) next).type);
 		}
 		return result;
 	}
@@ -380,8 +369,8 @@ public class pascal_program {
 		return ((word_token) t).name;
 	}
 
-	String get_word_value(ListIterator<token> i) {
-		return get_word_value(i.next());
+	String get_word_value(grouper_token i) {
+		return get_word_value(i.get_next_token_no_EOF());
 	}
 
 	private void loadPlugins() {

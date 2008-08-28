@@ -1,19 +1,11 @@
 package tokens;
 
-import java.util.LinkedList;
-import java.util.Queue;
 
-public class parenthesized_token implements grouper_token, token {
-	public Queue<token> insides = new LinkedList<token>();
-
-	public void add_token(token t) {
-		insides.add(t);
-	}
-
+public class parenthesized_token extends grouper_token{
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("(");
-		for (token t : insides) {
+		for (token t : tokens) {
 			builder.append(t).append(' ');
 		}
 		builder.append(')');
