@@ -129,8 +129,8 @@ public class binary_operator_evaluation implements returns_value {
 	}
 
 	public Class get_type(pascal_program p, function_declaration f) {
-		Class type1 = operon1.getClass();
-		Class type2 = operon2.getClass();
+		Class type1 = operon1.get_type(p, f);
+		Class type2 = operon2.get_type(p, f);
 		switch (operator_type) {
 		case AND:
 		case EQUALS:

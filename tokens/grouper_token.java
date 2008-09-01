@@ -1,58 +1,79 @@
 package tokens;
 
-import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public abstract class grouper_token implements token {
-	LinkedList<token> tokens = new LinkedList<token>();
+public class grouper_token implements token {
+	LinkedBlockingQueue<token> queue;
 
-	public void add_token(token g) {
-		tokens.offer(g);
-	}
+	token next = null;
 
-	public token get_next_token() {
-		token result=tokens.poll();
-		while(result==null) {
+	private token get_next() {
+		if (next == null) {
 			try {
-				wait();
+				next = queue.take();
 			} catch (InterruptedException e) {
+				System.err
+						.println("Interrupted while attempting to acess queue for first time.");
+				e.printStackTrace();
 			}
-			result=tokens.poll();
+		}
+		return next;
+	}
+
+	public grouper_token() {
+		queue = new LinkedBlockingQueue<token>();
+	}
+
+	public boolean hasNext() {
+		return !(get_next() instanceof EOF_token);
+	}
+
+	public void put(token t) {
+		try {
+			queue.put(t);
+		} catch (InterruptedException e) {
+			System.err
+					.println("Interrupted while attempting to insert object into queue.");
+			e.printStackTrace();
+		}
+	}
+
+	public token take() {
+		token result = get_next();
+		if (result instanceof EOF_token) {
+			System.err.println("Unexpected end of token queue in take");
+			System.exit(1);
+		}
+		try {
+			next = queue.take();
+		} catch (InterruptedException e) {
+			System.err.println("Interrupted while taking from grouping_token");
+			e.printStackTrace();
 		}
 		return result;
 	}
-	public token get_next_token_no_EOF() {
-		token result=get_next_token();
-		if(result instanceof EOF_token) {
-			System.err.println("Unexpected end of token group/file");
-			System.err.println("Terminating program");
+
+	public token peek() {
+		return get_next();
+	}
+
+	public token peek_no_EOF() {
+		token result = peek();
+		if (result instanceof EOF_token) {
+			System.err.println("Unexpected end of token queue in peek");
 			System.exit(1);
 		}
 		return result;
 	}
-	public void push_back(token t) {
-		tokens.push(t);
+
+	@Override
+	public String toString() {
+		return get_next().toString() + ',' + queue.toString();
 	}
-	public token peek_next_token() {
-		token result= tokens.peek();
-		while(result==null) {
-			try {
-				wait();
-			} catch(InterruptedException e) {
-			}
-			result=tokens.peek();
-		}
-		return result;
-	}
-	public token peek_next_token_no_EOF() {
-		token result=peek_next_token();
-		if(result instanceof EOF_token) {
-			System.err.println("Unexpected end of token group/file");
-			System.err.println("Terminating program");
-			System.exit(1);
-		}
-		return result;
-	}
-	public boolean has_next() {
-		return !(peek_next_token() instanceof EOF_token);
-	}
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5736870403548847904L;
+
 }

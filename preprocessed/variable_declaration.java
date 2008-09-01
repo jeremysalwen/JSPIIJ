@@ -1,5 +1,6 @@
 package preprocessed;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import serp.bytecode.BCClass;
@@ -24,9 +25,19 @@ public class variable_declaration {
 
 	public void initialize(Map<String, Object> map) {
 		try {
-			map.put(name, type.newInstance());
+			Object value=default_values.get(type);
+			if(value==null) {
+				value=type.newInstance();
+			}
+			map.put(name, value);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	static HashMap<Class, Object> default_values=new HashMap<Class, Object>();
+	static {
+		default_values.put(Integer.class, 0);
+		default_values.put(String.class, "");
+		//TODO add more
 	}
 }

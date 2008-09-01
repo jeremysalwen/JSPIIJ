@@ -1,5 +1,6 @@
 package preprocessed.instructions.returns_value;
 
+import preprocessed.abstract_function;
 import preprocessed.dummy_declaration;
 import preprocessed.function_declaration;
 import preprocessed.instructions.executable;
@@ -13,6 +14,7 @@ public class abstract_function_call implements returns_value, executable {
 
 	public abstract_function_call(String name, returns_value[] arguments) {
 		this.name = name;
+		this.arguments = arguments;
 	}
 
 	public Object get_value(function_on_stack f) {
@@ -23,11 +25,9 @@ public class abstract_function_call implements returns_value, executable {
 			values[i] = arguments[i].get_value(f);
 		}
 		dummy_declaration header = new dummy_declaration(name, arg_types);
-
-		return new function_on_stack(
-				f.program,
-				(function_declaration) f.program.callable_functions.get(header),
-				values).execute();
+		abstract_function called_function = f.program.callable_functions
+				.get(header);
+		return called_function.call(f.program, values);
 	}
 
 	public String toString() {

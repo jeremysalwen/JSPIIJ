@@ -53,8 +53,8 @@ public class function_declaration extends abstract_function {
 	}
 
 	@Override
-	public Object call(pascal_program program, List arguments) {
-		return new function_on_stack(program, this, arguments.toArray())
+	public Object call(pascal_program program, Object[] arguments) {
+		return new function_on_stack(program, this, arguments)
 				.execute();
 	}
 

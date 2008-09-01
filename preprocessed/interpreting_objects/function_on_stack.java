@@ -28,11 +28,7 @@ public class function_on_stack implements contains_variables {
 			variables.put(prototype.argument_names.get(i), arguments[i]);
 		}
 		if (declaration.return_type != null) {
-			try {
-				variables.put("result", declaration.return_type.newInstance());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+				new variable_declaration("result",prototype.return_type).initialize(variables);
 		}
 		this.program = program;
 		this.prototype = declaration;
