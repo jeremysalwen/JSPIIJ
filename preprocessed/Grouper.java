@@ -9,15 +9,20 @@ import tokens.EOF_token;
 import tokens.assignment_token;
 import tokens.base_grouper_token;
 import tokens.begin_end_token;
+import tokens.case_token;
 import tokens.colon_token;
 import tokens.comma_token;
 import tokens.do_token;
 import tokens.double_token;
+import tokens.downto_token;
+import tokens.else_token;
 import tokens.end_token;
+import tokens.for_token;
 import tokens.function_token;
 import tokens.grouper_token;
 import tokens.if_token;
 import tokens.integer_token;
+import tokens.of_token;
 import tokens.operator_token;
 import tokens.operator_types;
 import tokens.parenthesized_token;
@@ -25,11 +30,14 @@ import tokens.period_token;
 import tokens.procedure_token;
 import tokens.program_token;
 import tokens.record_token;
+import tokens.repeat_token;
 import tokens.semicolon_token;
 import tokens.string_token;
 import tokens.then_token;
+import tokens.to_token;
 import tokens.token;
 import tokens.type_token;
+import tokens.until_token;
 import tokens.var_token;
 import tokens.while_token;
 import tokens.word_token;
@@ -37,9 +45,11 @@ import exceptions.grouping_exception;
 
 public class Grouper implements Runnable {
 	public base_grouper_token token_queue;
+
 	private StreamTokenizer tokenizer;
+
 	private Stack<grouper_token> stack_of_groupers;
-	
+
 	public Grouper(String text) throws grouping_exception {
 		token_queue = new base_grouper_token();
 		StringReader reader = new StringReader(text);
@@ -49,7 +59,7 @@ public class Grouper implements Runnable {
 		tokenizer.ordinaryChar('\"');
 		stack_of_groupers = new Stack<grouper_token>();
 	}
-	
+
 	public void run() {
 		operator_types temp_type = null;
 		stack_of_groupers.add(token_queue);
@@ -65,7 +75,7 @@ public class Grouper implements Runnable {
 				case StreamTokenizer.TT_WORD:
 					tokenizer.sval = tokenizer.sval.intern();
 					if (tokenizer.sval == "begin") {
-						begin_end_token tmp=new begin_end_token();
+						begin_end_token tmp = new begin_end_token();
 						top_of_stack.put(tmp);
 						stack_of_groupers.push(tmp);
 						continue do_loop_break;
@@ -111,8 +121,24 @@ public class Grouper implements Runnable {
 						next_token = new procedure_token();
 					} else if (tokenizer.sval == "function") {
 						next_token = new function_token();
-					}else if(tokenizer.sval == "program") {
-						next_token=new program_token();
+					} else if (tokenizer.sval == "program") {
+						next_token = new program_token();
+					} else if (tokenizer.sval == "else") {
+						next_token = new else_token();
+					} else if (tokenizer.sval == "for") {
+						next_token = new for_token();
+					} else if (tokenizer.sval == "to") {
+						next_token = new to_token();
+					} else if (tokenizer.sval == "downto") {
+						next_token = new downto_token();
+					} else if (tokenizer.sval == "repeat") {
+						next_token = new repeat_token();
+					} else if (tokenizer.sval == "until") {
+						next_token = new until_token();
+					} else if (tokenizer.sval == "case") {
+						next_token = new case_token();
+					} else if (tokenizer.sval == "of") {
+						next_token = new of_token();
 					} else {
 
 						next_token = new word_token(tokenizer.sval);

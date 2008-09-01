@@ -12,9 +12,12 @@ import preprocessed.abstract_function;
 import preprocessed.function_declaration;
 import preprocessed.plugin_declaration;
 import preprocessed.variable_declaration;
+import preprocessed.instructions.downto_for_statement;
 import preprocessed.instructions.executable;
+import preprocessed.instructions.for_statement;
 import preprocessed.instructions.if_statement;
 import preprocessed.instructions.instruction_grouper;
+import preprocessed.instructions.repeat_instruction;
 import preprocessed.instructions.variable_set;
 import preprocessed.instructions.while_statement;
 import preprocessed.instructions.returns_value.abstract_function_call;
@@ -32,7 +35,10 @@ import tokens.colon_token;
 import tokens.comma_token;
 import tokens.do_token;
 import tokens.double_token;
+import tokens.downto_token;
+import tokens.else_token;
 import tokens.end_token;
+import tokens.for_token;
 import tokens.function_token;
 import tokens.grouper_token;
 import tokens.if_token;
@@ -43,9 +49,11 @@ import tokens.parenthesized_token;
 import tokens.period_token;
 import tokens.procedure_token;
 import tokens.record_token;
+import tokens.repeat_token;
 import tokens.semicolon_token;
 import tokens.string_token;
 import tokens.then_token;
+import tokens.to_token;
 import tokens.token;
 import tokens.type_token;
 import tokens.var_token;
@@ -138,8 +146,8 @@ public class pascal_program {
 			return;
 		} else if (next instanceof begin_end_token) {
 			main.instructions = get_function_body((begin_end_token) next);
-			next=i.take();
-			assert(next instanceof period_token);
+			next = i.take();
+			assert (next instanceof period_token);
 			return;
 		} else if (next instanceof var_token) {
 			main.local_variables = get_variable_declarations(i);
@@ -237,7 +245,13 @@ public class pascal_program {
 			next = token_iterator.take();
 			assert (next instanceof then_token);
 			executable command = get_next_command(token_iterator);
-			return new if_statement(condition, command);
+			executable else_command = null;
+			next = token_iterator.peek();
+			if (next instanceof else_token) {
+				token_iterator.take();
+				else_command = get_next_command(token_iterator);
+			}
+			return new if_statement(condition, command, else_command);
 		} else if (next instanceof while_token) {
 			returns_value condition = get_next_returns_value(token_iterator);
 			next = token_iterator.take();
@@ -252,8 +266,34 @@ public class pascal_program {
 						.add_command(get_next_command(cast_token));
 			}
 			return begin_end_preprocessed;
+		} else if (next instanceof for_token) {
+			variable_identifier tmp_var = get_next_var_identifier(token_iterator);
+			next = token_iterator.take();
+			assert (next instanceof assignment_token);
+			returns_value first_value = get_next_returns_value(token_iterator);
+			next = token_iterator.take();
+			boolean downto = false;
+			if (next instanceof downto_token) {
+				downto = true;
+			} else if (!(next instanceof to_token)) {
+				System.err.println("Expected to or downto");
+				System.exit(1);
+			}
+			returns_value last_value = get_next_returns_value(token_iterator);
+			next = token_iterator.take();
+			assert (next instanceof do_token);
+			if (downto) {
+				return new downto_for_statement(tmp_var, first_value,
+						last_value, get_next_command(token_iterator));
+			} else {
+				return new for_statement(tmp_var, first_value, last_value,
+						get_next_command(token_iterator));
+			}
+		} else if (next instanceof repeat_token) {
+			executable command = get_next_command(token_iterator);
+			returns_value condition = get_next_returns_value(token_iterator);
+			return new repeat_instruction(command, condition);
 		} else if (next instanceof word_token) {
-
 			String name = get_word_value(next);
 			next = token_iterator.peek_no_EOF();
 			if (next instanceof parenthesized_token) {
@@ -282,6 +322,18 @@ public class pascal_program {
 	void assert_next_semicolon(grouper_token i) {
 		token next = i.take();
 		assert (next instanceof semicolon_token);
+	}
+
+	variable_identifier get_next_var_identifier(grouper_token i) {
+		token next;
+		variable_identifier identifier = new variable_identifier();
+		while (i.peek() instanceof period_token) {
+			i.take();
+			next = i.take();
+			assert (next instanceof word_token);
+			identifier.add(((word_token) next).name);
+		}
+		return identifier;
 	}
 
 	variable_identifier get_next_var_identifier(String initial, grouper_token i) {
@@ -376,8 +428,8 @@ public class pascal_program {
 		ClassLoader classloader = ClassLoader.getSystemClassLoader();
 		for (File f : pluginarray) {
 			try {
-				String filename=f.getName();
-				filename=filename.substring(0, filename.indexOf(".class"));
+				String filename = f.getName();
+				filename = filename.substring(0, filename.indexOf(".class"));
 				Class c = classloader.loadClass("plugins." + filename);
 				if (pascal_plugin.class.isAssignableFrom(c)) {
 					for (Method m : c.getMethods()) {
@@ -400,7 +452,7 @@ public class pascal_program {
 		if (name == "string") {
 			return String.class;
 		}
-		if(name=="float") {
+		if (name == "float") {
 			return Float.class;
 		}
 		// TODO add more types
