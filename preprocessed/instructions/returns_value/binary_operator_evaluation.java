@@ -3,7 +3,7 @@ package preprocessed.instructions.returns_value;
 import preprocessed.function_declaration;
 import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascal_program;
-import tokens.operator_types;
+import tokens.value.operator_types;
 
 public class binary_operator_evaluation implements returns_value {
 	operator_types operator_type;

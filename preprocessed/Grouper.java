@@ -1,46 +1,56 @@
 package preprocessed;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.Stack;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import tokens.EOF_token;
-import tokens.assignment_token;
-import tokens.base_grouper_token;
-import tokens.begin_end_token;
-import tokens.case_token;
-import tokens.colon_token;
-import tokens.comma_token;
-import tokens.do_token;
-import tokens.double_token;
-import tokens.downto_token;
-import tokens.else_token;
 import tokens.end_token;
-import tokens.for_token;
-import tokens.function_token;
-import tokens.grouper_token;
-import tokens.if_token;
-import tokens.integer_token;
-import tokens.of_token;
-import tokens.operator_token;
-import tokens.operator_types;
-import tokens.parenthesized_token;
-import tokens.period_token;
-import tokens.procedure_token;
-import tokens.program_token;
-import tokens.record_token;
-import tokens.repeat_token;
-import tokens.semicolon_token;
-import tokens.string_token;
-import tokens.then_token;
-import tokens.to_token;
 import tokens.token;
-import tokens.type_token;
-import tokens.until_token;
-import tokens.var_token;
-import tokens.while_token;
-import tokens.word_token;
+import tokens.basic.assignment_token;
+import tokens.basic.case_token;
+import tokens.basic.colon_token;
+import tokens.basic.comma_token;
+import tokens.basic.do_token;
+import tokens.basic.downto_token;
+import tokens.basic.else_token;
+import tokens.basic.for_token;
+import tokens.basic.function_token;
+import tokens.basic.if_token;
+import tokens.basic.of_token;
+import tokens.basic.period_token;
+import tokens.basic.procedure_token;
+import tokens.basic.program_token;
+import tokens.basic.record_token;
+import tokens.basic.repeat_token;
+import tokens.basic.semicolon_token;
+import tokens.basic.then_token;
+import tokens.basic.to_token;
+import tokens.basic.until_token;
+import tokens.basic.var_token;
+import tokens.basic.while_token;
+import tokens.grouping.base_grouper_token;
+import tokens.grouping.begin_end_token;
+import tokens.grouping.grouper_token;
+import tokens.grouping.parenthesized_token;
+import tokens.grouping.type_token;
+import tokens.value.double_token;
+import tokens.value.integer_token;
+import tokens.value.operator_token;
+import tokens.value.operator_types;
+import tokens.value.string_token;
+import tokens.value.word_token;
 import exceptions.grouping_exception;
 
 public class Grouper implements Runnable {
@@ -140,7 +150,6 @@ public class Grouper implements Runnable {
 					} else if (tokenizer.sval == "of") {
 						next_token = new of_token();
 					} else {
-
 						next_token = new word_token(tokenizer.sval);
 					}
 					break;

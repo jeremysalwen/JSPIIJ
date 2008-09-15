@@ -13,10 +13,13 @@ public class repeat_instruction implements executable {
 		this.condition = condition;
 	}
 
-	public void execute(function_on_stack f) {
+	public boolean execute(function_on_stack f) {
 		do {
-			command.execute(f);
-		} while (((Boolean) condition.get_value(f)).booleanValue());
+			if (command.execute(f)) {
+				break;
+			}
+		} while (((Boolean) condition.get_value(f)));
+		return false;
 	}
 
 }

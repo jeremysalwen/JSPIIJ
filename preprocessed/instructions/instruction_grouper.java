@@ -16,10 +16,13 @@ public class instruction_grouper implements executable {
 		instructions.add(e);
 	}
 
-	public void execute(function_on_stack f) {
+	public boolean execute(function_on_stack f) {
 		for (executable e : instructions) {
-			e.execute(f);
+			if (e.execute(f)) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.instructions.returns_value.variable_access;
 import preprocessed.interpreting_objects.function_on_stack;
 import preprocessed.interpreting_objects.variables.variable_identifier;
-import tokens.operator_types;
+import tokens.value.operator_types;
 
 public class downto_for_statement implements executable {
 	variable_identifier temp_var;
@@ -25,7 +25,7 @@ public class downto_for_statement implements executable {
 		this.command = command;
 	}
 
-	public void execute(function_on_stack f) {
+	public boolean execute(function_on_stack f) {
 		constant_access last_value = new constant_access(last.get_value(f));
 		variable_access get_temp_var = new variable_access(temp_var);
 		new variable_set(temp_var, first).execute(f);
@@ -36,9 +36,12 @@ public class downto_for_statement implements executable {
 						new constant_access(1), operator_types.MINUS));
 
 		while (((Boolean) less_than_last.get_value(f)).booleanValue()) {
-			command.execute(f);
+			if(command.execute(f)) {
+				break;
+			}
 			increment_temp.execute(f);
 		}
+		return false;
 	}
 
 }

@@ -35,8 +35,9 @@ public class abstract_function_call implements returns_value, executable {
 				+ arguments + ']';
 	}
 
-	public void execute(function_on_stack f) {
+	public boolean execute(function_on_stack f) {
 		get_value(f);
+		return false;
 	}
 
 	public Class get_type(pascal_program p, function_declaration f) {

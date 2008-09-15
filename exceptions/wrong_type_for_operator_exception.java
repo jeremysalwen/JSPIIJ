@@ -1,6 +1,6 @@
 package exceptions;
 
-import tokens.operator_types;
+import tokens.value.operator_types;
 
 public class wrong_type_for_operator_exception extends RuntimeException {
 	operator_types operator;

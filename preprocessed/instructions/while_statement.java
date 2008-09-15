@@ -13,10 +13,13 @@ public class while_statement implements executable {
 		this.command = command;
 	}
 
-	public void execute(function_on_stack f) {
+	public boolean execute(function_on_stack f) {
 		while ((Boolean) condition.get_value(f)) {
-			command.execute(f);
+			if(command.execute(f)) {
+				break;
+			}
 		}
+		return false;
 	}
 
 	@Override

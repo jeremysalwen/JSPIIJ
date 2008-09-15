@@ -3,6 +3,7 @@ package preprocessed;
 import processing.pascal_program;
 
 public abstract class abstract_function {
+
 	abstract String get_name();
 
 	abstract Class[] get_arg_types();
@@ -36,6 +37,12 @@ public abstract class abstract_function {
 		}
 		return false;
 	}
-
+/**
+ * This invokes a function call of any type.
+ * 
+ * @param program The program context.
+ * @param arguments 
+ * @return The return value of the called function.
+ */
 	public abstract Object call(pascal_program program, Object[] arguments);
 }

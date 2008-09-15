@@ -4,7 +4,7 @@ import preprocessed.instructions.returns_value.binary_operator_evaluation;
 import preprocessed.instructions.returns_value.constant_access;
 import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.interpreting_objects.function_on_stack;
-import tokens.operator_types;
+import tokens.value.operator_types;
 
 public class single_value implements case_condition {
 	returns_value value;

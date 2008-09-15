@@ -17,13 +17,14 @@ public class variable_set implements executable {
 		this.value = value;
 	}
 
-	public void execute(function_on_stack f) {
+	public boolean execute(function_on_stack f) {
 		ListIterator<String> iterator = name.listIterator();
 		contains_variables v = f;
 		for (int i = 0; i < name.size() - 1; v = (contains_variables) v
 				.get_var(iterator.next()))
 			;
 		v.set_var(iterator.next(), value.get_value(f));
+		return false;
 	}
 
 	@Override

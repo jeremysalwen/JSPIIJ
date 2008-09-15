@@ -23,15 +23,35 @@ public class custom_type_generator {
 		c.output_class("blah", variables);
 	}
 
+	/**
+	 * The base directory into which the files will be output.
+	 */
 	File output;
 
+	/**
+	 * 
+	 * @param output
+	 *            The folder to put the generated class files into.
+	 */
 	public custom_type_generator(File output) {
 		this.output = output;
 		assert (output.isDirectory());
 	}
 
-	public void output_class(String name,
-			List<variable_declaration> variables) {
+	/**
+	 * This method outputs a class with a specified name and fields. Not only
+	 * does it add the fields, but it also inserts the get_var and set_var
+	 * methods, and constructs them to do a fast lookup or setting of a variable
+	 * with a specified name, sans reflection. It also makes the class implement
+	 * {@link contains_variables} for easy arbitrary name variable acess.
+	 * 
+	 * @param name
+	 *            The name of the class to be generated
+	 * @param variables
+	 *            The list of {@link variable_declaration}s which will be added
+	 *            to this class file.
+	 */
+	public void output_class(String name, List<variable_declaration> variables) {
 		Project p = new Project();
 		BCClass c = p.loadClass("java.lang.Object");
 		c.setName(name);
@@ -53,6 +73,13 @@ public class custom_type_generator {
 		}
 	}
 
+	/**
+	 * This method adds a default constructor which sets all the fields to
+	 * default pascal values.
+	 * 
+	 * @param b
+	 *            The class to modify
+	 */
 	void add_constructor(BCClass b) {
 		BCMethod constructor = b.addDefaultConstructor();
 		constructor.removeCode();
@@ -92,6 +119,14 @@ public class custom_type_generator {
 		constructor_code.calculateMaxStack();
 	}
 
+	/**
+	 * Adds the get_var method to a specified class. This method will conform to
+	 * the ideas of the contains_variables interface, and will allow access to
+	 * all declared fields.
+	 * 
+	 * @param b
+	 *            The class to modify.
+	 */
 	void add_get_var(BCClass b) {
 		BCMethod get_var = b.declareMethod("get_var", Object.class,
 				new Class[] { String.class });
@@ -149,6 +184,14 @@ public class custom_type_generator {
 		get_var_code.calculateMaxStack();
 	}
 
+	/**
+	 * Adds the set_var method to a specified class. This method will conform to
+	 * the ideas of the contains_variables interface, and will allow acess to
+	 * all declared fields.
+	 * 
+	 * @param b
+	 *            The class to modify.
+	 */
 	void add_set_var(BCClass b) {
 		BCMethod set_var = b.declareMethod("set_var", void.class, new Class[] {
 				String.class, Object.class });

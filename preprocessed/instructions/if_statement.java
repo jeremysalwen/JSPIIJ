@@ -21,11 +21,14 @@ public class if_statement implements executable {
 		this.instruction = instruction;
 	}
 
-	public void execute(function_on_stack f) {
+	public boolean execute(function_on_stack f) {
 		if (((Boolean) (condition.get_value(f))).booleanValue()) {
-			instruction.execute(f);
+			return instruction.execute(f);
 		} else {
-			else_instruction.execute(f);
+			if (else_instruction != null) {
+				return else_instruction.execute(f);
+			}
+			return false;
 		}
 	}
 
