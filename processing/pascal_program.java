@@ -28,7 +28,6 @@ import preprocessed.instructions.returns_value.unary_operator_evaluation;
 import preprocessed.instructions.returns_value.variable_access;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 import tokens.EOF_token;
-import tokens.end_token;
 import tokens.token;
 import tokens.basic.assignment_token;
 import tokens.basic.colon_token;
@@ -41,7 +40,6 @@ import tokens.basic.function_token;
 import tokens.basic.if_token;
 import tokens.basic.period_token;
 import tokens.basic.procedure_token;
-import tokens.basic.record_token;
 import tokens.basic.repeat_token;
 import tokens.basic.semicolon_token;
 import tokens.basic.then_token;
@@ -52,6 +50,7 @@ import tokens.grouping.base_grouper_token;
 import tokens.grouping.begin_end_token;
 import tokens.grouping.grouper_token;
 import tokens.grouping.parenthesized_token;
+import tokens.grouping.record_token;
 import tokens.grouping.type_token;
 import tokens.value.double_token;
 import tokens.value.integer_token;
@@ -115,7 +114,7 @@ public class pascal_program {
 			function_declaration declaration = new function_declaration();
 			declaration.name = get_word_value(i);
 			get_arguments_for_declaration(i, is_procedure,
-					declaration.argument_names, declaration.argument_types);
+					declaration.argument_names, declaration.argument_types, declaration.are_varargs);
 			next = i.take();
 			assert (is_procedure ^ next instanceof colon_token);
 			if (!is_procedure && next instanceof colon_token) {
@@ -163,22 +162,26 @@ public class pascal_program {
 		assert ((operator_token) next).type == operator_types.EQUALS;
 		next = i.take();
 		assert (next instanceof record_token);
-		result.variable_types = get_variable_declarations(i);
-		next = i.take();
-		assert (next instanceof end_token);
+		result.variable_types = get_variable_declarations((record_token)next);
 		assert_next_semicolon(i);
 		custom_types.put(name, result);
 	}
 
 	private void get_arguments_for_declaration(grouper_token i,
-			boolean is_procedure, List<String> names, List<Class> types) { // need
+			boolean is_procedure, List<String> names, List<Class> types, List<Boolean> are_varargs) { // need
 		token next = i.take();
 		if (next instanceof parenthesized_token) {
 			parenthesized_token arguments_token = (parenthesized_token) next;
 			while (arguments_token.hasNext()) {
 				int j = 0; // counts number added of this type
 				next = arguments_token.take();
+				boolean is_varargs=false;
+				if(next instanceof var_token) {
+					is_varargs=true;
+					next=arguments_token.take();
+				}
 				do {
+					are_varargs.add(is_varargs);
 					names.add(((word_token) next).name);
 					j++;
 				} while ((next = arguments_token.take()) instanceof comma_token);

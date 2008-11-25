@@ -1,22 +1,11 @@
 package preprocessed;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.Stack;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import tokens.EOF_token;
-import tokens.end_token;
 import tokens.token;
 import tokens.basic.assignment_token;
 import tokens.basic.case_token;
@@ -32,7 +21,6 @@ import tokens.basic.of_token;
 import tokens.basic.period_token;
 import tokens.basic.procedure_token;
 import tokens.basic.program_token;
-import tokens.basic.record_token;
 import tokens.basic.repeat_token;
 import tokens.basic.semicolon_token;
 import tokens.basic.then_token;
@@ -44,6 +32,7 @@ import tokens.grouping.base_grouper_token;
 import tokens.grouping.begin_end_token;
 import tokens.grouping.grouper_token;
 import tokens.grouping.parenthesized_token;
+import tokens.grouping.record_token;
 import tokens.grouping.type_token;
 import tokens.value.double_token;
 import tokens.value.integer_token;
@@ -89,14 +78,19 @@ public class Grouper implements Runnable {
 						top_of_stack.put(tmp);
 						stack_of_groupers.push(tmp);
 						continue do_loop_break;
-					} else if (tokenizer.sval == "end") {
+					} else if (tokenizer.sval == "record") {
+						record_token tmp = new record_token();
+						top_of_stack.put(tmp);
+						stack_of_groupers.push(tmp);
+						continue do_loop_break;
+					}else if (tokenizer.sval == "end") {
 						if (stack_of_groupers.size() > 0
-								&& stack_of_groupers.peek() instanceof begin_end_token) {
+								&& stack_of_groupers.peek() instanceof begin_end_token  || stack_of_groupers.peek() instanceof record_token) {
 							top_of_stack.put(new EOF_token());
 							stack_of_groupers.pop();
 							continue do_loop_break;
 						}
-						next_token = new end_token();
+						System.err.println("Extra 'end' token encountered");
 					} else if (tokenizer.sval == "if") {
 						next_token = new if_token();
 					} else if (tokenizer.sval == "then") {
@@ -113,9 +107,7 @@ public class Grouper implements Runnable {
 						temp_type = operator_types.OR;
 					} else if (tokenizer.sval == "var") {
 						next_token = new var_token();
-					} else if (tokenizer.sval == "record") {
-						next_token = new record_token();
-					} else if (tokenizer.sval == "type") {
+					}  else if (tokenizer.sval == "type") {
 						next_token = new type_token();
 					} else if (tokenizer.sval == "xor") {
 						temp_type = operator_types.XOR;

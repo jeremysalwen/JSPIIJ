@@ -15,11 +15,13 @@ public class function_declaration extends abstract_function {
 	public List<variable_declaration> local_variables;
 
 	public List<executable> instructions;
-
+/*     These go together ---->     */
 	public List<String> argument_names;
 
 	public List<Class> argument_types;
-
+	
+	public List<Boolean> are_varargs;
+/*      <-----                     */
 	public function_declaration() { /* WARNING, INCOMPLETE CONSTRUCTION */
 		local_variables = new ArrayList<variable_declaration>();
 		instructions = new ArrayList<executable>();
