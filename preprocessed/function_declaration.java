@@ -22,6 +22,7 @@ public class function_declaration extends abstract_function {
 	
 	public List<Boolean> are_varargs;
 /*      <-----                     */
+	
 	public function_declaration() { /* WARNING, INCOMPLETE CONSTRUCTION */
 		local_variables = new ArrayList<variable_declaration>();
 		instructions = new ArrayList<executable>();
@@ -45,11 +46,13 @@ public class function_declaration extends abstract_function {
 	}
 
 	@Override
+	public
 	Class[] get_arg_types() {
 		return argument_types.toArray(new Class[argument_types.size()]);
 	}
 
 	@Override
+	public
 	String get_name() {
 		return name;
 	}
@@ -67,6 +70,11 @@ public class function_declaration extends abstract_function {
 
 	public Class get_variable_type(String name) {
 		return argument_types.get(argument_names.indexOf(name));
+	}
+
+	@Override
+	public boolean is_varargs(int i) {
+		return are_varargs.get(i);
 	}
 
 }

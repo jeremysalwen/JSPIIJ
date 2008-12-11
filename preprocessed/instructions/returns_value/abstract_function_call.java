@@ -4,7 +4,9 @@ import preprocessed.abstract_function;
 import preprocessed.dummy_declaration;
 import preprocessed.function_declaration;
 import preprocessed.instructions.executable;
+import preprocessed.instructions.variable_set;
 import preprocessed.interpreting_objects.function_on_stack;
+import preprocessed.interpreting_objects.pointer;
 import processing.pascal_program;
 
 public class abstract_function_call implements returns_value, executable {
@@ -27,11 +29,22 @@ public class abstract_function_call implements returns_value, executable {
 		dummy_declaration header = new dummy_declaration(name, arg_types);
 		abstract_function called_function = f.program.callable_functions
 				.get(header);
-		return called_function.call(f.program, values);
+		for(int i=0; i<values.length; i++) {
+			if(called_function.is_varargs(i)) {
+				values[i]=new pointer(values[i]);
+			}
+		}
+		Object  result= called_function.call(f.program, values);
+		for(int i=0; i<values.length; i++) {
+			if(called_function.is_varargs(i)) {
+				new variable_set(((variable_access)arguments[i]).variable_name,new constant_access(((pointer)values[i]).value));
+			}
+		}
+		return result;
 	}
 
 	public String toString() {
-		return "call function [" + "ARGFIXTHISNOW" + "] with args ["
+		return "call function [" + name + "] with args ["
 				+ arguments + ']';
 	}
 

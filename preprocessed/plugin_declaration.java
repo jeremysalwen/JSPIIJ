@@ -3,6 +3,7 @@ package preprocessed;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import preprocessed.interpreting_objects.pointer;
 import processing.pascal_program;
 
 public class plugin_declaration extends abstract_function {
@@ -30,11 +31,13 @@ public class plugin_declaration extends abstract_function {
 	}
 
 	@Override
+	public
 	Class[] get_arg_types() {
 		return method.getParameterTypes();
 	}
 
 	@Override
+	public
 	String get_name() {
 		return method.getName();
 	}
@@ -42,6 +45,11 @@ public class plugin_declaration extends abstract_function {
 	@Override
 	public Class get_return_type() {
 		return method.getReturnType();
+	}
+
+	@Override
+	public boolean is_varargs(int i) {
+		return method.getParameterTypes()[i]==pointer.class;
 	}
 
 }

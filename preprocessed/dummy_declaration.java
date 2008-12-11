@@ -14,11 +14,13 @@ public class dummy_declaration extends abstract_function {
 		this.arg_types = arg_types;
 	}
 	@Override
+	public
 	Class[] get_arg_types() {
 		return arg_types;
 	}
 
 	@Override
+	public
 	String get_name() {
 		return name;
 	}
@@ -33,6 +35,10 @@ public class dummy_declaration extends abstract_function {
 	@Override
 	public Object call(pascal_program program, Object[] arguments) {
 		return null;
+	}
+	@Override
+	public boolean is_varargs(int i) {
+		return false;
 	}
 
 }

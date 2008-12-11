@@ -4,12 +4,12 @@ import processing.pascal_program;
 
 public abstract class abstract_function {
 
-	abstract String get_name();
+	public abstract String get_name();
 
-	abstract Class[] get_arg_types();
+	public abstract Class[] get_arg_types();
 
 	public abstract Class get_return_type();
-
+	public abstract boolean is_varargs(int i);
 	public int hashCode() {
 		int hashcode = get_name().hashCode();
 		Class[] types = get_arg_types();
