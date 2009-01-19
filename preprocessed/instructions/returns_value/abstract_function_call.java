@@ -7,6 +7,7 @@ import preprocessed.instructions.executable;
 import preprocessed.instructions.variable_set;
 import preprocessed.interpreting_objects.function_on_stack;
 import preprocessed.interpreting_objects.pointer;
+import preprocessed.interpreting_objects.variables.variable_identifier;
 import processing.pascal_program;
 
 public class abstract_function_call implements returns_value, executable {
@@ -24,28 +25,31 @@ public class abstract_function_call implements returns_value, executable {
 		Object[] values = new Object[arguments.length];
 		for (int i = 0; i < arguments.length; i++) {
 			arg_types[i] = arguments[i].get_type(f.program, f.prototype);
-			values[i] = arguments[i].get_value(f);
+
 		}
 		dummy_declaration header = new dummy_declaration(name, arg_types);
 		abstract_function called_function = f.program.callable_functions
 				.get(header);
-		for(int i=0; i<values.length; i++) {
-			if(called_function.is_varargs(i)) {
-				values[i]=new pointer(values[i]);
+		for (int i = 0; i < values.length; i++) {
+			if (called_function.is_varargs(i)) {
+				if (!(arguments[i] instanceof variable_access)) {
+					System.err
+							.println("Attempted to pass non-variable as variable argument");
+					System.exit(0);
+				}
+				variable_identifier a = (variable_identifier) arguments[i];
+				values[i] = new pointer(a.get(a.size() - 1), f
+						.get_variable_holder(a));
+			} else {
+				values[i] = arguments[i].get_value(f);
 			}
 		}
-		Object  result= called_function.call(f.program, values);
-		for(int i=0; i<values.length; i++) {
-			if(called_function.is_varargs(i)) {
-				new variable_set(((variable_access)arguments[i]).variable_name,new constant_access(((pointer)values[i]).value));
-			}
-		}
+		Object result = called_function.call(f.program, values);
 		return result;
 	}
 
 	public String toString() {
-		return "call function [" + name + "] with args ["
-				+ arguments + ']';
+		return "call function [" + name + "] with args [" + arguments + ']';
 	}
 
 	public boolean execute(function_on_stack f) {

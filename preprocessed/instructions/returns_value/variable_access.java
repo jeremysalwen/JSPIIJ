@@ -2,7 +2,6 @@ package preprocessed.instructions.returns_value;
 
 import preprocessed.function_declaration;
 import preprocessed.interpreting_objects.function_on_stack;
-import preprocessed.interpreting_objects.variables.contains_variables;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 import processing.pascal_program;
 
@@ -14,11 +13,7 @@ public class variable_access implements returns_value {
 	}
 
 	public Object get_value(function_on_stack f) {
-		Object v = f;
-		for (String s:variable_name) {
-			v=((contains_variables) v).get_var(s);
-		}
-		return v;
+		return f.get_var(variable_name);
 	}
 
 	@Override

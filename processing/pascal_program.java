@@ -70,6 +70,8 @@ public class pascal_program {
 	 */
 	public HashMap<abstract_function, abstract_function> callable_functions;
 
+	public HashMap<String, Object> global_variables;
+
 	public static void main(String[] args) throws grouping_exception {
 		new pascal_program("var x:integer;" + " begin" + " x:=2+5;"
 				+ " if((x mod 7)=0) then writeln('hi there'+returnfive(4));"
@@ -114,7 +116,8 @@ public class pascal_program {
 			function_declaration declaration = new function_declaration();
 			declaration.name = get_word_value(i);
 			get_arguments_for_declaration(i, is_procedure,
-					declaration.argument_names, declaration.argument_types, declaration.are_varargs);
+					declaration.argument_names, declaration.argument_types,
+					declaration.are_varargs);
 			next = i.take();
 			assert (is_procedure ^ next instanceof colon_token);
 			if (!is_procedure && next instanceof colon_token) {
@@ -162,23 +165,24 @@ public class pascal_program {
 		assert ((operator_token) next).type == operator_types.EQUALS;
 		next = i.take();
 		assert (next instanceof record_token);
-		result.variable_types = get_variable_declarations((record_token)next);
+		result.variable_types = get_variable_declarations((record_token) next);
 		assert_next_semicolon(i);
 		custom_types.put(name, result);
 	}
 
 	private void get_arguments_for_declaration(grouper_token i,
-			boolean is_procedure, List<String> names, List<Class> types, List<Boolean> are_varargs) { // need
+			boolean is_procedure, List<String> names, List<Class> types,
+			List<Boolean> are_varargs) { // need
 		token next = i.take();
 		if (next instanceof parenthesized_token) {
 			parenthesized_token arguments_token = (parenthesized_token) next;
 			while (arguments_token.hasNext()) {
 				int j = 0; // counts number added of this type
 				next = arguments_token.take();
-				boolean is_varargs=false;
-				if(next instanceof var_token) {
-					is_varargs=true;
-					next=arguments_token.take();
+				boolean is_varargs = false;
+				if (next instanceof var_token) {
+					is_varargs = true;
+					next = arguments_token.take();
 				}
 				do {
 					are_varargs.add(is_varargs);
