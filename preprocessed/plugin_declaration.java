@@ -2,6 +2,7 @@ package preprocessed;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 
 import preprocessed.interpreting_objects.pointer;
 import processing.pascal_program;
@@ -31,25 +32,36 @@ public class plugin_declaration extends abstract_function {
 	}
 
 	@Override
-	public
-	Class[] get_arg_types() {
-		return method.getParameterTypes();
+	public Class[] get_arg_types() {
+		Class[] result = method.getParameterTypes();
+		for (int i = 0; i < result.length; i++) {
+			if (result[i] == pointer.class) {
+				result[i] = (Class) ((ParameterizedType) method
+						.getGenericParameterTypes()[i])
+						.getActualTypeArguments()[0];
+			}
+		}
+		return result;
 	}
 
 	@Override
-	public
-	String get_name() {
+	public String get_name() {
 		return method.getName();
 	}
 
 	@Override
 	public Class get_return_type() {
-		return method.getReturnType();
+		Class result = method.getReturnType();
+		if (result == pointer.class) {
+			result = (Class) ((ParameterizedType) method.getGenericReturnType())
+					.getActualTypeArguments()[0];
+		}
+		return result;
 	}
 
 	@Override
 	public boolean is_varargs(int i) {
-		return method.getParameterTypes()[i]==pointer.class;
+		return method.getParameterTypes()[i] == pointer.class;
 	}
 
 }
