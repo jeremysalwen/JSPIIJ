@@ -86,4 +86,8 @@ public class function_declaration extends abstract_function {
 		return are_varargs.get(i);
 	}
 
+	@Override
+	public String toString() {
+		return super.toString() + ",function";
+	}
 }

@@ -40,5 +40,8 @@ public class dummy_declaration extends abstract_function {
 	public boolean is_varargs(int i) {
 		return false;
 	}
-
+@Override
+public String toString() {
+	return super.toString()+",dummy";
+}
 }

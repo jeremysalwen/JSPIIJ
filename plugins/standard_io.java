@@ -10,4 +10,10 @@ public class standard_io implements pascal_plugin {
 	public static void writeln(String s) {
 		System.out.println(s);
 	}
+	public static void writeln(int s) {
+		System.out.println(s);
+	}
+	public static void writeln(double s) {
+		System.out.println(s);
+	}
 }

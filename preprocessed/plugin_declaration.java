@@ -80,4 +80,8 @@ public class plugin_declaration extends abstract_function {
 		return method.getParameterTypes()[i] == pointer.class;
 	}
 
+	@Override
+	public String toString() {
+		return method.toString();
+	}
 }

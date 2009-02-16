@@ -3,19 +3,35 @@ package plugins;
 import processing.pascal_plugin;
 
 public class typecasts implements pascal_plugin {
-	public static Integer integer(Double d) {
-		return d.intValue();
+	public static int integer(double d) {
+		return (int) d;
 	}
 
-	public static Double real(Integer i) {
-		return i.doubleValue();
+	public static int integer(long l) {
+		return (int) l;
 	}
 
-	public static String tostring(Integer i) {
-		return i.toString();
+	public static double real(long l) {
+		return (double) l;
 	}
 
-	public static String tostring(Double d) {
-		return d.toString();
+	public static double real(int i) {
+		return (double) i;
+	}
+
+	public static String tostring(int i) {
+		return String.valueOf(i);
+	}
+
+	public static String tostring(double d) {
+		return String.valueOf(d);
+	}
+
+	public static long longint(int i) {
+		return (long) i;
+	}
+
+	public static long longint(double d) {
+		return (long) d;
 	}
 }
