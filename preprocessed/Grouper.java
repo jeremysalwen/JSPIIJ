@@ -56,6 +56,9 @@ public class Grouper implements Runnable {
 		// tokenizer.slashSlashComments(true);
 		tokenizer.slashStarComments(true);
 		tokenizer.ordinaryChar('\"');
+		tokenizer.ordinaryChar('.');
+		tokenizer.eolIsSignificant(false);
+		tokenizer.lowerCaseMode(true);
 		stack_of_groupers = new Stack<grouper_token>();
 	}
 
@@ -83,9 +86,10 @@ public class Grouper implements Runnable {
 						top_of_stack.put(tmp);
 						stack_of_groupers.push(tmp);
 						continue do_loop_break;
-					}else if (tokenizer.sval == "end") {
+					} else if (tokenizer.sval == "end") {
 						if (stack_of_groupers.size() > 0
-								&& stack_of_groupers.peek() instanceof begin_end_token  || stack_of_groupers.peek() instanceof record_token) {
+								&& stack_of_groupers.peek() instanceof begin_end_token
+								|| stack_of_groupers.peek() instanceof record_token) {
 							top_of_stack.put(new EOF_token());
 							stack_of_groupers.pop();
 							continue do_loop_break;
@@ -107,7 +111,7 @@ public class Grouper implements Runnable {
 						temp_type = operator_types.OR;
 					} else if (tokenizer.sval == "var") {
 						next_token = new var_token();
-					}  else if (tokenizer.sval == "type") {
+					} else if (tokenizer.sval == "type") {
 						next_token = new type_token();
 					} else if (tokenizer.sval == "xor") {
 						temp_type = operator_types.XOR;
@@ -229,7 +233,9 @@ public class Grouper implements Runnable {
 					next_token = new operator_token(temp_type);
 					temp_type = null;
 				}
-				top_of_stack.put(next_token);
+				if (next_token != null) {
+					top_of_stack.put(next_token);
+				}
 			} while (true);
 		} catch (IOException e) {
 		}

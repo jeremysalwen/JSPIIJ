@@ -33,8 +33,7 @@ public class binary_operator_evaluation implements returns_value {
 			default:
 				return null;
 			}
-		} else if (value1 instanceof Double || value2 instanceof Double
-				|| value1 instanceof Float || value2 instanceof Float) {
+		} else if (get_GCF(value1.getClass(), value2.getClass()) == Double.class) {
 			double d1 = ((Number) value1).doubleValue();
 			double d2 = ((Number) value2).doubleValue();
 			switch (operator_type) {
@@ -65,7 +64,7 @@ public class binary_operator_evaluation implements returns_value {
 			default:
 				return null;
 			}
-		} else if (value1 instanceof Number && value2 instanceof Number) {
+		} else if (get_GCF(value1.getClass(), value2.getClass()) == Long.class) {
 			long l1 = ((Number) value1).longValue();
 			long l2 = ((Number) value2).longValue();
 			switch (operator_type) {
@@ -98,6 +97,72 @@ public class binary_operator_evaluation implements returns_value {
 				return l1 >> l2;
 			case XOR:
 				return l1 ^ l2;
+			default:
+				return null;
+			}
+		} else if (get_GCF(value1.getClass(), value2.getClass()) == Integer.class) {
+			int l1 = ((Number) value1).intValue();
+			int l2 = ((Number) value2).intValue();
+			switch (operator_type) {
+			case DIV:
+			case DIVIDE:
+				return l1 / l2;
+			case EQUALS:
+				return (l1 == l2);
+			case GREATEREQ:
+				return l1 >= l2;
+			case GREATERTHAN:
+				return l1 > l2;
+			case LESSEQ:
+				return l1 <= l2;
+			case LESSTHAN:
+				return l1 < l2;
+			case MINUS:
+				return l1 - l2;
+			case MOD:
+				return l1 % l2;
+			case MULTIPLY:
+				return l1 * l2;
+			case NOTEQUAL:
+				return l1 != l2;
+			case PLUS:
+				return l1 + l2;
+			case SHIFTLEFT:
+				return l1 << l2;
+			case SHIFTRIGHT:
+				return l1 >> l2;
+			case XOR:
+				return l1 ^ l2;
+			default:
+				return null;
+			}
+		} else if (get_GCF(value1.getClass(), value2.getClass()) == Float.class) {
+			float l1 = ((Number) value1).floatValue();
+			float l2 = ((Number) value2).floatValue();
+			switch (operator_type) {
+			case DIV:
+			case DIVIDE:
+				return l1 / l2;
+			case EQUALS:
+				return (l1 == l2);
+			case GREATEREQ:
+				return l1 >= l2;
+			case GREATERTHAN:
+				return l1 > l2;
+			case LESSEQ:
+				return l1 <= l2;
+			case LESSTHAN:
+				return l1 < l2;
+			case MINUS:
+				return l1 - l2;
+			case MOD:
+				return l1 % l2;
+			case MULTIPLY:
+				return l1 * l2;
+			case NOTEQUAL:
+				return l1 != l2;
+			case PLUS:
+				return l1 + l2;
 			default:
 				return null;
 			}

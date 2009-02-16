@@ -2,8 +2,6 @@ package tokens.grouping;
 
 import tokens.token;
 
-
-
 public class begin_end_token extends grouper_token {
 
 	/**
@@ -14,8 +12,10 @@ public class begin_end_token extends grouper_token {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("begin ");
-		builder.append(next);
-		for (token t : this.queue) {//TODO check this doesn't modify
+		if (next != null) {
+			builder.append(next);
+		}
+		for (token t : this.queue) {// TODO check this doesn't modify
 			builder.append(t).append(' ');
 		}
 		builder.append("end ");

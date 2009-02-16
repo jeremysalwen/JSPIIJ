@@ -4,7 +4,6 @@ import preprocessed.abstract_function;
 import preprocessed.dummy_declaration;
 import preprocessed.function_declaration;
 import preprocessed.instructions.executable;
-import preprocessed.instructions.variable_set;
 import preprocessed.interpreting_objects.function_on_stack;
 import preprocessed.interpreting_objects.pointer;
 import preprocessed.interpreting_objects.variables.variable_identifier;
@@ -30,6 +29,9 @@ public class abstract_function_call implements returns_value, executable {
 		dummy_declaration header = new dummy_declaration(name, arg_types);
 		abstract_function called_function = f.program.callable_functions
 				.get(header);
+		if(called_function==null) {
+			System.err.println("Could not find called function");
+		}
 		for (int i = 0; i < values.length; i++) {
 			if (called_function.is_varargs(i)) {
 				if (!(arguments[i] instanceof variable_access)) {

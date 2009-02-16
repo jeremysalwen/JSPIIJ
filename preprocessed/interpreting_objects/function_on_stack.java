@@ -8,6 +8,7 @@ import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.variables.contains_variables;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 import processing.pascal_program;
+import processing.run_mode;
 
 public class function_on_stack implements contains_variables {
 	public HashMap<String, Object> local_variables = new HashMap<String, Object>();
@@ -47,7 +48,11 @@ public class function_on_stack implements contains_variables {
 
 	public Object execute() {
 		for (executable e : prototype.instructions) {
+			if (program.mode == run_mode.stopped) {
+				return null;
+			}
 			e.execute(this);
+
 		}
 		return local_variables.get("result");
 	}

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import preprocessed.interpreting_objects.function_on_stack;
+import processing.run_mode;
 
 public class instruction_grouper implements executable {
 	List<executable> instructions;
@@ -18,6 +19,9 @@ public class instruction_grouper implements executable {
 
 	public boolean execute(function_on_stack f) {
 		for (executable e : instructions) {
+			if (f.program.mode == run_mode.stopped) {
+				return true;
+			}
 			if (e.execute(f)) {
 				return true;
 			}

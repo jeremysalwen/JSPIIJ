@@ -1,7 +1,5 @@
 package processing;
 
-import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,9 +56,10 @@ import tokens.value.operator_token;
 import tokens.value.operator_types;
 import tokens.value.string_token;
 import tokens.value.word_token;
-import exceptions.grouping_exception;
 
-public class pascal_program {
+public class pascal_program implements Runnable {
+	public run_mode mode;
+
 	function_declaration main;
 
 	public HashMap<String, custom_type_declaration> custom_types;
@@ -72,27 +71,23 @@ public class pascal_program {
 
 	public HashMap<String, Object> global_variables;
 
-	public static void main(String[] args) throws grouping_exception {
-		new pascal_program("var x:integer;" + " begin" + " x:=2+5;"
-				+ " if((x mod 7)=0) then writeln('hi there'+returnfive(4));"
-				+ " end;" + " function returnfive(x:integer): integer;"
-				+ " begin " + "result:=5;" + " end;").run();
-	}
-
 	public void run() {
+		mode = run_mode.running;
 		main.call(this, new Object[0]);
 	}
 
-	public pascal_program() {
+	public pascal_program(List<plugin_declaration> plugins) {
 		callable_functions = new HashMap<abstract_function, abstract_function>();
-		loadPlugins();
+		for (plugin_declaration p : plugins) {
+			callable_functions.put(p, p);
+		}
 		main = new function_declaration();
 		main.name = "main";
 		main.argument_types = new ArrayList<Class>();
 	}
 
-	public pascal_program(String program) {
-		this();
+	public pascal_program(String program, List<plugin_declaration> plugins) {
+		this(plugins);
 		Grouper grouper = new Grouper(program);
 		new Thread(grouper).start();
 		parse_tree(grouper.token_queue);
@@ -104,8 +99,9 @@ public class pascal_program {
 		}
 	}
 
-	public pascal_program(base_grouper_token tokens) {
-		this();
+	public pascal_program(base_grouper_token tokens,
+			List<plugin_declaration> plugins) {
+		this(plugins);
 		parse_tree(tokens);
 	}
 
@@ -334,11 +330,15 @@ public class pascal_program {
 	variable_identifier get_next_var_identifier(grouper_token i) {
 		token next;
 		variable_identifier identifier = new variable_identifier();
-		while (i.peek() instanceof period_token) {
-			i.take();
+		while (true) {
 			next = i.take();
 			assert (next instanceof word_token);
 			identifier.add(((word_token) next).name);
+			if (i.peek() instanceof period_token) {
+				i.take();
+			} else {
+				break;
+			}
 		}
 		return identifier;
 	}
@@ -425,32 +425,6 @@ public class pascal_program {
 		return get_word_value(i.take());
 	}
 
-	private void loadPlugins() {
-		File pluginFolder = new File("plugins/");
-		File[] pluginarray = pluginFolder.listFiles(new java.io.FileFilter() {
-			public boolean accept(File pathname) {
-				return pathname.getName().endsWith(".class");
-			}
-		});
-		ClassLoader classloader = ClassLoader.getSystemClassLoader();
-		for (File f : pluginarray) {
-			try {
-				String filename = f.getName();
-				filename = filename.substring(0, filename.indexOf(".class"));
-				Class c = classloader.loadClass("plugins." + filename);
-				if (pascal_plugin.class.isAssignableFrom(c)) {
-					for (Method m : c.getMethods()) {
-						abstract_function tmp = new plugin_declaration(m);
-						this.callable_functions.put(tmp, tmp);
-					}
-				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
 	Class get_java_class(String name) throws ClassNotFoundException {
 		name = name.intern();
 		if (name == "integer") {
@@ -461,6 +435,9 @@ public class pascal_program {
 		}
 		if (name == "float") {
 			return Float.class;
+		}
+		if (name == "real") {
+			return Double.class;
 		}
 		// TODO add more types
 		return Class.forName(name);

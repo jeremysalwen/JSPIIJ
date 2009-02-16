@@ -2,8 +2,6 @@ package tokens.grouping;
 
 import tokens.token;
 
-
-
 public class parenthesized_token extends grouper_token {
 	/**
 	 * 
@@ -13,8 +11,10 @@ public class parenthesized_token extends grouper_token {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("(");
-		builder.append(next).append(',');
-		for (token t : this.queue) {  //TODO check this works
+		if (next != null) {
+			builder.append(next).append(',');
+		}
+		for (token t : this.queue) { // TODO check this works
 			builder.append(t).append(' ');
 		}
 		builder.append(')');

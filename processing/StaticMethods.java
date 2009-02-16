@@ -4,21 +4,6 @@ import java.util.ArrayList;
 
 public class StaticMethods {
 
-	public static boolean isSubClass(Class sub, Class Super) {
-		Class c = sub;
-		while (!c.equals(Super) && c.getSuperclass() != null)
-			c = c.getSuperclass();
-		return c.equals(Super);
-	}
-
-	public static int lastIndex(String s, char c) {
-		char[] chararray = s.toCharArray();
-		for (int i = s.length() - 1; i >= 0; i--)
-			if (chararray[i] == c)
-				return i;
-		return -1;
-	}
-
 	public static String[] split(String s, String[] regexs) {
 		ArrayList<String> result = new ArrayList<String>();
 		String total = "";

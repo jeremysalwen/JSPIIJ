@@ -16,7 +16,6 @@ public class plugin_declaration extends abstract_function {
 
 	public Object call(pascal_program program, Object[] arguments) {
 		try {
-			System.out.println(arguments);
 			return method.invoke(null, arguments);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -31,6 +30,22 @@ public class plugin_declaration extends abstract_function {
 		return null;
 	}
 
+	Class box(Class c) {
+		if (c == int.class) {
+			return Integer.class;
+		}
+		if (c == double.class) {
+			return Double.class;
+		}
+		if (c == char.class) {
+			return Character.class;
+		}
+		if (c == float.class) {
+			return Float.class;
+		}
+		return c;
+	}
+
 	@Override
 	public Class[] get_arg_types() {
 		Class[] result = method.getParameterTypes();
@@ -40,6 +55,7 @@ public class plugin_declaration extends abstract_function {
 						.getGenericParameterTypes()[i])
 						.getActualTypeArguments()[0];
 			}
+			result[i] = box(result[i]);
 		}
 		return result;
 	}

@@ -10,6 +10,6 @@ public class string_token implements value_token {
 
 	@Override
 	public String toString() {
-		return new StringBuilder('"').append(value).append('"').toString();
+		return new StringBuilder().append('"').append(value).append('"').toString();
 	}
 }
