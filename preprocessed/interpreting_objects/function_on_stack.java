@@ -7,6 +7,7 @@ import preprocessed.function_declaration;
 import preprocessed.variable_declaration;
 import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.variables.contains_variables;
+import preprocessed.interpreting_objects.variables.subvar_identifier;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 import processing.pascal_program;
 import processing.run_mode;
@@ -89,39 +90,40 @@ public class function_on_stack implements contains_variables {
 		zero_length_check(name);
 		Object var_holder = get_variable_holder(name);
 		if (var_holder instanceof contains_variables) {
-			return ((contains_variables) var_holder).get_var(name.get(name
-					.size() - 1));
+			return ((contains_variables) var_holder).get_var(name.get(
+					name.size() - 1).string());
 		} else {
-			return Array.get(var_holder, Integer.parseInt(name
-					.get(name.size() - 1)));
+			return Array.get(var_holder, ((Number) name.get(name.size() - 1)
+					.returnsvalue().get_value(this)).intValue());
 		}
 	}
 
 	public void set_var(variable_identifier name, Object val) {
 		zero_length_check(name);
 		if (name.size() == 1) {
-			set_var(name.get(0), val);
+			set_var(name.get(0).string(), val);
 		}
 		Object variable_holder = get_variable_holder(name);
-		if (variable_holder instanceof contains_variables) {
-			((contains_variables) variable_holder).set_var(name
-					.get(name.size() - 1), val);
+		if (name.get(name.size() - 1).isstring()) {
+			((contains_variables) variable_holder).set_var(name.get(
+					name.size() - 1).string(), val);
 		} else {
-			Array.set(variable_holder, Integer.parseInt(name
-					.get(name.size() - 1)), val);
+			Array.set(variable_holder, ((Number) name.get(name.size() - 1)
+					.returnsvalue().get_value(this)).intValue(), val);
 		}
 	}
 
 	public Object get_variable_holder(variable_identifier name) {
 		Object v = this;
 		for (int i = 0; i < name.size() - 1; i++) {
-			String index = name.get(i);
-			try {
-				int arrayindex = Integer.parseInt(index);
+			subvar_identifier index = name.get(i);
+			if (index.isreturnsvalue()) {
+				int arrayindex = ((Number) index.returnsvalue().get_value(this))
+						.intValue();
 				v = Array.get(v, arrayindex);
 
-			} catch (NumberFormatException e) {
-				v = ((contains_variables) v).get_var(name.get(i));
+			} else {
+				v = ((contains_variables) v).get_var(name.get(i).string());
 			}
 		}
 		return v;

@@ -2,7 +2,7 @@ package preprocessed.interpreting_objects.variables;
 
 import java.util.ArrayList;
 
-public class variable_identifier extends ArrayList<String> {
+public class variable_identifier extends ArrayList<subvar_identifier> {
 	public variable_identifier() {
 		super();
 	}
@@ -20,7 +20,7 @@ public class variable_identifier extends ArrayList<String> {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		for (String s : this) {
+		for (Object s : this) {
 			builder.append(s).append('.');
 		}
 		return builder.toString();

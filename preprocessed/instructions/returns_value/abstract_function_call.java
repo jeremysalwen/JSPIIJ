@@ -4,9 +4,11 @@ import preprocessed.abstract_function;
 import preprocessed.dummy_declaration;
 import preprocessed.function_declaration;
 import preprocessed.instructions.executable;
+import preprocessed.interpreting_objects.arraypointer;
+import preprocessed.interpreting_objects.containsvariablespointer;
 import preprocessed.interpreting_objects.function_on_stack;
-import preprocessed.interpreting_objects.pointer;
 import preprocessed.interpreting_objects.variables.contains_variables;
+import preprocessed.interpreting_objects.variables.subvar_identifier;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 import processing.pascal_program;
 
@@ -42,9 +44,16 @@ public class abstract_function_call implements returns_value, executable {
 				}
 				variable_identifier a = (variable_identifier) arguments[i];
 				Object var_holder = f.get_variable_holder(a);
-				values[i] = new pointer(a.get(a.size() - 1), var_holder,
-						!(var_holder instanceof contains_variables));
-
+				subvar_identifier identifier = a.get(a.size() - 1);
+				if (identifier.isstring()) {
+					values[i] = new containsvariablespointer(
+							(contains_variables) var_holder, identifier
+									.string());
+				} else {
+					values[i] = new arraypointer(var_holder,
+							((Number) identifier.returnsvalue().get_value(f))
+									.intValue());
+				}
 			} else {
 				values[i] = arguments[i].get_value(f);
 			}

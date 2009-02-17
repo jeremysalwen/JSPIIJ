@@ -22,12 +22,17 @@ public class variable_access implements returns_value {
 	}
 
 	public Class get_type(pascal_program p, function_declaration f) {
-		Class type=f.get_variable_type(variable_name.get(0));
-		for(int i=1; i<variable_name.size(); i++) {
-			try {
-				type=type.getField(variable_name.get(i)).getType();
-			} catch (NoSuchFieldException e) {
-				e.printStackTrace();
+		Class type = f.get_variable_type(variable_name.get(0).string());
+		for (int i = 1; i < variable_name.size(); i++) {
+			if (variable_name.get(i).isstring()) {
+				try {
+					type = type.getField(variable_name.get(i).string())
+							.getType();
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				}
+			} else {
+				type = type.getClass().getComponentType();
 			}
 		}
 		return type;

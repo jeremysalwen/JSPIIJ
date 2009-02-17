@@ -24,6 +24,8 @@ import preprocessed.instructions.returns_value.constant_access;
 import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.instructions.returns_value.unary_operator_evaluation;
 import preprocessed.instructions.returns_value.variable_access;
+import preprocessed.interpreting_objects.variables.returnsvalue_subvar_identifier;
+import preprocessed.interpreting_objects.variables.string_subvar_identifier;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 import tokens.EOF_token;
 import tokens.token;
@@ -46,6 +48,7 @@ import tokens.basic.var_token;
 import tokens.basic.while_token;
 import tokens.grouping.base_grouper_token;
 import tokens.grouping.begin_end_token;
+import tokens.grouping.bracketed_token;
 import tokens.grouping.grouper_token;
 import tokens.grouping.parenthesized_token;
 import tokens.grouping.record_token;
@@ -330,17 +333,20 @@ public class pascal_program implements Runnable {
 	variable_identifier get_next_var_identifier(grouper_token i) {
 		token next;
 		variable_identifier identifier = new variable_identifier();
+		identifier.add(new string_subvar_identifier(get_word_value(i)));
 		while (true) {
-			next = i.take();
-			if (next instanceof word_token) {
-				identifier.add(((word_token) next).name);
-			} else if (next instanceof integer_token) {
-				identifier.add(String.valueOf(((integer_token) next).value));
-			} else {
-				error();
-			}
 			if (i.peek() instanceof period_token) {
 				i.take();
+				next = i.take();
+				if (next instanceof word_token) {
+					identifier.add(new string_subvar_identifier(
+							((word_token) next).name));
+				} else {
+					error();
+				}
+			} else if (i.peek() instanceof bracketed_token) {
+				identifier.add(new returnsvalue_subvar_identifier(
+						get_next_returns_value((bracketed_token) i.take())));
 			} else {
 				break;
 			}
@@ -351,16 +357,22 @@ public class pascal_program implements Runnable {
 	variable_identifier get_next_var_identifier(String initial, grouper_token i) {
 		token next;
 		variable_identifier identifier = new variable_identifier();
-		identifier.add(initial);
-		while (i.peek() instanceof period_token) {
-			i.take();
-			next = i.take();
-			if (next instanceof word_token) {
-				identifier.add(((word_token) next).name);
-			} else if (next instanceof integer_token) {
-				identifier.add(String.valueOf(((integer_token) next).value));
+		identifier.add(new string_subvar_identifier(initial));
+		while (true) {
+			if (i.peek() instanceof period_token) {
+				i.take();
+				next = i.take();
+				if (next instanceof word_token) {
+					identifier.add(new string_subvar_identifier(
+							((word_token) next).name));
+				} else {
+					error();
+				}
+			} else if (i.peek() instanceof bracketed_token) {
+				identifier.add(new returnsvalue_subvar_identifier(
+						get_next_returns_value((bracketed_token) i.take())));
 			} else {
-				error();
+				break;
 			}
 		}
 		return identifier;
