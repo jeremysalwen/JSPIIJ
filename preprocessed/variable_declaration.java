@@ -38,6 +38,7 @@ public class variable_declaration {
 	static {
 		default_values.put(Integer.class, 0);
 		default_values.put(String.class, "");
+		default_values.put(Double.class, 0.0D);
 		//TODO add more
 	}
 }

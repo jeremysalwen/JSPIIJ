@@ -30,6 +30,7 @@ import tokens.basic.var_token;
 import tokens.basic.while_token;
 import tokens.grouping.base_grouper_token;
 import tokens.grouping.begin_end_token;
+import tokens.grouping.bracketed_token;
 import tokens.grouping.grouper_token;
 import tokens.grouping.parenthesized_token;
 import tokens.grouping.record_token;
@@ -56,6 +57,7 @@ public class Grouper implements Runnable {
 		// tokenizer.slashSlashComments(true);
 		tokenizer.slashStarComments(true);
 		tokenizer.ordinaryChar('\"');
+		tokenizer.ordinaryChar('/');
 		tokenizer.ordinaryChar('.');
 		tokenizer.eolIsSignificant(false);
 		tokenizer.lowerCaseMode(true);
@@ -228,6 +230,22 @@ public class Grouper implements Runnable {
 					break;
 				case ',':
 					next_token = new comma_token();
+				break;
+				case '[':
+					bracketed_token b_token = new bracketed_token();
+					top_of_stack.put(b_token);
+					stack_of_groupers.push(b_token);
+					continue do_loop_break;
+				case ']':
+					if (!(stack_of_groupers.pop() instanceof bracketed_token)) {
+						throw new grouping_exception(
+								grouping_exception.grouping_exception_types.MISMATCHED_BEGIN_END);
+					} else if (stack_of_groupers.size() == 0) {
+						throw new grouping_exception(
+								grouping_exception.grouping_exception_types.EXTRA_END_PARENS);
+					}
+					top_of_stack.put(new EOF_token());
+					continue do_loop_break;
 				}
 				if (temp_type != null) {
 					next_token = new operator_token(temp_type);

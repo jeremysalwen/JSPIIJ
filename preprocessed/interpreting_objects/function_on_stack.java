@@ -1,5 +1,6 @@
 package preprocessed.interpreting_objects;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 
 import preprocessed.function_declaration;
@@ -86,8 +87,14 @@ public class function_on_stack implements contains_variables {
 
 	public Object get_var(variable_identifier name) {
 		zero_length_check(name);
-		return get_variable_holder(name).get_var(name.get(name.size() - 1));// not
-		// recursion
+		Object var_holder = get_variable_holder(name);
+		if (var_holder instanceof contains_variables) {
+			return ((contains_variables) var_holder).get_var(name.get(name
+					.size() - 1));
+		} else {
+			return Array.get(var_holder, Integer.parseInt(name
+					.get(name.size() - 1)));
+		}
 	}
 
 	public void set_var(variable_identifier name, Object val) {
@@ -95,13 +102,27 @@ public class function_on_stack implements contains_variables {
 		if (name.size() == 1) {
 			set_var(name.get(0), val);
 		}
-		get_variable_holder(name).set_var(name.get(name.size() - 1), val);
+		Object variable_holder = get_variable_holder(name);
+		if (variable_holder instanceof contains_variables) {
+			((contains_variables) variable_holder).set_var(name
+					.get(name.size() - 1), val);
+		} else {
+			Array.set(variable_holder, Integer.parseInt(name
+					.get(name.size() - 1)), val);
+		}
 	}
 
-	public contains_variables get_variable_holder(variable_identifier name) {
-		contains_variables v = this;
+	public Object get_variable_holder(variable_identifier name) {
+		Object v = this;
 		for (int i = 0; i < name.size() - 1; i++) {
-			v = (contains_variables) v.get_var(name.get(i));
+			String index = name.get(i);
+			try {
+				int arrayindex = Integer.parseInt(index);
+				v = Array.get(v, arrayindex);
+
+			} catch (NumberFormatException e) {
+				v = ((contains_variables) v).get_var(name.get(i));
+			}
 		}
 		return v;
 	}

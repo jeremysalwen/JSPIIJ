@@ -332,8 +332,13 @@ public class pascal_program implements Runnable {
 		variable_identifier identifier = new variable_identifier();
 		while (true) {
 			next = i.take();
-			assert (next instanceof word_token);
-			identifier.add(((word_token) next).name);
+			if (next instanceof word_token) {
+				identifier.add(((word_token) next).name);
+			} else if (next instanceof integer_token) {
+				identifier.add(String.valueOf(((integer_token) next).value));
+			} else {
+				error();
+			}
 			if (i.peek() instanceof period_token) {
 				i.take();
 			} else {
@@ -350,8 +355,13 @@ public class pascal_program implements Runnable {
 		while (i.peek() instanceof period_token) {
 			i.take();
 			next = i.take();
-			assert (next instanceof word_token);
-			identifier.add(((word_token) next).name);
+			if (next instanceof word_token) {
+				identifier.add(((word_token) next).name);
+			} else if (next instanceof integer_token) {
+				identifier.add(String.valueOf(((integer_token) next).value));
+			} else {
+				error();
+			}
 		}
 		return identifier;
 	}
@@ -441,5 +451,11 @@ public class pascal_program implements Runnable {
 		}
 		// TODO add more types
 		return Class.forName(name);
+	}
+
+	void error() {
+		System.err
+				.println("problem with your code that the interpreter has not been taught to identify");
+		System.exit(0);
 	}
 }

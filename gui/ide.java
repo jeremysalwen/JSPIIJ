@@ -70,21 +70,22 @@ public class ide extends JFrame {
 
 	}
 
+	void loadFile(File toOpen) {
+		try {
+			FileReader reader = new FileReader(toOpen);
+			char[] buffer = new char[(int) toOpen.length()];
+			reader.read(buffer);
+			programInput.setText(new String(buffer));
+		} catch (IOException e) {
+			errorReadingFile();
+		}
+	}
+
 	void loadFile() {
 		int retval = fc.showOpenDialog(this);
-		File toOpen;
 		switch (retval) {
 		case JFileChooser.APPROVE_OPTION:
-			try {
-				toOpen = fc.getSelectedFile();
-				FileReader reader = new FileReader(toOpen);
-				char[] buffer = new char[(int) toOpen.length()];
-				reader.read(buffer);
-				programInput.setText(new String(buffer));
-			} catch (IOException e) {
-				errorReadingFile();
-			}
-
+			loadFile(fc.getSelectedFile());
 		case JFileChooser.CANCEL_OPTION:
 			break;
 		case JFileChooser.ERROR_OPTION:
@@ -158,6 +159,8 @@ public class ide extends JFrame {
 				clearPlugins();
 			}
 		});
+		loadFile(new File(System.getProperty("user.dir") + File.separatorChar
+				+ "testprogram.pas"));
 		setVisible(true);
 	}
 

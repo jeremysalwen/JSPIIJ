@@ -1,20 +1,35 @@
 package preprocessed.interpreting_objects;
 
+import java.lang.reflect.Array;
+
 import preprocessed.interpreting_objects.variables.contains_variables;
 
 public class pointer {
-	public pointer(String name, contains_variables v) {
-		this.v=v;
-		this.variable_name=name;
+	public pointer(String name, Object v, boolean isarray) {
+		this.v = v;
+		this.variable_name = name;
+		this.is_array = isarray;
 	}
-	contains_variables v;
+
+	Object v; // array or contain_variables
 
 	String variable_name;
 
+	boolean is_array;
+
 	public void set(Object value) {
-		v.set_var(variable_name, value);
+		if (!is_array) {
+			((contains_variables) v).set_var(variable_name, value);
+		} else {
+			Array.set(v, Integer.valueOf(variable_name), value);
+		}
 	}
+
 	public Object get() {
-		return v.get_var(variable_name);
+		if (!is_array) {
+			return ((contains_variables) v).get_var(variable_name);
+		} else {
+			return Array.get(v, Integer.valueOf(variable_name));
+		}
 	}
 }

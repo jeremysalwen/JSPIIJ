@@ -6,6 +6,7 @@ import preprocessed.function_declaration;
 import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.function_on_stack;
 import preprocessed.interpreting_objects.pointer;
+import preprocessed.interpreting_objects.variables.contains_variables;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 import processing.pascal_program;
 
@@ -29,7 +30,7 @@ public class abstract_function_call implements returns_value, executable {
 		dummy_declaration header = new dummy_declaration(name, arg_types);
 		abstract_function called_function = f.program.callable_functions
 				.get(header);
-		if(called_function==null) {
+		if (called_function == null) {
 			System.err.println("Could not find called function");
 		}
 		for (int i = 0; i < values.length; i++) {
@@ -40,8 +41,10 @@ public class abstract_function_call implements returns_value, executable {
 					System.exit(0);
 				}
 				variable_identifier a = (variable_identifier) arguments[i];
-				values[i] = new pointer(a.get(a.size() - 1), f
-						.get_variable_holder(a));
+				Object var_holder = f.get_variable_holder(a);
+				values[i] = new pointer(a.get(a.size() - 1), var_holder,
+						!(var_holder instanceof contains_variables));
+
 			} else {
 				values[i] = arguments[i].get_value(f);
 			}
