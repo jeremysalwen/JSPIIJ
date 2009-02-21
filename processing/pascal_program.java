@@ -1,5 +1,6 @@
 package processing;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import tokens.basic.else_token;
 import tokens.basic.for_token;
 import tokens.basic.function_token;
 import tokens.basic.if_token;
+import tokens.basic.of_token;
 import tokens.basic.period_token;
 import tokens.basic.procedure_token;
 import tokens.basic.repeat_token;
@@ -121,7 +123,7 @@ public class pascal_program implements Runnable {
 			assert (is_procedure ^ next instanceof colon_token);
 			if (!is_procedure && next instanceof colon_token) {
 				try {
-					declaration.return_type = get_java_class(get_word_value(i));
+					declaration.return_type = get_next_java_class(i);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -192,7 +194,7 @@ public class pascal_program implements Runnable {
 				assert (next instanceof colon_token);
 				Class type;
 				try {
-					type = get_java_class(get_word_value(arguments_token));
+					type = get_next_java_class(arguments_token);
 					while (j > 0) {
 						types.add(type);
 						j--;
@@ -219,7 +221,7 @@ public class pascal_program implements Runnable {
 			assert (next instanceof colon_token);
 			Class type;
 			try {
-				type = get_java_class(get_word_value(i));
+				type = get_next_java_class(i);
 				assert_next_semicolon(i);
 				for (String s : names) {
 					result.add(new variable_declaration(s, type));
@@ -447,22 +449,38 @@ public class pascal_program implements Runnable {
 		return get_word_value(i.take());
 	}
 
-	Class get_java_class(String name) throws ClassNotFoundException {
-		name = name.intern();
-		if (name == "integer") {
+	Class get_next_java_class(grouper_token i) throws ClassNotFoundException {
+		String s = get_word_value(i).intern();
+		if (s == "array") {
+			bracketed_token bounds = (bracketed_token) i.take();
+			int lower = ((integer_token) bounds.take()).value;
+			token next = i.take();
+			assert (next instanceof period_token);
+			next = i.take();
+			assert (next instanceof period_token);
+			int upper = ((integer_token) bounds.take()).value;
+			next = i.take();
+			assert (next instanceof of_token);
+			Class element_class = get_next_java_class(i);
+			return Array.newInstance(element_class, 0).getClass();
+		}
+		if (s == "integer") {
 			return Integer.class;
 		}
-		if (name == "string") {
+		if (s == "string") {
 			return String.class;
 		}
-		if (name == "float") {
+		if (s == "float") {
 			return Float.class;
 		}
-		if (name == "real") {
+		if (s == "real") {
 			return Double.class;
 		}
+		if (s == "long") {
+			return Long.class;
+		}
 		// TODO add more types
-		return Class.forName(name);
+		return Class.forName(s);
 	}
 
 	void error() {
