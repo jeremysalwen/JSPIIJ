@@ -1,11 +1,13 @@
 package processing;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import pascal_types.array_type;
+import pascal_types.class_pascal_type;
 import pascal_types.custom_type_declaration;
+import pascal_types.pascal_type;
 import preprocessed.Grouper;
 import preprocessed.abstract_function;
 import preprocessed.function_declaration;
@@ -88,7 +90,7 @@ public class pascal_program implements Runnable {
 		}
 		main = new function_declaration();
 		main.name = "main";
-		main.argument_types = new ArrayList<Class>();
+		main.argument_types = new ArrayList<pascal_type>();
 	}
 
 	public pascal_program(String program, List<plugin_declaration> plugins) {
@@ -172,7 +174,7 @@ public class pascal_program implements Runnable {
 	}
 
 	private void get_arguments_for_declaration(grouper_token i,
-			boolean is_procedure, List<String> names, List<Class> types,
+			boolean is_procedure, List<String> names, List<pascal_type> types,
 			List<Boolean> are_varargs) { // need
 		token next = i.take();
 		if (next instanceof parenthesized_token) {
@@ -192,7 +194,7 @@ public class pascal_program implements Runnable {
 				} while ((next = arguments_token.take()) instanceof comma_token);
 
 				assert (next instanceof colon_token);
-				Class type;
+				pascal_type type;
 				try {
 					type = get_next_java_class(arguments_token);
 					while (j > 0) {
@@ -219,7 +221,7 @@ public class pascal_program implements Runnable {
 				next = i.take();
 			} while (next instanceof comma_token);
 			assert (next instanceof colon_token);
-			Class type;
+			pascal_type type;
 			try {
 				type = get_next_java_class(i);
 				assert_next_semicolon(i);
@@ -449,7 +451,8 @@ public class pascal_program implements Runnable {
 		return get_word_value(i.take());
 	}
 
-	Class get_next_java_class(grouper_token i) throws ClassNotFoundException {
+	pascal_type get_next_java_class(grouper_token i)
+			throws ClassNotFoundException {
 		String s = get_word_value(i).intern();
 		if (s == "array") {
 			bracketed_token bounds = (bracketed_token) i.take();
@@ -461,26 +464,29 @@ public class pascal_program implements Runnable {
 			int upper = ((integer_token) bounds.take()).value;
 			next = i.take();
 			assert (next instanceof of_token);
-			Class element_class = get_next_java_class(i);
-			return Array.newInstance(element_class, 0).getClass();
+			pascal_type element_class = get_next_java_class(i);
+			return new array_type(element_class, lower, upper);
 		}
 		if (s == "integer") {
-			return Integer.class;
+			return pascal_type.Integer;
 		}
 		if (s == "string") {
-			return String.class;
+			return pascal_type.String;
 		}
 		if (s == "float") {
-			return Float.class;
+			return pascal_type.Float;
 		}
 		if (s == "real") {
-			return Double.class;
+			return pascal_type.Double;
 		}
 		if (s == "long") {
-			return Long.class;
+			return pascal_type.Long;
+		}
+		if (s == "boolean") {
+			return pascal_type.Boolean;
 		}
 		// TODO add more types
-		return Class.forName(s);
+		return new class_pascal_type(Class.forName(s));
 	}
 
 	void error() {

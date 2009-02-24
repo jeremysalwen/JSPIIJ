@@ -1,5 +1,6 @@
 package preprocessed.instructions.returns_value;
 
+import pascal_types.pascal_type;
 import preprocessed.function_declaration;
 import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascal_program;
@@ -47,7 +48,7 @@ public class unary_operator_evaluation implements returns_value {
 		return "operator [" + type + "] on [" + operon + ']';
 	}
 
-	public Class get_type(pascal_program p, function_declaration f) {
+	public pascal_type get_type(pascal_program p, function_declaration f) {
 		return operon.get_type(p, f);
 	}
 

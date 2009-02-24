@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
+import pascal_types.class_pascal_type;
+import pascal_types.pascal_type;
 import preprocessed.interpreting_objects.pointer;
 import processing.pascal_program;
 
@@ -47,15 +49,16 @@ public class plugin_declaration extends abstract_function {
 	}
 
 	@Override
-	public Class[] get_arg_types() {
-		Class[] result = method.getParameterTypes();
-		for (int i = 0; i < result.length; i++) {
-			if (result[i] == pointer.class) {
-				result[i] = (Class) ((ParameterizedType) method
+	public pascal_type[] get_arg_types() {
+		Class[] types = method.getParameterTypes();
+		pascal_type[] result = new pascal_type[types.length];
+		for (int i = 0; i < types.length; i++) {
+			if (types[i] == pointer.class) {
+				types[i] = (Class) ((ParameterizedType) method
 						.getGenericParameterTypes()[i])
 						.getActualTypeArguments()[0];
 			}
-			result[i] = box(result[i]);
+			result[i] = new class_pascal_type(box(types[i]));
 		}
 		return result;
 	}
@@ -66,13 +69,13 @@ public class plugin_declaration extends abstract_function {
 	}
 
 	@Override
-	public Class get_return_type() {
+	public pascal_type get_return_type() {
 		Class result = method.getReturnType();
 		if (result == pointer.class) {
-			result = (Class) ((ParameterizedType) method.getGenericReturnType())
-					.getActualTypeArguments()[0];
+			return new class_pascal_type((Class) ((ParameterizedType) method
+					.getGenericReturnType()).getActualTypeArguments()[0]);
 		}
-		return result;
+		return new class_pascal_type(result);
 	}
 
 	@Override

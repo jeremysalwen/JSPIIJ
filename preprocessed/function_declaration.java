@@ -3,6 +3,7 @@ package preprocessed;
 import java.util.ArrayList;
 import java.util.List;
 
+import pascal_types.pascal_type;
 import preprocessed.instructions.executable;
 import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascal_program;
@@ -10,7 +11,7 @@ import processing.pascal_program;
 public class function_declaration extends abstract_function {
 	public String name;
 
-	public Class return_type;
+	public pascal_type return_type;
 
 	public List<variable_declaration> local_variables;
 
@@ -19,7 +20,7 @@ public class function_declaration extends abstract_function {
 	/* These go together ----> */
 	public List<String> argument_names;
 
-	public List<Class> argument_types;
+	public List<pascal_type> argument_types;
 
 	public List<Boolean> are_varargs;
 
@@ -29,7 +30,7 @@ public class function_declaration extends abstract_function {
 		local_variables = new ArrayList<variable_declaration>();
 		instructions = new ArrayList<executable>();
 		argument_names = new ArrayList<String>();
-		argument_types = new ArrayList<Class>();
+		argument_types = new ArrayList<pascal_type>();
 		are_varargs = new ArrayList<Boolean>();
 	}
 
@@ -48,8 +49,8 @@ public class function_declaration extends abstract_function {
 	}
 
 	@Override
-	public Class[] get_arg_types() {
-		return argument_types.toArray(new Class[argument_types.size()]);
+	public pascal_type[] get_arg_types() {
+		return argument_types.toArray(new pascal_type[argument_types.size()]);
 	}
 
 	@Override
@@ -63,11 +64,11 @@ public class function_declaration extends abstract_function {
 	}
 
 	@Override
-	public Class get_return_type() {
+	public pascal_type get_return_type() {
 		return return_type;
 	}
 
-	public Class get_variable_type(String name) {
+	public pascal_type get_variable_type(String name) {
 		int index = argument_names.indexOf(name);
 		if (index != -1) {
 			return argument_types.get(argument_names.indexOf(name));

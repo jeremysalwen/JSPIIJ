@@ -1,5 +1,7 @@
 package preprocessed.instructions.returns_value;
 
+import pascal_types.class_pascal_type;
+import pascal_types.pascal_type;
 import preprocessed.function_declaration;
 import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascal_program;
@@ -20,7 +22,7 @@ public class constant_access implements returns_value {
 		return "get_constant[" + constant_value + ']';
 	}
 
-	public Class get_type(pascal_program p, function_declaration f) {
-		return constant_value.getClass();
+	public pascal_type get_type(pascal_program p, function_declaration f) {
+		return new class_pascal_type(constant_value.getClass());
 	}
 }

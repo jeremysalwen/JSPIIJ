@@ -1,5 +1,6 @@
 package preprocessed.instructions.returns_value;
 
+import pascal_types.pascal_type;
 import preprocessed.abstract_function;
 import preprocessed.dummy_declaration;
 import preprocessed.function_declaration;
@@ -23,7 +24,7 @@ public class abstract_function_call implements returns_value, executable {
 	}
 
 	public Object get_value(function_on_stack f) {
-		Class[] arg_types = new Class[arguments.length];
+		pascal_type[] arg_types = new pascal_type[arguments.length];
 		Object[] values = new Object[arguments.length];
 		for (int i = 0; i < arguments.length; i++) {
 			arg_types[i] = arguments[i].get_type(f.program, f.prototype);
@@ -71,8 +72,8 @@ public class abstract_function_call implements returns_value, executable {
 		return false;
 	}
 
-	public Class get_type(pascal_program p, function_declaration f) {
-		Class[] arg_types = new Class[arguments.length];
+	public pascal_type get_type(pascal_program p, function_declaration f) {
+		pascal_type[] arg_types = new pascal_type[arguments.length];
 		for (int i = 0; i < arguments.length; i++) {
 			arg_types[i] = arguments[i].get_type(p, f);
 		}

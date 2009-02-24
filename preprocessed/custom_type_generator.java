@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import pascal_types.pascal_type;
 import preprocessed.interpreting_objects.variables.contains_variables;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -18,8 +19,10 @@ public class custom_type_generator {
 	public static void main(String[] args) {
 		custom_type_generator c = new custom_type_generator(new File("C:\\"));
 		List<variable_declaration> variables = new ArrayList<variable_declaration>();
-		variables.add(new variable_declaration("double_field", double.class));
-		variables.add(new variable_declaration("integer_field", int.class));
+		variables.add(new variable_declaration("double_field",
+				pascal_type.Double));
+		variables.add(new variable_declaration("integer_field",
+				pascal_type.Integer));
 		c.output_class("blah", variables);
 	}
 

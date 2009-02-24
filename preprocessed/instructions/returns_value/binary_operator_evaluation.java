@@ -1,5 +1,7 @@
 package preprocessed.instructions.returns_value;
 
+import pascal_types.class_pascal_type;
+import pascal_types.pascal_type;
 import preprocessed.function_declaration;
 import preprocessed.interpreting_objects.function_on_stack;
 import processing.pascal_program;
@@ -193,9 +195,9 @@ public class binary_operator_evaluation implements returns_value {
 		return "[" + operon1 + "] " + operator_type + " [" + operon2 + ']';
 	}
 
-	public Class get_type(pascal_program p, function_declaration f) {
-		Class type1 = operon1.get_type(p, f);
-		Class type2 = operon2.get_type(p, f);
+	public pascal_type get_type(pascal_program p, function_declaration f) {
+		pascal_type type1 = operon1.get_type(p, f);
+		pascal_type type2 = operon2.get_type(p, f);
 		switch (operator_type) {
 		case AND:
 		case EQUALS:
@@ -206,7 +208,7 @@ public class binary_operator_evaluation implements returns_value {
 		case NOT:
 		case NOTEQUAL:
 		case OR:
-			return Boolean.class;
+			return new class_pascal_type(Boolean.class);
 		case DIV:
 		case MOD:
 		case SHIFTLEFT:
@@ -216,7 +218,8 @@ public class binary_operator_evaluation implements returns_value {
 		case MULTIPLY:
 		case PLUS:
 		case XOR:
-			return get_GCF(type1, type2);
+			return new class_pascal_type(get_GCF(type1.toclass(), type2
+					.toclass()));
 		default:
 			return null;
 		}
