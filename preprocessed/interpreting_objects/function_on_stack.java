@@ -121,7 +121,6 @@ public class function_on_stack implements contains_variables {
 				int arrayindex = ((Number) index.returnsvalue().get_value(this))
 						.intValue();
 				v = Array.get(v, arrayindex);
-
 			} else {
 				v = ((contains_variables) v).get_var(name.get(i).string());
 			}

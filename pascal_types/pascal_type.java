@@ -2,6 +2,8 @@ package pascal_types;
 
 import java.util.HashMap;
 
+import serp.bytecode.Code;
+
 public abstract class pascal_type {
 	public abstract Object initialize();
 
@@ -36,4 +38,6 @@ public abstract class pascal_type {
 		default_values.put(Character, '\0');
 		default_values.put(Float, 0.0F);
 	}
+
+	public abstract void get_default_value_on_stack(Code code);
 }

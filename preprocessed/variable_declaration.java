@@ -4,6 +4,7 @@ import java.util.Map;
 
 import pascal_types.pascal_type;
 import serp.bytecode.BCClass;
+import serp.bytecode.Code;
 
 public class variable_declaration {
 	public String name;
@@ -27,4 +28,10 @@ public class variable_declaration {
 		map.put(name, type.initialize());
 	}
 
+	public void add_to_constructor(Code constructor_code) {
+		constructor_code.aload().setThis();
+		type.get_default_value_on_stack(constructor_code);
+		constructor_code.putfield().setField(name,
+				constructor_code.getMethod().getDeclarer());
+	}
 }

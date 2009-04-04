@@ -1,5 +1,7 @@
 package pascal_types;
 
+import serp.bytecode.Code;
+
 public class class_pascal_type extends pascal_type {
 	Class c;
 
@@ -23,7 +25,7 @@ public class class_pascal_type extends pascal_type {
 	}
 
 	@Override
-	public Object initialize() {
+	public Object initialize() { //TODO FIX THIS
 		try {
 			return c.newInstance();
 		} catch (InstantiationException e) {
@@ -37,5 +39,22 @@ public class class_pascal_type extends pascal_type {
 	@Override
 	public Class toclass() {
 		return c;
+	}
+
+	public void get_default_value_on_stack(Code code) {
+		Object result;
+		if ((result = pascal_type.default_values.get(this)) != null) {
+			code.constant().setValue(result);
+		} else {
+			try {
+				code.anew().setType(c);
+				code.invokespecial().setMethod(c.getConstructor());
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
 	}
 }

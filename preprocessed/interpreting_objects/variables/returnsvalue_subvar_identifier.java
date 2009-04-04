@@ -11,7 +11,7 @@ public class returnsvalue_subvar_identifier extends subvar_identifier {
 
 	@Override
 	public boolean isreturnsvalue() {
-		return false;
+		return true;
 	}
 
 }

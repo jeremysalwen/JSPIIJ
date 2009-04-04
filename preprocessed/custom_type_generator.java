@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import pascal_types.custom_type_declaration;
 import pascal_types.pascal_type;
+import preprocessed.interpreting_objects.pointer;
 import preprocessed.interpreting_objects.variables.contains_variables;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -14,16 +16,22 @@ import serp.bytecode.Code;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
 import serp.bytecode.Project;
+import tokens.EOF_token;
+import tokens.grouping.type_token;
 
 public class custom_type_generator {
 	public static void main(String[] args) {
-		custom_type_generator c = new custom_type_generator(new File("C:\\"));
+		custom_type_generator c = new custom_type_generator(new File("/tmp/"));
 		List<variable_declaration> variables = new ArrayList<variable_declaration>();
 		variables.add(new variable_declaration("double_field",
 				pascal_type.Double));
 		variables.add(new variable_declaration("integer_field",
 				pascal_type.Integer));
-		c.output_class("blah", variables);
+		custom_type_declaration custom = new custom_type_declaration();
+		custom.name = "blah";
+		custom.variable_types = variables;
+		c.output_class(custom);
+
 	}
 
 	/**
@@ -54,36 +62,35 @@ public class custom_type_generator {
 	 *            The list of {@link variable_declaration}s which will be added
 	 *            to this class file.
 	 */
-	public void output_class(String name, List<variable_declaration> variables) {
+	public void output_class(custom_type_declaration custom) {
+		List<variable_declaration> variables = custom.variable_types;
+		String name = custom.name;
 		Project p = new Project();
 		BCClass c = p.loadClass("java.lang.Object");
 		c.setName(name);
 		c.setSuperclass(Object.class);
 		c.clearDeclaredMethods();
+		c.clearAttributes();
 		c.setDeclaredInterfaces(new Class[] { contains_variables.class });
 		c.makePublic();
 		c.getSourceFile(true).setFile("dynamically_generated");
+		add_constructor(c, custom);
+
 		for (variable_declaration v : variables) {
 			v.add_declaration(c);
 		}
-		add_constructor(c);
+
 		add_get_var(c);
 		add_set_var(c);
 		try {
-			c.write(new File(output.getAbsolutePath() + name + ".class"));
+			c.write(new File(output.getAbsolutePath() + File.separatorChar
+					+ name + ".class"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * This method adds a default constructor which sets all the fields to
-	 * default pascal values.
-	 * 
-	 * @param b
-	 *            The class to modify
-	 */
-	void add_constructor(BCClass b) {
+	void add_constructor(BCClass b, custom_type_declaration c) {
 		BCMethod constructor = b.addDefaultConstructor();
 		constructor.removeCode();
 		Code constructor_code = constructor.getCode(true);
@@ -91,31 +98,13 @@ public class custom_type_generator {
 		try {
 			constructor_code.invokespecial().setMethod(
 					Object.class.getDeclaredConstructor());
+			for (variable_declaration v : c.variable_types) {
+				v.type.get_default_value_on_stack(constructor_code);
+				constructor_code.putfield().setField(b.getClassName(),
+						v.get_name(), v.type.toclass().getCanonicalName());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		for (BCField f : b.getFields()) {
-			constructor_code.aload().setThis();
-			Class<?> field_type = f.getType();
-			if (field_type == double.class) {
-				constructor_code.constant().setValue(0.0D);
-			} else if (field_type == int.class) {
-				constructor_code.constant().setValue(0);
-			} else if (field_type == float.class) {
-				constructor_code.constant().setValue(0.0F);
-			} else if (field_type == char.class) {
-				constructor_code.constant().setValue('\0');
-			} else if (field_type == boolean.class) {
-				constructor_code.constant().setValue(false);
-			} else {
-				try {
-					constructor_code.invokespecial().setMethod(
-							field_type.getDeclaredConstructor());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			constructor_code.putfield().setField(f);
 		}
 		constructor_code.vreturn();
 		constructor_code.calculateMaxLocals();
@@ -244,5 +233,32 @@ public class custom_type_generator {
 		}
 		set_var_code.calculateMaxLocals();
 		set_var_code.calculateMaxStack();
+	}
+
+	void add_clone(BCClass b) {
+		BCMethod clone_method = b.declareMethod("clone", Object.class,
+				new Class[0]);
+		clone_method.makePublic();
+		Code clone_code = clone_method.getCode(true);
+		try {
+			clone_code.anew().setType(b);
+			clone_code.invokespecial().setMethod(
+					b.getComponentType().getDeclaredConstructor(new Class[0]));
+			clone_code.astore().setLocal(1);
+			for (BCField f : b.getFields()) {
+				clone_code.aload().setLocal(1);
+				clone_code.aload().setThis();
+				clone_code.getfield().setField(f);
+				if (!f.getType().isPrimitive() && f.getType() != String.class) {
+					clone_code.invokevirtual().setMethod(
+							f.getType().getMethod("clone", new Class[0]));
+				}
+				clone_code.putfield().setField(f);
+			}
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
 	}
 }

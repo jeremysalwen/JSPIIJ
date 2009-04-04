@@ -162,7 +162,7 @@ public class pascal_program implements Runnable {
 
 	private void add_custom_type_declaration(grouper_token i) {
 		custom_type_declaration result = new custom_type_declaration();
-		String name = get_word_value(i);
+		result.name = get_word_value(i);
 		token next = i.take();
 		assert (next instanceof operator_token);
 		assert ((operator_token) next).type == operator_types.EQUALS;
@@ -170,7 +170,7 @@ public class pascal_program implements Runnable {
 		assert (next instanceof record_token);
 		result.variable_types = get_variable_declarations((record_token) next);
 		assert_next_semicolon(i);
-		custom_types.put(name, result);
+		custom_types.put(result.name, result);
 	}
 
 	private void get_arguments_for_declaration(grouper_token i,

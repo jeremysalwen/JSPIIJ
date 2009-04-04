@@ -2,6 +2,8 @@ package pascal_types;
 
 import java.lang.reflect.Array;
 
+import serp.bytecode.Code;
+
 public class array_type extends pascal_type {
 	public pascal_type element_type;
 
@@ -45,11 +47,30 @@ public class array_type extends pascal_type {
 	@Override
 	public Class toclass() {
 		try {
-			return Class.forName("["
+			return Class.forName("L"
 					+ element_type.toclass().getCanonicalName());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public void get_default_value_on_stack(Code code) {
+		int i = 1;
+		pascal_type sub_type = element_type;
+		while (true) {
+			if (sub_type.isarray()) {
+				i++;
+				array_type next = sub_type.get_type_array();
+				code.constant().setValue(
+						next.upper_bound - next.lower_bound + 1);
+				sub_type = next.element_type;
+			} else {
+				break;
+			}
+		}
+		code.multianewarray().setDimensions(i).setType(sub_type.toclass());
+
 	}
 }
