@@ -261,4 +261,8 @@ public class custom_type_generator {
 			e.printStackTrace();
 		}
 	}
+
+	void add_get_type(BCClass b) {
+
+	}
 }

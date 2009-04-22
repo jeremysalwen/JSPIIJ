@@ -35,6 +35,7 @@ public class abstract_function_call implements returns_value, executable {
 				.get(header);
 		if (called_function == null) {
 			System.err.println("Could not find called function");
+			System.exit(0);
 		}
 		for (int i = 0; i < values.length; i++) {
 			if (called_function.is_varargs(i)) {

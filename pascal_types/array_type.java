@@ -1,20 +1,23 @@
 package pascal_types;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 
 import serp.bytecode.Code;
 
+
+//This class gets the version 1.0 stamp of approval.  Hopefully I won't have to change it any more.
 public class array_type extends pascal_type {
 	public pascal_type element_type;
 
-	public int lower_bound;
+	public int[] lower_bounds;
 
-	public int upper_bound;
+	public int[] array_sizes;
 
-	public array_type(pascal_type element_class, int lower, int upper) {
+	public array_type(pascal_type element_class, int[] lower, int[] sizes) {
 		this.element_type = element_class;
-		this.lower_bound = lower;
-		this.upper_bound = upper;
+		this.lower_bounds = lower;
+		this.array_sizes = sizes;
 	}
 
 	@Override
@@ -26,51 +29,50 @@ public class array_type extends pascal_type {
 	public boolean equals(Object obj) {
 		if (obj instanceof array_type) {
 			array_type o = (array_type) obj;
-			return o.element_type.equals(element_type)
-					&& o.lower_bound == lower_bound
-					&& o.upper_bound == upper_bound;
+			if (o.element_type.equals(element_type)
+					&& o.lower_bounds.length == lower_bounds.length
+					&& Arrays.equals(lower_bounds, o.lower_bounds)
+					&& Arrays.equals(array_sizes, o.array_sizes)) {
+				return true;
+			}
 		}
-		return false;
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		return (element_type.hashCode() * 31 + lower_bound) * 31 + upper_bound;
+		return (element_type.hashCode() * 31 + Arrays.hashCode(lower_bounds))
+				* 31 + Arrays.hashCode(array_sizes);
 	}
 
 	@Override
 	public Object initialize() {
-		return Array.newInstance(element_type.toclass(), upper_bound
-				- lower_bound + 1);
+		return Array.newInstance(element_type.toclass(), array_sizes);
 	}
 
 	@Override
 	public Class toclass() {
+		int depth = lower_bounds.length;
+		String s = element_type.toString();
+		int length = s.length() + depth + 1;
+		StringBuilder b = new StringBuilder(length);
+		for (int i = 0; i < depth; i++) {
+			b.append('[');
+		}
+		b.append(element_type.toString());
+		b.append(';');
 		try {
-			return Class.forName("L"
-					+ element_type.toclass().getCanonicalName());
+			return Class.forName(b.toString());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 	@Override
 	public void get_default_value_on_stack(Code code) {
-		int i = 1;
-		pascal_type sub_type = element_type;
-		while (true) {
-			if (sub_type.isarray()) {
-				i++;
-				array_type next = sub_type.get_type_array();
-				code.constant().setValue(
-						next.upper_bound - next.lower_bound + 1);
-				sub_type = next.element_type;
-			} else {
-				break;
-			}
-		}
-		code.multianewarray().setDimensions(i).setType(sub_type.toclass());
+		code.multianewarray().setDimensions(array_sizes.length).setType(
+				element_type.toclass());
 
 	}
 }

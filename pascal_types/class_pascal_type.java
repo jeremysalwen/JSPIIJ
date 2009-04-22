@@ -16,7 +16,10 @@ public class class_pascal_type extends pascal_type {
 
 	@Override
 	public boolean equals(Object obj) {
-		return c.equals(obj);
+		if (obj instanceof class_pascal_type) {
+			return c.equals(((class_pascal_type) obj).c);
+		}
+		return false;
 	}
 
 	@Override
@@ -25,15 +28,21 @@ public class class_pascal_type extends pascal_type {
 	}
 
 	@Override
-	public Object initialize() { //TODO FIX THIS
-		try {
-			return c.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+	public Object initialize() { // TODO FIX THIS
+		Object result;
+		if ((result = pascal_type.default_values.get(this)) != null) {
+			return result;
+		} else {
+			try {
+				return c.newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+
+			return null;
 		}
-		return null;
 	}
 
 	@Override
@@ -57,4 +66,5 @@ public class class_pascal_type extends pascal_type {
 			return;
 		}
 	}
+
 }
