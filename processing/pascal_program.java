@@ -27,8 +27,10 @@ import preprocessed.instructions.returns_value.constant_access;
 import preprocessed.instructions.returns_value.returns_value;
 import preprocessed.instructions.returns_value.unary_operator_evaluation;
 import preprocessed.instructions.returns_value.variable_access;
+import preprocessed.interpreting_objects.function_on_stack;
 import preprocessed.interpreting_objects.variables.returnsvalue_subvar_identifier;
 import preprocessed.interpreting_objects.variables.string_subvar_identifier;
+import preprocessed.interpreting_objects.variables.subvar_identifier;
 import preprocessed.interpreting_objects.variables.variable_identifier;
 import tokens.EOF_token;
 import tokens.token;
@@ -67,7 +69,9 @@ import tokens.value.word_token;
 public class pascal_program implements Runnable {
 	public run_mode mode;
 
-	function_declaration main;
+	public function_declaration main;
+
+	public function_on_stack main_running;
 
 	public HashMap<String, custom_type_declaration> custom_types;
 
@@ -76,11 +80,10 @@ public class pascal_program implements Runnable {
 	 */
 	public HashMap<abstract_function, abstract_function> callable_functions;
 
-	public HashMap<String, Object> global_variables;
-
 	public void run() {
 		mode = run_mode.running;
-		main.call(this, new Object[0]);
+		main_running = new function_on_stack(this, main, new Object[0]);
+		main_running.execute();
 	}
 
 	public pascal_program(List<plugin_declaration> plugins) {
@@ -155,7 +158,10 @@ public class pascal_program implements Runnable {
 			assert (next instanceof period_token);
 			return;
 		} else if (next instanceof var_token) {
-			main.local_variables = get_variable_declarations(i);
+			List<variable_declaration> global_var_decs = get_variable_declarations(i);
+			for (variable_declaration v : global_var_decs) {
+				main.local_variables.add(v);
+			}
 			return;
 		}
 	}
@@ -451,22 +457,8 @@ public class pascal_program implements Runnable {
 		return get_word_value(i.take());
 	}
 
-	pascal_type get_next_java_class(grouper_token i)
-			throws ClassNotFoundException {
-		String s = get_word_value(i).intern();
-		if (s == "array") {
-			bracketed_token bounds = (bracketed_token) i.take();
-			int lower = ((integer_token) bounds.take()).value;
-			token next = i.take();
-			assert (next instanceof period_token);
-			next = i.take();
-			assert (next instanceof period_token);
-			int upper = ((integer_token) bounds.take()).value;
-			next = i.take();
-			assert (next instanceof of_token);
-			pascal_type element_class = get_next_java_class(i);
-			return new array_type(element_class, lower, upper);
-		}
+	pascal_type get_basic_type(String s) throws ClassNotFoundException {
+		s = s.intern();
 		if (s == "integer") {
 			return pascal_type.Integer;
 		}
@@ -486,7 +478,40 @@ public class pascal_program implements Runnable {
 			return pascal_type.Boolean;
 		}
 		// TODO add more types
-		return new class_pascal_type(Class.forName(s));
+		return new class_pascal_type(Class.forName("plugins." + s));
+	}
+
+	pascal_type get_next_java_class(grouper_token i)
+			throws ClassNotFoundException {
+		String s = get_word_value(i.peek_no_EOF());
+		if (s == "array") {
+			ArrayList<Integer> lower = new ArrayList<Integer>(1);
+			ArrayList<Integer> upper = new ArrayList<Integer>(1);
+			while (s == "array") {
+				i.take();
+				bracketed_token bounds = (bracketed_token) i.take();
+				lower.add(((integer_token) bounds.take()).value);
+				token next = i.take();
+				assert (next instanceof period_token);
+				next = i.take();
+				assert (next instanceof period_token);
+				upper.add(((integer_token) bounds.take()).value);
+				next = i.take();
+				assert (next instanceof of_token);
+				s = get_word_value(i.peek_no_EOF());
+			}
+			i.take();
+			pascal_type element_class = get_basic_type(s);
+			int[] lowerarray = new int[lower.size()];
+			int[] sizes = new int[upper.size()];
+			for (int j = 0; j < lower.size(); j++) {
+				lowerarray[j] = lower.get(j);
+				sizes[j] = upper.get(j) - lowerarray[j] + 1;
+			}
+			return new array_type(element_class, lowerarray, sizes);
+		}
+		i.take();
+		return get_basic_type(s);
 	}
 
 	void error() {

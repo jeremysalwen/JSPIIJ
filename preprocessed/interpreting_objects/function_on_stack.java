@@ -62,13 +62,13 @@ public class function_on_stack implements contains_variables {
 	public Object get_var(String name) {
 		if (local_variables.containsKey(name)) {
 			return local_variables.get(name);
-		} else if (program.global_variables.containsKey(name)) {
-			return program.global_variables.get(name);
+		} else if (program.main.local_variables.contains(name)) {
+			return program.main_running.local_variables.get(name);
 		} else if (passed_variables.containsKey(name)) {
 			return passed_variables.get(name).get();
 		} else {
-			System.err.println("Could not find requested variable!");
-			System.exit(0);
+			System.err.println("Could not find requested variable '" + name
+					+ "'");
 			return null; // I have to do this
 		}
 	}
@@ -76,12 +76,12 @@ public class function_on_stack implements contains_variables {
 	public void set_var(String name, Object val) {
 		if (local_variables.containsKey(name)) {
 			local_variables.put(name, val);
-		} else if (program.global_variables.containsKey(name)) {
-			program.global_variables.put(name, val);
+		} else if (program.main.local_variables.contains(name)) {
+			program.main_running.local_variables.put(name, val);
 		} else if (passed_variables.containsKey(name)) {
 			passed_variables.get(name).set(val);
 		} else {
-			System.err.println("Could not find requested variable!");
+			System.err.println("Could not find requested variable '"+name+"'");
 			System.exit(0);
 		}
 	}

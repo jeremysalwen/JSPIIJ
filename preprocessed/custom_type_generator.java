@@ -7,7 +7,6 @@ import java.util.List;
 
 import pascal_types.custom_type_declaration;
 import pascal_types.pascal_type;
-import preprocessed.interpreting_objects.pointer;
 import preprocessed.interpreting_objects.variables.contains_variables;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -16,8 +15,6 @@ import serp.bytecode.Code;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
 import serp.bytecode.Project;
-import tokens.EOF_token;
-import tokens.grouping.type_token;
 
 public class custom_type_generator {
 	public static void main(String[] args) {
@@ -243,7 +240,7 @@ public class custom_type_generator {
 		try {
 			clone_code.anew().setType(b);
 			clone_code.invokespecial().setMethod(
-					b.getComponentType().getDeclaredConstructor(new Class[0]));
+					b.getComponentType().getConstructor(new Class[0]));
 			clone_code.astore().setLocal(1);
 			for (BCField f : b.getFields()) {
 				clone_code.aload().setLocal(1);

@@ -2,6 +2,7 @@ package preprocessed.instructions.returns_value;
 
 import pascal_types.class_pascal_type;
 import pascal_types.pascal_type;
+import preprocessed.dummy_declaration;
 import preprocessed.function_declaration;
 import preprocessed.interpreting_objects.function_on_stack;
 import preprocessed.interpreting_objects.variables.variable_identifier;
@@ -25,6 +26,9 @@ public class variable_access implements returns_value {
 
 	public pascal_type get_type(pascal_program p, function_declaration f) {
 		pascal_type type = f.get_variable_type(variable_name.get(0).string());
+		if(type==null) {
+			type=p.main.get_variable_type(variable_name.get(0).string());
+		}
 		for (int i = 1; i < variable_name.size(); i++) {
 			if (variable_name.get(i).isstring()) {
 				try {
@@ -37,6 +41,7 @@ public class variable_access implements returns_value {
 				type = new class_pascal_type(type.getClass().getComponentType());
 			}
 		}
+		assert(type!=null);
 		return type;
 	}
 }
