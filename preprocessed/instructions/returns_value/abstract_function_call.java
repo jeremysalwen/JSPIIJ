@@ -28,8 +28,9 @@ public class abstract_function_call implements returns_value, executable {
 		Object[] values = new Object[arguments.length];
 		for (int i = 0; i < arguments.length; i++) {
 			arg_types[i] = arguments[i].get_type(f.program, f.prototype);
-			if(arg_types[i]==null) {
+			if (arg_types[i] == null || arg_types[i].toclass() == null) {
 				System.out.println(arguments[i]);
+				arguments[i].get_type(f.program, f.prototype);
 			}
 		}
 		dummy_declaration header = new dummy_declaration(name, arg_types);

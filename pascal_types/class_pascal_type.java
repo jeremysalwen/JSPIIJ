@@ -67,4 +67,8 @@ public class class_pascal_type extends pascal_type {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "class_pascal_type :" + c.toString();
+	}
 }

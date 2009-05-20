@@ -491,9 +491,9 @@ public class pascal_program implements Runnable {
 				i.take();
 				bracketed_token bounds = (bracketed_token) i.take();
 				lower.add(((integer_token) bounds.take()).value);
-				token next = i.take();
+				token next = bounds.take();
 				assert (next instanceof period_token);
-				next = i.take();
+				next = bounds.take();
 				assert (next instanceof period_token);
 				upper.add(((integer_token) bounds.take()).value);
 				next = i.take();

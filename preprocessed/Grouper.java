@@ -59,6 +59,8 @@ public class Grouper implements Runnable {
 		tokenizer.ordinaryChar('\"');
 		tokenizer.ordinaryChar('/');
 		tokenizer.ordinaryChar('.');
+		tokenizer.ordinaryChar('-');
+		tokenizer.ordinaryChar('+');
 		tokenizer.eolIsSignificant(false);
 		tokenizer.lowerCaseMode(true);
 		stack_of_groupers = new Stack<grouper_token>();

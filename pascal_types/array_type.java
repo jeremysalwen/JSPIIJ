@@ -53,13 +53,14 @@ public class array_type extends pascal_type {
 	@Override
 	public Class toclass() {
 		int depth = lower_bounds.length;
-		String s = element_type.toString();
+		String s = element_type.toclass().getName();
 		int length = s.length() + depth + 1;
 		StringBuilder b = new StringBuilder(length);
 		for (int i = 0; i < depth; i++) {
 			b.append('[');
 		}
-		b.append(element_type.toString());
+		b.append('L');
+		b.append(s);
 		b.append(';');
 		try {
 			return Class.forName(b.toString());

@@ -38,7 +38,7 @@ public class variable_access implements returns_value {
 					e.printStackTrace();
 				}
 			} else {
-				type = new class_pascal_type(type.getClass().getComponentType());
+				type = new class_pascal_type(type.toclass().getComponentType());
 			}
 		}
 		assert(type!=null);
