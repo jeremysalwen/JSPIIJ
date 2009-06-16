@@ -1,6 +1,12 @@
+type coords= record
+x:integer;
+y:integer;
+end
+
 var
 i, target:integer;
 r:real;
+point:coords;
 cow:array[0 .. 10] of integer;
 begin
 writeln('haha fools');
