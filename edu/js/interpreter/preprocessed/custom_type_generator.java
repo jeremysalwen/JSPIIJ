@@ -51,7 +51,8 @@ public class custom_type_generator {
 	 * does it add the fields, but it also inserts the get_var and set_var
 	 * methods, and constructs them to do a fast lookup or setting of a variable
 	 * with a specified name, sans reflection. It also makes the class implement
-	 * {@link contains_variables} for easy arbitrary name variable access and type access.
+	 * {@link contains_variables} for easy arbitrary name variable access and
+	 * type access.
 	 * 
 	 * @param name
 	 *            The name of the class to be generated
@@ -61,10 +62,10 @@ public class custom_type_generator {
 	 */
 	public void output_class(custom_type_declaration custom) {
 		List<variable_declaration> variables = custom.variable_types;
-		String name = "edu.js.interpreter.custom_types."+Integer.toHexString(custom.hashCode());
+		String name = "edu.js.interpreter.custom_types."
+				+ Integer.toHexString(custom.hashCode());
 		Project p = new Project();
 		BCClass c = p.loadClass(name);
-		c.setSuperclass(Object.class);
 		c.setDeclaredInterfaces(new Class[] { contains_variables.class });
 		c.getSourceFile(true).setFile("dynamically_generated");
 		add_constructor(c, custom);
@@ -76,8 +77,10 @@ public class custom_type_generator {
 		add_get_var(c);
 		add_set_var(c);
 		try {
-			c.write(new File(output.getAbsolutePath() + File.separatorChar
-					+ name + ".class"));
+			String location=output.getAbsolutePath() + File.separatorChar
+			+ "edu" + File.separatorChar + "js" + File.separatorChar
+			+ "interpreter" + File.separatorChar +"custom_types" +File.separatorChar + c.getClassName()+ ".class";
+			c.write(new File(location));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

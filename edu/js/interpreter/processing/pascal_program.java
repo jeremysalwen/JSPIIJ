@@ -31,7 +31,6 @@ import edu.js.interpreter.preprocessed.instructions.returns_value.variable_acces
 import edu.js.interpreter.preprocessed.interpreting_objects.function_on_stack;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.returnsvalue_subvar_identifier;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.string_subvar_identifier;
-import edu.js.interpreter.preprocessed.interpreting_objects.variables.subvar_identifier;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.variable_identifier;
 import edu.js.interpreter.tokens.EOF_token;
 import edu.js.interpreter.tokens.token;
@@ -67,7 +66,6 @@ import edu.js.interpreter.tokens.value.operator_types;
 import edu.js.interpreter.tokens.value.string_token;
 import edu.js.interpreter.tokens.value.word_token;
 
-
 public class pascal_program implements Runnable {
 	public run_mode mode;
 
@@ -76,6 +74,8 @@ public class pascal_program implements Runnable {
 	public function_on_stack main_running;
 
 	public HashMap<String, custom_type_declaration> custom_types;
+
+	public custom_type_generator type_generator;
 
 	/*
 	 * plugins and functions
@@ -88,39 +88,31 @@ public class pascal_program implements Runnable {
 		main_running.execute();
 	}
 
-	pascal_program(List<plugin_declaration> plugins) {
+	pascal_program(List<plugin_declaration> plugins,
+			custom_type_generator type_generator) {
 		callable_functions = new HashMap<abstract_function, abstract_function>();
 		custom_types = new HashMap<String, custom_type_declaration>();
 		for (plugin_declaration p : plugins) {
 			callable_functions.put(p, p);
 		}
+		this.type_generator = type_generator;
 		main = new function_declaration();
 		main.name = "main";
 		main.argument_types = new ArrayList<pascal_type>();
 	}
 
-	public pascal_program(String program, List<plugin_declaration> plugins) {
-		this(plugins);
+	public pascal_program(String program, List<plugin_declaration> plugins,
+			custom_type_generator type_generator) {
+		this(plugins, type_generator);
 		Grouper grouper = new Grouper(program);
 		new Thread(grouper).start();
 		parse_tree(grouper.token_queue);
-		generate_classes();
-	}
-
-	void generate_classes() {
-
 	}
 
 	public void parse_tree(base_grouper_token tokens) {
 		while (tokens.hasNext()) {
 			add_next_declaration(tokens);
 		}
-	}
-
-	public pascal_program(base_grouper_token tokens,
-			List<plugin_declaration> plugins) {
-		this(plugins);
-		parse_tree(tokens);
 	}
 
 	private void add_next_declaration(base_grouper_token i) {
@@ -133,7 +125,7 @@ public class pascal_program implements Runnable {
 					declaration.argument_names, declaration.argument_types,
 					declaration.are_varargs);
 			next = i.take();
-			assert (is_procedure ^ next instanceof colon_token);
+			assert (is_procedure ^ (next instanceof colon_token));
 			if (!is_procedure && next instanceof colon_token) {
 				try {
 					declaration.return_type = get_next_java_class(i);
@@ -184,6 +176,7 @@ public class pascal_program implements Runnable {
 		assert (next instanceof record_token);
 		result.variable_types = get_variable_declarations((record_token) next);
 		custom_types.put(result.name, result);
+		type_generator.output_class(result);
 	}
 
 	private void get_arguments_for_declaration(grouper_token i,
@@ -485,7 +478,9 @@ public class pascal_program implements Runnable {
 			return pascal_type.Boolean;
 		}
 		// TODO add more types
-		return new class_pascal_type(Class.forName("plugins." + s));
+		return new class_pascal_type(Class
+				.forName("edu.js.interpreter.custom_types."
+						+ Integer.toHexString(custom_types.get(s).hashCode())));
 	}
 
 	pascal_type get_next_java_class(grouper_token i)

@@ -78,7 +78,7 @@ public class custom_type_declaration extends pascal_type {
 	@Override
 	public Class toclass() {
 		try {
-			return Class.forName("edu.js.interpreter.dynamic_types." + hashCode());
+			return Class.forName("edu.js.interpreter.custom_types." + hashCode());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

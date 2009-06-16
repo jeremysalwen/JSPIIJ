@@ -22,11 +22,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import edu.js.interpreter.preprocessed.custom_type_generator;
 import edu.js.interpreter.preprocessed.plugin_declaration;
 import edu.js.interpreter.processing.pascal_plugin;
 import edu.js.interpreter.processing.pascal_program;
 import edu.js.interpreter.processing.run_mode;
-
 
 public class ide extends JFrame {
 	/**
@@ -57,6 +57,8 @@ public class ide extends JFrame {
 	JButton addPluginsButton;
 
 	pascal_program program;
+
+	custom_type_generator type_generator;
 
 	/**
 	 * @param args
@@ -103,7 +105,9 @@ public class ide extends JFrame {
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		plugins = new ArrayList<plugin_declaration>();
 		this.addNewPluginsDirectory(new File(System.getProperty("user.dir")
-				+ File.separatorChar + "plugins" + File.separatorChar));
+				+ File.separatorChar + "edu" + File.separatorChar + "js"
+				+ File.separatorChar + "interpreter" + File.separatorChar
+				+ "plugins" + File.separatorChar));
 		wholeWindow = new JPanel();
 		this.add(wholeWindow);
 		programInput = new JTextArea();
@@ -166,6 +170,7 @@ public class ide extends JFrame {
 		});
 		loadFile(new File(System.getProperty("user.dir") + File.separatorChar
 				+ "testprogram.pas"));
+		type_generator = new custom_type_generator(new File(System.getProperty("user.dir")));
 		setVisible(true);
 	}
 
@@ -231,7 +236,8 @@ public class ide extends JFrame {
 					String filename = f.getName();
 					filename = filename
 							.substring(0, filename.indexOf(".class"));
-					Class c = classloader.loadClass("plugins." + filename);
+					Class c = classloader
+							.loadClass("edu.js.interpreter.plugins." + filename);
 					if (pascal_plugin.class.isAssignableFrom(c)) {
 						for (Method m : c.getMethods()) {
 							if (Modifier.isStatic(m.getModifiers())) {
@@ -252,7 +258,8 @@ public class ide extends JFrame {
 	}
 
 	void runProgram() {
-		program = new pascal_program(programInput.getText(), plugins);
+		program = new pascal_program(programInput.getText(), plugins,
+				type_generator);
 		program.run();
 	}
 
