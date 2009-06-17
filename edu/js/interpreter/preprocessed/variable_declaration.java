@@ -21,9 +21,6 @@ public class variable_declaration {
 		this.type = type;
 	}
 
-	public void add_declaration(BCClass c) {
-		c.declareField(name, type.toclass());
-	}
 
 	public void initialize(Map<String, Object> map) {
 		map.put(name, type.initialize());

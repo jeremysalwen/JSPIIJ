@@ -5,17 +5,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.js.interpreter.pascal_types.custom_type_declaration;
-import edu.js.interpreter.pascal_types.pascal_type;
-import edu.js.interpreter.preprocessed.interpreting_objects.variables.contains_variables;
-
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
+import serp.bytecode.LocalVariable;
 import serp.bytecode.Project;
+import edu.js.interpreter.pascal_types.custom_type_declaration;
+import edu.js.interpreter.pascal_types.pascal_type;
+import edu.js.interpreter.preprocessed.interpreting_objects.variables.contains_variables;
 
 public class custom_type_generator {
 	public static void main(String[] args) {
@@ -67,19 +67,20 @@ public class custom_type_generator {
 		Project p = new Project();
 		BCClass c = p.loadClass(name);
 		c.setDeclaredInterfaces(new Class[] { contains_variables.class });
-		c.getSourceFile(true).setFile("dynamically_generated");
-		add_constructor(c, custom);
 
 		for (variable_declaration v : variables) {
-			v.add_declaration(c);
+			System.out.println(v.name + v.type.toclass());
+			c.declareField(v.name, wrapper_to_type(v.type.toclass()));
 		}
-
+		add_constructor(c, custom);
 		add_get_var(c);
 		add_set_var(c);
+		add_clone(c);
 		try {
-			String location=output.getAbsolutePath() + File.separatorChar
-			+ "edu" + File.separatorChar + "js" + File.separatorChar
-			+ "interpreter" + File.separatorChar +"custom_types" +File.separatorChar + c.getClassName()+ ".class";
+			String location = output.getAbsolutePath() + File.separatorChar
+					+ "edu" + File.separatorChar + "js" + File.separatorChar
+					+ "interpreter" + File.separatorChar + "custom_types"
+					+ File.separatorChar + c.getClassName() + ".class";
 			c.write(new File(location));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -95,9 +96,11 @@ public class custom_type_generator {
 			constructor_code.invokespecial().setMethod(
 					Object.class.getDeclaredConstructor());
 			for (variable_declaration v : c.variable_types) {
+				constructor_code.aload().setThis();
 				v.type.get_default_value_on_stack(constructor_code);
 				constructor_code.putfield().setField(b.getClassName(),
-						v.get_name(), v.type.toclass().getCanonicalName());
+						v.get_name(),
+						wrapper_to_type(v.type.toclass()).getCanonicalName());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -105,6 +108,23 @@ public class custom_type_generator {
 		constructor_code.vreturn();
 		constructor_code.calculateMaxLocals();
 		constructor_code.calculateMaxStack();
+	}
+
+	public Class wrapper_to_type(Class c) {
+		if (c == Integer.class)
+			return int.class;
+		if (c == Double.class)
+			return double.class;
+		if (c == Byte.class)
+			return byte.class;
+		if (c == Float.class)
+			return float.class;
+		if (c == Character.class)
+			return char.class;
+		if (c == Short.class) {
+			return short.class;
+		}
+		return c;
 	}
 
 	/**
@@ -238,23 +258,27 @@ public class custom_type_generator {
 		Code clone_code = clone_method.getCode(true);
 		try {
 			clone_code.anew().setType(b);
-			clone_code.invokespecial().setMethod(
-					b.getComponentType().getConstructor(new Class[0]));
+			clone_code.dup();
 			clone_code.astore().setLocal(1);
-			for (BCField f : b.getFields()) {
-				clone_code.aload().setLocal(1);
-				clone_code.aload().setThis();
-				clone_code.getfield().setField(f);
-				if (!f.getType().isPrimitive() && f.getType() != String.class) {
-					clone_code.invokevirtual().setMethod(
-							f.getType().getMethod("clone", new Class[0]));
-				}
-				clone_code.putfield().setField(f);
-			}
+			clone_code.invokespecial().setMethod(b.addDefaultConstructor());
+
+			/*
+			 * for (BCField f : b.getFields()) { clone_code.aload().setLocal(1);
+			 * clone_code.aload().setThis(); clone_code.getfield().setField(f);
+			 * if (!f.getType().isPrimitive() && f.getType() != String.class) {
+			 * clone_code.invokevirtual().setMethod(
+			 * f.getType().getMethod("clone", new Class[0])); }
+			 * clone_code.putfield().setField(f); }
+			 */
+			clone_code.aload().setLocal(1);
+			clone_code.areturn();
+			clone_code.calculateMaxLocals();
+			clone_code.calculateMaxStack();
 		} catch (SecurityException e) {
 			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
+
+			// } catch (NoSuchMethodException e) { e.printStackTrace();
+
 		}
 	}
 }
