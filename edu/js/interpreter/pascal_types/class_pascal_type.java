@@ -25,6 +25,7 @@ public class class_pascal_type extends pascal_type {
 	@Override
 	public int hashCode() {
 		return c.getCanonicalName().hashCode();
+		
 	}
 
 	@Override
