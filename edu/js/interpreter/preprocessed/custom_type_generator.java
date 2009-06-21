@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ncsa.tools.common.util.TypeUtils;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
@@ -70,7 +72,7 @@ public class custom_type_generator {
 
 		for (variable_declaration v : variables) {
 			System.out.println(v.name + v.type.toclass());
-			c.declareField(v.name, wrapper_to_type(v.type.toclass()));
+			c.declareField(v.name, TypeUtils.getTypeForClass(v.type.toclass()));
 		}
 		add_constructor(c, custom);
 		add_get_var(c);
@@ -98,9 +100,15 @@ public class custom_type_generator {
 			for (variable_declaration v : c.variable_types) {
 				constructor_code.aload().setThis();
 				v.type.get_default_value_on_stack(constructor_code);
-				constructor_code.putfield().setField(b.getClassName(),
-						v.get_name(),
-						wrapper_to_type(v.type.toclass()).getCanonicalName());
+				constructor_code
+						.putfield()
+						.setField(
+								b.getClassName(),
+								v.get_name(),
+								TypeUtils.isPrimitiveWrapper(v.type.toclass()) ? TypeUtils
+										.getTypeForClass(v.type.toclass())
+										.getCanonicalName()
+										: v.type.toclass().getCanonicalName());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -108,23 +116,6 @@ public class custom_type_generator {
 		constructor_code.vreturn();
 		constructor_code.calculateMaxLocals();
 		constructor_code.calculateMaxStack();
-	}
-
-	public Class wrapper_to_type(Class c) {
-		if (c == Integer.class)
-			return int.class;
-		if (c == Double.class)
-			return double.class;
-		if (c == Byte.class)
-			return byte.class;
-		if (c == Float.class)
-			return float.class;
-		if (c == Character.class)
-			return char.class;
-		if (c == Short.class) {
-			return short.class;
-		}
-		return c;
 	}
 
 	/**
