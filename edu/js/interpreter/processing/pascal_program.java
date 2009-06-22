@@ -478,10 +478,11 @@ public class pascal_program implements Runnable {
 			return pascal_type.Boolean;
 		}
 		// TODO add more types
+		System.out.println(Integer.toHexString(custom_types.get(s).hashCode()));
 		return new class_pascal_type(Class
-				.forName("edu.js.interpreter.custom_types."
-						+ Integer.toHexString(custom_types.get(s).hashCode())));
+				.forName("edu.js.interpreter.custom_types.e5b4e1c2"));
 	}
+	edu.js.interpreter.custom_types.e5b4e1c2 blarg;
 
 	pascal_type get_next_java_class(grouper_token i)
 			throws ClassNotFoundException {

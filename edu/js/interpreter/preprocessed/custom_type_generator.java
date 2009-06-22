@@ -6,14 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ncsa.tools.common.util.TypeUtils;
-
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
-import serp.bytecode.LocalVariable;
 import serp.bytecode.Project;
 import edu.js.interpreter.pascal_types.custom_type_declaration;
 import edu.js.interpreter.pascal_types.pascal_type;
@@ -64,12 +62,12 @@ public class custom_type_generator {
 	 */
 	public void output_class(custom_type_declaration custom) {
 		List<variable_declaration> variables = custom.variable_types;
+		System.out.println(Integer.toHexString(custom.hashCode()));
 		String name = "edu.js.interpreter.custom_types."
 				+ Integer.toHexString(custom.hashCode());
 		Project p = new Project();
 		BCClass c = p.loadClass(name);
 		c.setDeclaredInterfaces(new Class[] { contains_variables.class });
-
 		for (variable_declaration v : variables) {
 			System.out.println(v.name + v.type.toclass());
 			c.declareField(v.name, TypeUtils.getTypeForClass(v.type.toclass()));
@@ -78,6 +76,7 @@ public class custom_type_generator {
 		add_get_var(c);
 		add_set_var(c);
 		add_clone(c);
+
 		try {
 			String location = output.getAbsolutePath() + File.separatorChar
 					+ "edu" + File.separatorChar + "js" + File.separatorChar
@@ -103,7 +102,7 @@ public class custom_type_generator {
 				constructor_code
 						.putfield()
 						.setField(
-								b.getClassName(),
+								b.getName(),
 								v.get_name(),
 								TypeUtils.isPrimitiveWrapper(v.type.toclass()) ? TypeUtils
 										.getTypeForClass(v.type.toclass())
@@ -249,18 +248,20 @@ public class custom_type_generator {
 		Code clone_code = clone_method.getCode(true);
 		try {
 			clone_code.anew().setType(b);
-			clone_code.dup();
 			clone_code.astore().setLocal(1);
+			clone_code.aload().setLocal(1);
 			clone_code.invokespecial().setMethod(b.addDefaultConstructor());
+			for (BCField f : b.getFields()) {
+				clone_code.aload().setLocal(1);
+				clone_code.aload().setThis();
+				clone_code.getfield().setField(f);
+				if (!f.getType().isPrimitive() && f.getType() != String.class) {
+					clone_code.invokevirtual().setMethod(
+							f.getType().getMethod("clone", new Class[0]));
+				}
+				clone_code.putfield().setField(f);
+			}
 
-			/*
-			 * for (BCField f : b.getFields()) { clone_code.aload().setLocal(1);
-			 * clone_code.aload().setThis(); clone_code.getfield().setField(f);
-			 * if (!f.getType().isPrimitive() && f.getType() != String.class) {
-			 * clone_code.invokevirtual().setMethod(
-			 * f.getType().getMethod("clone", new Class[0])); }
-			 * clone_code.putfield().setField(f); }
-			 */
 			clone_code.aload().setLocal(1);
 			clone_code.areturn();
 			clone_code.calculateMaxLocals();
@@ -268,7 +269,8 @@ public class custom_type_generator {
 		} catch (SecurityException e) {
 			e.printStackTrace();
 
-			// } catch (NoSuchMethodException e) { e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 
 		}
 	}
