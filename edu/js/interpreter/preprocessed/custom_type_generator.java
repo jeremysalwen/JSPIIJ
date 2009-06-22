@@ -62,7 +62,12 @@ public class custom_type_generator {
 	 */
 	public void output_class(custom_type_declaration custom) {
 		List<variable_declaration> variables = custom.variable_types;
-		System.out.println(Integer.toHexString(custom.hashCode()));
+		File location = new File(output.getAbsolutePath() + File.separatorChar
+				+ "edu" + File.separatorChar + "js" + File.separatorChar
+				+ "interpreter" + File.separatorChar + "custom_types"
+				+ File.separatorChar + Integer.toHexString(custom.hashCode())
+				+ ".class");
+		location.delete();
 		String name = "edu.js.interpreter.custom_types."
 				+ Integer.toHexString(custom.hashCode());
 		Project p = new Project();
@@ -78,11 +83,7 @@ public class custom_type_generator {
 		add_clone(c);
 
 		try {
-			String location = output.getAbsolutePath() + File.separatorChar
-					+ "edu" + File.separatorChar + "js" + File.separatorChar
-					+ "interpreter" + File.separatorChar + "custom_types"
-					+ File.separatorChar + c.getClassName() + ".class";
-			c.write(new File(location));
+			c.write(location);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

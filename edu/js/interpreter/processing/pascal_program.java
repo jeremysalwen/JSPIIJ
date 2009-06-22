@@ -124,10 +124,11 @@ public class pascal_program implements Runnable {
 			get_arguments_for_declaration(i, is_procedure,
 					declaration.argument_names, declaration.argument_types,
 					declaration.are_varargs);
-			next = i.take();
+			next = i.peek();
 			assert (is_procedure ^ (next instanceof colon_token));
 			if (!is_procedure && next instanceof colon_token) {
 				try {
+					i.take();
 					declaration.return_type = get_next_java_class(i);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
@@ -427,8 +428,8 @@ public class pascal_program implements Runnable {
 			String name = ((word_token) next).name;
 			if (!((next = iterator.peek()) instanceof EOF_token)) {
 				if (next instanceof parenthesized_token) {
-					return new abstract_function_call(name,
-							get_arguments_for_call((parenthesized_token) next));
+					result= new abstract_function_call(name,
+							get_arguments_for_call((parenthesized_token) iterator.take()));
 				} else {
 					result = new variable_access(get_next_var_identifier(name,
 							iterator));
@@ -478,11 +479,10 @@ public class pascal_program implements Runnable {
 			return pascal_type.Boolean;
 		}
 		// TODO add more types
-		System.out.println(Integer.toHexString(custom_types.get(s).hashCode()));
 		return new class_pascal_type(Class
-				.forName("edu.js.interpreter.custom_types.e5b4e1c2"));
+				.forName("edu.js.interpreter.custom_types."
+						+ Integer.toHexString(custom_types.get(s).hashCode())));
 	}
-	edu.js.interpreter.custom_types.e5b4e1c2 blarg;
 
 	pascal_type get_next_java_class(grouper_token i)
 			throws ClassNotFoundException {
