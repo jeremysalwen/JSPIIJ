@@ -1,9 +1,8 @@
 package edu.js.interpreter.preprocessed.interpreting_objects;
 
+public abstract class pointer<T> {
 
-public abstract class pointer {
+	public abstract void set(T value);
 
-	public abstract void set(Object value);
-
-	public abstract Object get();
+	public abstract T get();
 }

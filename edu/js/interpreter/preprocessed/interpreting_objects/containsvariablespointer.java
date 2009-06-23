@@ -2,7 +2,7 @@ package edu.js.interpreter.preprocessed.interpreting_objects;
 
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.contains_variables;
 
-public class containsvariablespointer extends pointer {
+public class containsvariablespointer<T> extends pointer<T> {
 	contains_variables v;
 
 	String variable_name;
@@ -13,12 +13,12 @@ public class containsvariablespointer extends pointer {
 	}
 
 	@Override
-	public Object get() {
-		return v.get_var(variable_name);
+	public T get() {
+		return (T) v.get_var(variable_name);
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(T value) {
 		v.set_var(variable_name, value);
 	}
 

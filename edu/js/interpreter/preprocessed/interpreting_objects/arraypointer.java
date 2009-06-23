@@ -2,7 +2,7 @@ package edu.js.interpreter.preprocessed.interpreting_objects;
 
 import java.lang.reflect.Array;
 
-public class arraypointer extends pointer {
+public class arraypointer<T> extends pointer<T> {
 	Object array;
 
 	int index;
@@ -13,12 +13,12 @@ public class arraypointer extends pointer {
 	}
 
 	@Override
-	public Object get() {
-		return Array.get(array, index);
+	public T get() {
+		return (T) Array.get(array, index);
 	}
 
 	@Override
-	public void set(Object value) {
+	public void set(T value) {
 		Array.set(array, index, value);
 
 	}
