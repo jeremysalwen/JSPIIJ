@@ -6,8 +6,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -16,10 +17,12 @@ import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import edu.js.interpreter.preprocessed.custom_type_generator;
@@ -34,7 +37,9 @@ public class ide extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	JTextArea programInput;
+	JEditorPane programInput;
+
+	JTextArea debugBox;
 
 	JPanel wholeWindow;
 
@@ -110,11 +115,13 @@ public class ide extends JFrame {
 				+ "plugins" + File.separatorChar));
 		wholeWindow = new JPanel();
 		this.add(wholeWindow);
-		programInput = new JTextArea();
+		programInput = new JEditorPane();
+		debugBox = new JTextArea("Debug Box\n");
 		wholeWindow.setLayout(new BoxLayout(wholeWindow, BoxLayout.Y_AXIS));
-		wholeWindow.add(programInput);
+		wholeWindow.add(new JScrollPane(programInput));
 		buttonsPanel = new JPanel();
 		wholeWindow.add(buttonsPanel);
+		wholeWindow.add(new JScrollPane(debugBox));
 		runButton = new JButton();
 		runButton.setText("Run");
 		buttonsPanel.add(runButton);
@@ -170,7 +177,8 @@ public class ide extends JFrame {
 		});
 		loadFile(new File(System.getProperty("user.dir") + File.separatorChar
 				+ "testprogram.pas"));
-		type_generator = new custom_type_generator(new File(System.getProperty("user.dir")));
+		type_generator = new custom_type_generator(new File(System
+				.getProperty("user.dir")));
 		setVisible(true);
 	}
 
@@ -230,7 +238,7 @@ public class ide extends JFrame {
 		ClassLoader classloader;
 		try {
 			classloader = new URLClassLoader(new URL[] { pluginFolder
-					.getParentFile().toURL() });
+					.getParentFile().toURI().toURL() });
 			for (File f : pluginarray) {
 				try {
 					String filename = f.getName();
@@ -239,12 +247,18 @@ public class ide extends JFrame {
 					Class c = classloader
 							.loadClass("edu.js.interpreter.plugins." + filename);
 					if (pascal_plugin.class.isAssignableFrom(c)) {
+						Object o;
+						try {
+							Constructor constructor = c
+									.getConstructor(ide.class);
+							o = constructor.newInstance(this);
+						} catch (NoSuchMethodException e) {
+							o = null;
+						}
 						for (Method m : c.getMethods()) {
-							if (Modifier.isStatic(m.getModifiers())) {
-								plugin_declaration tmp = new plugin_declaration(
-										m);
-								this.plugins.add(tmp);
-							}
+							plugin_declaration tmp = new plugin_declaration(o,
+									m);
+							this.plugins.add(tmp);
 						}
 					}
 				} catch (ClassNotFoundException e) {
@@ -252,8 +266,14 @@ public class ide extends JFrame {
 				}
 
 			}
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -266,4 +286,9 @@ public class ide extends JFrame {
 	void stopProgram() {
 		program.mode = run_mode.stopped;
 	}
+
+	public void output_to_debug(String s) {
+		debugBox.append(s);
+	}
+
 }

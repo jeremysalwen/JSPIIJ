@@ -2,10 +2,8 @@ package edu.js.interpreter.preprocessed;
 
 import java.util.Map;
 
-import edu.js.interpreter.pascal_types.pascal_type;
-
-import serp.bytecode.BCClass;
 import serp.bytecode.Code;
+import edu.js.interpreter.pascal_types.pascal_type;
 
 public class variable_declaration {
 	public String name;

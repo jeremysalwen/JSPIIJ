@@ -4,22 +4,26 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
+import ncsa.tools.common.util.TypeUtils;
+
 import edu.js.interpreter.pascal_types.class_pascal_type;
 import edu.js.interpreter.pascal_types.pascal_type;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_program;
 
-
 public class plugin_declaration extends abstract_function {
+	Object owner;
+
 	Method method;
 
-	public plugin_declaration(Method m) {
+	public plugin_declaration(Object owner, Method m) {
 		method = m;
+		this.owner = owner;
 	}
 
 	public Object call(pascal_program program, Object[] arguments) {
 		try {
-			return method.invoke(null, arguments);
+			return method.invoke(owner, arguments);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -33,22 +37,6 @@ public class plugin_declaration extends abstract_function {
 		return null;
 	}
 
-	Class box(Class c) {
-		if (c == int.class) {
-			return Integer.class;
-		}
-		if (c == double.class) {
-			return Double.class;
-		}
-		if (c == char.class) {
-			return Character.class;
-		}
-		if (c == float.class) {
-			return Float.class;
-		}
-		return c;
-	}
-
 	@Override
 	public pascal_type[] get_arg_types() {
 		Class[] types = method.getParameterTypes();
@@ -59,7 +47,9 @@ public class plugin_declaration extends abstract_function {
 						.getGenericParameterTypes()[i])
 						.getActualTypeArguments()[0];
 			}
-			result[i] = new class_pascal_type(box(types[i]));
+			result[i] = class_pascal_type
+					.anew(types[i].isPrimitive() ? TypeUtils
+							.getClassForType(types[i]) : types[i]);
 		}
 		return result;
 	}
@@ -73,10 +63,10 @@ public class plugin_declaration extends abstract_function {
 	public pascal_type get_return_type() {
 		Class result = method.getReturnType();
 		if (result == pointer.class) {
-			return new class_pascal_type((Class) ((ParameterizedType) method
+			return class_pascal_type.anew((Class) ((ParameterizedType) method
 					.getGenericReturnType()).getActualTypeArguments()[0]);
 		}
-		return new class_pascal_type(result);
+		return class_pascal_type.anew(result);
 	}
 
 	@Override

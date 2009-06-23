@@ -428,8 +428,10 @@ public class pascal_program implements Runnable {
 			String name = ((word_token) next).name;
 			if (!((next = iterator.peek()) instanceof EOF_token)) {
 				if (next instanceof parenthesized_token) {
-					result= new abstract_function_call(name,
-							get_arguments_for_call((parenthesized_token) iterator.take()));
+					result = new abstract_function_call(
+							name,
+							get_arguments_for_call((parenthesized_token) iterator
+									.take()));
 				} else {
 					result = new variable_access(get_next_var_identifier(name,
 							iterator));
@@ -461,25 +463,25 @@ public class pascal_program implements Runnable {
 	pascal_type get_basic_type(String s) throws ClassNotFoundException {
 		s = s.intern();
 		if (s == "integer") {
-			return pascal_type.Integer;
+			return class_pascal_type.Integer;
 		}
 		if (s == "string") {
-			return pascal_type.String;
+			return class_pascal_type.String;
 		}
 		if (s == "float") {
-			return pascal_type.Float;
+			return class_pascal_type.Float;
 		}
 		if (s == "real") {
-			return pascal_type.Double;
+			return class_pascal_type.Double;
 		}
 		if (s == "long") {
-			return pascal_type.Long;
+			return class_pascal_type.Long;
 		}
 		if (s == "boolean") {
-			return pascal_type.Boolean;
+			return class_pascal_type.Boolean;
 		}
 		// TODO add more types
-		return new class_pascal_type(Class
+		return class_pascal_type.anew(Class
 				.forName("edu.js.interpreter.custom_types."
 						+ Integer.toHexString(custom_types.get(s).hashCode())));
 	}

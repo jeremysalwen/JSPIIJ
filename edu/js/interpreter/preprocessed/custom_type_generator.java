@@ -13,8 +13,8 @@ import serp.bytecode.Code;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
 import serp.bytecode.Project;
+import edu.js.interpreter.pascal_types.class_pascal_type;
 import edu.js.interpreter.pascal_types.custom_type_declaration;
-import edu.js.interpreter.pascal_types.pascal_type;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.contains_variables;
 
 public class custom_type_generator {
@@ -22,9 +22,9 @@ public class custom_type_generator {
 		custom_type_generator c = new custom_type_generator(new File("/tmp/"));
 		List<variable_declaration> variables = new ArrayList<variable_declaration>();
 		variables.add(new variable_declaration("double_field",
-				pascal_type.Double));
+				class_pascal_type.Double));
 		variables.add(new variable_declaration("integer_field",
-				pascal_type.Integer));
+				class_pascal_type.Integer));
 		custom_type_declaration custom = new custom_type_declaration();
 		custom.name = "blah";
 		custom.variable_types = variables;

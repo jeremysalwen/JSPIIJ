@@ -208,7 +208,7 @@ public class binary_operator_evaluation implements returns_value {
 		case NOT:
 		case NOTEQUAL:
 		case OR:
-			return new class_pascal_type(Boolean.class);
+			return class_pascal_type.Boolean;
 		case DIV:
 		case MOD:
 		case SHIFTLEFT:
@@ -218,7 +218,7 @@ public class binary_operator_evaluation implements returns_value {
 		case MULTIPLY:
 		case PLUS:
 		case XOR:
-			return new class_pascal_type(get_GCF(type1.toclass(), type2
+			return class_pascal_type.anew(get_GCF(type1.toclass(), type2
 					.toclass()));
 		default:
 			return null;

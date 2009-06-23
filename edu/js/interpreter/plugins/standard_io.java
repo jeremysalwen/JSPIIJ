@@ -1,19 +1,30 @@
 package edu.js.interpreter.plugins;
 
+import edu.js.interpreter.gui.ide;
 import edu.js.interpreter.processing.pascal_plugin;
 
 public class standard_io implements pascal_plugin {
+	ide ide;
+
+	public standard_io(ide ide) {
+		this.ide = ide;
+	}
+
 	/**
 	 * Redirects to System.out
-	 * @param s The string to output.
+	 * 
+	 * @param s
+	 *            The string to output.
 	 */
-	public static void writeln(String s) {
-		System.out.println(s);
+	public void writeln(String s) {
+		ide.output_to_debug(s + '\n');
 	}
-	public static void writeln(int s) {
-		System.out.println(s);
+
+	public void writeln(int s) {
+		writeln(String.valueOf(s));
 	}
-	public static void writeln(double s) {
-		System.out.println(s);
+
+	public void writeln(double s) {
+		writeln(String.valueOf(s));
 	}
 }

@@ -17,9 +17,6 @@ public abstract class abstract_function {
 		int hashcode = get_name().hashCode();
 		pascal_type[] types = get_arg_types();
 		for (int i = 0; i < types.length; i++) {
-			if(types[i]==null) {
-				get_arg_types();
-			}
 			hashcode ^= types[i].hashCode();
 		}
 		return hashcode;
