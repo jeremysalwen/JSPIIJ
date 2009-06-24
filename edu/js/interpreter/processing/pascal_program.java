@@ -480,6 +480,9 @@ public class pascal_program implements Runnable {
 		if (s == "boolean") {
 			return class_pascal_type.Boolean;
 		}
+		if (s == "character") {
+			return class_pascal_type.Character;
+		}
 		// TODO add more types
 		return class_pascal_type.anew(Class
 				.forName("edu.js.interpreter.custom_types."

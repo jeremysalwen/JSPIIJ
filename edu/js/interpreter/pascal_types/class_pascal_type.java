@@ -2,6 +2,8 @@ package edu.js.interpreter.pascal_types;
 
 import java.util.HashMap;
 
+import ncsa.tools.common.util.TypeUtils;
+
 import serp.bytecode.Code;
 
 public class class_pascal_type extends pascal_type {
@@ -50,12 +52,13 @@ public class class_pascal_type extends pascal_type {
 
 	@Override
 	public int hashCode() {
-		return c.getCanonicalName().hashCode();
+		return (TypeUtils.isPrimitiveWrapper(c) ? TypeUtils.getTypeForClass(c)
+				: c).getCanonicalName().hashCode();
 
 	}
 
 	@Override
-	public Object initialize() { // TODO FIX THIS
+	public Object initialize() {
 		Object result;
 		if ((result = class_pascal_type.default_values.get(this)) != null) {
 			return result;

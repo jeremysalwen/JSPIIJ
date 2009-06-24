@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -53,6 +54,8 @@ public class ide extends JFrame {
 
 	JButton saveButton;
 
+	JButton clearDebugButton;
+
 	JFileChooser fc;
 
 	List<plugin_declaration> plugins;
@@ -64,6 +67,8 @@ public class ide extends JFrame {
 	pascal_program program;
 
 	custom_type_generator type_generator;
+
+	security_settings settings;
 
 	/**
 	 * @param args
@@ -103,9 +108,10 @@ public class ide extends JFrame {
 
 	public ide() {
 		super();
+		settings = new security_settings();
 		this.setTitle("pascalinterpreterinjava ide");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setSize(800, 300);
+		this.setSize(1200, 800);
 		fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		plugins = new ArrayList<plugin_declaration>();
@@ -173,6 +179,14 @@ public class ide extends JFrame {
 		clearPluginsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clearPlugins();
+			}
+		});
+		clearDebugButton = new JButton();
+		clearDebugButton.setText("Clear Debug");
+		buttonsPanel.add(clearDebugButton);
+		clearDebugButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				clearDebug();
 			}
 		});
 		loadFile(new File(System.getProperty("user.dir") + File.separatorChar
@@ -255,10 +269,12 @@ public class ide extends JFrame {
 						} catch (NoSuchMethodException e) {
 							o = null;
 						}
-						for (Method m : c.getMethods()) {
-							plugin_declaration tmp = new plugin_declaration(o,
-									m);
-							this.plugins.add(tmp);
+						for (Method m : c.getDeclaredMethods()) {
+							if (Modifier.isPublic(m.getModifiers())) {
+								plugin_declaration tmp = new plugin_declaration(
+										o, m);
+								this.plugins.add(tmp);
+							}
 						}
 					}
 				} catch (ClassNotFoundException e) {
@@ -289,6 +305,10 @@ public class ide extends JFrame {
 
 	public void output_to_debug(String s) {
 		debugBox.append(s);
+	}
+
+	void clearDebug() {
+		debugBox.setText("");
 	}
 
 }

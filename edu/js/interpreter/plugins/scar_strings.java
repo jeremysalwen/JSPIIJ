@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import sun.security.provider.MD5;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_plugin;
 

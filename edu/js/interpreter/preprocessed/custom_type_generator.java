@@ -67,7 +67,9 @@ public class custom_type_generator {
 				+ "interpreter" + File.separatorChar + "custom_types"
 				+ File.separatorChar + Integer.toHexString(custom.hashCode())
 				+ ".class");
-		location.delete();
+		if (location.exists() && !location.isDirectory()) {
+			return;
+		}
 		String name = "edu.js.interpreter.custom_types."
 				+ Integer.toHexString(custom.hashCode());
 		Project p = new Project();

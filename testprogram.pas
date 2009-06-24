@@ -11,7 +11,6 @@ function appendhello(i:integer):string;
 begin
 Result:=tostring(i)+'hello';
 end;
-
 var
 i, target:integer;
 r:real;

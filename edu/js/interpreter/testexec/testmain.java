@@ -5,7 +5,6 @@ public class testmain {
 		try {
 			Class.forName("[[Ljava.lang.String;");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

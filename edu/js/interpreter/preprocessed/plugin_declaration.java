@@ -17,21 +17,18 @@ public class plugin_declaration extends abstract_function {
 	Method method;
 
 	public plugin_declaration(Object owner, Method m) {
-		method = m;
 		this.owner = owner;
+		method = m;
 	}
 
 	public Object call(pascal_program program, Object[] arguments) {
 		try {
 			return method.invoke(owner, arguments);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -63,8 +60,11 @@ public class plugin_declaration extends abstract_function {
 	public pascal_type get_return_type() {
 		Class result = method.getReturnType();
 		if (result == pointer.class) {
-			return class_pascal_type.anew((Class) ((ParameterizedType) method
-					.getGenericReturnType()).getActualTypeArguments()[0]);
+			result = (Class) ((ParameterizedType) method.getGenericReturnType())
+					.getActualTypeArguments()[0];
+		}
+		if (result.isPrimitive()) {
+			result = TypeUtils.getClassForType(result);
 		}
 		return class_pascal_type.anew(result);
 	}
