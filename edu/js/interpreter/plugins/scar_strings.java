@@ -212,16 +212,18 @@ public class scar_strings implements pascal_plugin {
 		return s.startsWith(prefix);
 	}
 
-	public static void strget() {
-		// TODO no doc
+	public static char strget(pointer<String> s, int index) {
+		return s.get().charAt(index);
 	}
 
-	public static void strset() {
-		// TODO no doc
+	public static void strset(char c, int index, pointer<String> s) {
+		char[] array = s.get().toCharArray();
+		array[index] = c;
+		s.set(new String(array));
 	}
 
-	public static void stringofchar() {
-		// TODO no doc
+	public static String stringofchar(char c, int times) {
+		return replicate(c, times);
 	}
 
 	public static String trimex(String delimeter, String s) {
