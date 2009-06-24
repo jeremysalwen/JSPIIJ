@@ -3,6 +3,8 @@ package edu.js.interpreter.plugins;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_plugin;
@@ -48,8 +50,13 @@ public class scar_strings implements pascal_plugin {
 		return tosearch.endsWith(suffix);
 	}
 
-	public static void findregexp() {
-		// TODO there is no documentation on the freddy1990 wiki
+	public static String findregex(String tosearch, String regex) {
+		Pattern reg = Pattern.compile(regex);
+		Matcher m = reg.matcher(tosearch);
+		if (!m.find()) {
+			return "";
+		}
+		return tosearch.substring(m.start(), m.end());
 	}
 
 	public static String getletters(String s) {
@@ -95,24 +102,25 @@ public class scar_strings implements pascal_plugin {
 		return false;
 	}
 
-	public static void insert() {
-		// TODO no doc
+	public static void insert(String toinsert, pointer<String> reciever, int pos) {
+		reciever.set(reciever.get().substring(0, pos) + toinsert
+				+ reciever.get().substring(pos + toinsert.length()));
 	}
 
-	public static void LastPosEx() {
-		// TODO no doc
+	public static int LastPosEx(String tofind, String findin, int from) {
+		return findin.lastIndexOf(tofind, from);
 	}
 
-	public static void LastPos() {
-		// TODO no doc
+	public static int LastPos(String tofind, String findin) {
+		return findin.lastIndexOf(tofind);
 	}
 
-	public static void Left() {
-		// TODO no doc
+	public static String Left(String s, int count) {
+		return s.substring(0, count);
 	}
 
 	public static int length(String s) {
-		return s.length(); // TODO double check this is correct.
+		return s.length();
 	}
 
 	public static String md5(String s) {
@@ -121,58 +129,87 @@ public class scar_strings implements pascal_plugin {
 			digester.update(s.getBytes());
 			return new BigInteger(1, digester.digest()).toString(16);
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public static void padl() {
-		// TODO no doc
+	public static String padl(String topad, int size) {
+		StringBuilder result = new StringBuilder(size);
+		for (int i = topad.length(); i < size; i++) {
+			result.append(' ');
+		}
+		result.append(topad);
+		return result.toString();
 	}
 
-	public static void padr() {
-		// TODO no doc
+	public static String padr(String topad, int size) {
+		StringBuilder result = new StringBuilder(size);
+		result.append(topad);
+		for (int i = topad.length(); i < size; i++) {
+			result.append(' ');
+		}
+		return result.toString();
 	}
 
-	public static void padz() {
-		// TODO no doc
+	public static String padz(String topad, int size) {
+		StringBuilder result = new StringBuilder(size);
+		for (int i = topad.length(); i < size; i++) {
+			result.append('0');
+		}
+		result.append(topad);
+		return result.toString();
 	}
 
-	public static void posex() {
-		// TODO no doc
+	public static int posex(String tofind, String s, int startindex) {
+		return s.indexOf("\\Q" + tofind, startindex);
 	}
 
-	public static void pos() {
-		// TODO no doc
+	public static int pos(String substring, String s) {
+		return s.indexOf(substring) + 1;
 	}
 
-	public static void regexpos() {
-		// TODO no doc
+	public static int regexpos(String text, String regex) {
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(text);
+		m.find();
+		int i = m.start();
+		if (i >= 0) {
+			i++;
+		}
+		return i;
 	}
 
-	public static void replaceregex() {
-		// TODO no doc
+	public static String replaceregex(String text, String regex,
+			String replacetext) {
+		StringBuilder result = new StringBuilder(text.length());
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(text);
+		return m.replaceAll(replacetext);
 	}
 
-	public static void replace() {
-		// TODO no doc
+	public static String replace(String text, String tofind, String replacement) {
+		return text.replaceAll("\\Q" + tofind, replacement);
 	}
 
-	public static void replicate() {
-		// TODO no doc
+	public static String replicate(char c, int times) {
+		StringBuilder result = new StringBuilder(times);
+		for (int i = 0; i < times; i++) {
+			result.append(c);
+		}
+		return result.toString();
 	}
 
-	public static void right() {
-		// TODO no doc
+	public static String right(String s, int length) {
+		return s.substring(s.length() - length, s.length());
 	}
 
 	public static void setlength() {
 		// TODO no doc
 	}
 
-	public static void startswith() {
-		// TODO no doc
+	public static boolean startswith(String prefix, String s) {
+		return s.startsWith(prefix);
 	}
 
 	public static void strget() {
@@ -186,22 +223,58 @@ public class scar_strings implements pascal_plugin {
 	public static void stringofchar() {
 		// TODO no doc
 	}
-	public static void trimex() {
-		// TODO no doc
+
+	public static String trimex(String delimeter, String s) {
+		int beginningindex = 0;
+		while (s.startsWith(delimeter, beginningindex)) {
+			beginningindex += delimeter.length();
+		}
+		int endindex = s.length();
+		while (s.lastIndexOf(delimeter, endindex) == endindex
+				- delimeter.length()) {
+			endindex -= delimeter.length();
+		}
+		return s.substring(beginningindex, endindex);
 	}
-	public static void trim() {
-		// TODO no doc
+
+	public static String trim(String s) {
+		return s.trim();
 	}
-	public static void trimletters() {
-		// TODO no doc
+
+	public static String trimletters(String s) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (!Character.isLetter(c)) {
+				result.append(c);
+			}
+		}
+		return s.toString();
 	}
-	public static void trimnumbers() {
-		// TODO no doc
+
+	public static String trimnumbers(String s) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (!Character.isDigit(c)) {
+				result.append(c);
+			}
+		}
+		return s.toString();
 	}
-	public static void trimothers() {
-		// TODO no doc
+
+	public static String trimothers(String s) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (Character.isDigit(c) || Character.isLetter(c)) {
+				result.append(c);
+			}
+		}
+		return s.toString();
 	}
-	public static void uppercase() {
-		// TODO no doc
+
+	public static String uppercase(String s) {
+		return s.toUpperCase();
 	}
 }
