@@ -11,7 +11,7 @@ public class scar_conversions implements pascal_plugin {
 		return String.valueOf(i);
 	}
 
-	public static String FloatToStr(float f) {
+	public static String FloatToStr(double f) {
 		return String.valueOf(f);
 	}
 

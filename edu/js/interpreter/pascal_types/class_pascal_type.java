@@ -11,8 +11,6 @@ public class class_pascal_type extends pascal_type {
 
 	protected static HashMap<pascal_type, Object> default_values = new HashMap<pascal_type, Object>();
 
-	public static pascal_type Float = new class_pascal_type(Float.class);
-
 	public static pascal_type Boolean = new class_pascal_type(Boolean.class);
 
 	public static pascal_type Character = new class_pascal_type(Character.class);
@@ -30,7 +28,6 @@ public class class_pascal_type extends pascal_type {
 		default_values.put(class_pascal_type.Double, 0.0D);
 		default_values.put(class_pascal_type.Long, 0L);
 		default_values.put(class_pascal_type.Character, '\0');
-		default_values.put(class_pascal_type.Float, 0.0F);
 	}
 
 	private class_pascal_type(Class name) {
@@ -113,13 +110,10 @@ public class class_pascal_type extends pascal_type {
 			return class_pascal_type.String;
 		}
 		if (c == Long.class) {
-			return class_pascal_type.Float;
+			return class_pascal_type.Long;
 		}
 		if (c == Character.class) {
 			return class_pascal_type.Character;
-		}
-		if (c == Float.class) {
-			return class_pascal_type.Float;
 		}
 		if (c == Boolean.class) {
 			return class_pascal_type.Boolean;

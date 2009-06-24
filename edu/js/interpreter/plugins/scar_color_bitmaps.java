@@ -1,7 +1,5 @@
 package edu.js.interpreter.plugins;
 
-import java.util.HashMap;
-
 import edu.js.interpreter.gui.ide;
 import edu.js.interpreter.processing.pascal_plugin;
 

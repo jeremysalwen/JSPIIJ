@@ -163,13 +163,6 @@ public class custom_type_generator {
 			} else if (return_type == char.class) {
 				get_var_code.invokestatic().setMethod(Character.class,
 						"valueOf", Character.class, new Class[] { char.class });
-			} else if (return_type == float.class) {
-				try {
-					get_var_code.invokestatic()
-							.setMethod(Float.class, "valueOf", Float.class,
-									new Class[] { float.class });
-				} catch (Exception e) {
-				}
 			} else if (return_type == boolean.class) {
 				get_var_code.invokestatic().setMethod(Boolean.class, "valueOf",
 						Boolean.class, new Class[] { boolean.class });
@@ -221,10 +214,6 @@ public class custom_type_generator {
 				set_var_code.checkcast().setType(Double.class);
 				set_var_code.invokevirtual().setMethod(Double.class,
 						"doubleValue", double.class, new Class[] {});
-			} else if (field_class == float.class) {
-				set_var_code.checkcast().setType(Float.class);
-				set_var_code.invokevirtual().setMethod(Float.class,
-						"floatValue", float.class, new Class[] {});
 			} else if (field_class == boolean.class) {
 				set_var_code.checkcast().setType(Boolean.class);
 				set_var_code.invokevirtual().setMethod(Boolean.class,

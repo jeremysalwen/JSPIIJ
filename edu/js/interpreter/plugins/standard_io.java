@@ -43,5 +43,8 @@ public class standard_io implements pascal_plugin {
 	public void cleardebug() {
 		ide.clearDebug();
 	}
-	public int getdebuglinecount()
+
+	public int getdebuglinecount() {
+		return ide.debugBox.getLineCount();
+	}
 }

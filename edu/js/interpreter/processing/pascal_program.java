@@ -86,6 +86,7 @@ public class pascal_program implements Runnable {
 		mode = run_mode.running;
 		main_running = new function_on_stack(this, main, new Object[0]);
 		main_running.execute();
+
 	}
 
 	pascal_program(List<plugin_declaration> plugins,
@@ -468,10 +469,7 @@ public class pascal_program implements Runnable {
 		if (s == "string") {
 			return class_pascal_type.String;
 		}
-		if (s == "float") {
-			return class_pascal_type.Float;
-		}
-		if (s == "real") {
+		if (s == "single" || s == "extended" || s == "double") {
 			return class_pascal_type.Double;
 		}
 		if (s == "long") {

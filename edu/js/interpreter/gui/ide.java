@@ -40,7 +40,7 @@ public class ide extends JFrame {
 
 	JEditorPane programInput;
 
-	JTextArea debugBox;
+	public JTextArea debugBox;
 
 	JPanel wholeWindow;
 

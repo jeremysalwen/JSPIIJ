@@ -138,36 +138,6 @@ public class binary_operator_evaluation implements returns_value {
 			default:
 				return null;
 			}
-		} else if (get_GCF(value1.getClass(), value2.getClass()) == Float.class) {
-			float l1 = ((Number) value1).floatValue();
-			float l2 = ((Number) value2).floatValue();
-			switch (operator_type) {
-			case DIV:
-			case DIVIDE:
-				return l1 / l2;
-			case EQUALS:
-				return (l1 == l2);
-			case GREATEREQ:
-				return l1 >= l2;
-			case GREATERTHAN:
-				return l1 > l2;
-			case LESSEQ:
-				return l1 <= l2;
-			case LESSTHAN:
-				return l1 < l2;
-			case MINUS:
-				return l1 - l2;
-			case MOD:
-				return l1 % l2;
-			case MULTIPLY:
-				return l1 * l2;
-			case NOTEQUAL:
-				return l1 != l2;
-			case PLUS:
-				return l1 + l2;
-			default:
-				return null;
-			}
 		} else if (value1 instanceof Boolean && value2 instanceof Boolean) {
 			boolean b1 = (Boolean) value1;
 			boolean b2 = (Boolean) value2;
@@ -231,9 +201,6 @@ public class binary_operator_evaluation implements returns_value {
 		}
 		if (one == Double.class || two == Double.class) {
 			return Double.class;
-		}
-		if (one == Float.class || two == Float.class) {
-			return Float.class;
 		}
 		if (one == Long.class || two == Long.class) {
 			return Long.class;
