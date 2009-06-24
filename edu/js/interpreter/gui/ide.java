@@ -307,7 +307,7 @@ public class ide extends JFrame {
 		debugBox.append(s);
 	}
 
-	void clearDebug() {
+	public void clearDebug() {
 		debugBox.setText("");
 	}
 

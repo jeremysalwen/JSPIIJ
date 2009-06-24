@@ -39,4 +39,9 @@ public class standard_io implements pascal_plugin {
 				"pascalinterpreterinjava", JOptionPane.OK_CANCEL_OPTION);
 		return result == null ? "" : result;
 	}
+
+	public void cleardebug() {
+		ide.clearDebug();
+	}
+	public int getdebuglinecount()
 }
