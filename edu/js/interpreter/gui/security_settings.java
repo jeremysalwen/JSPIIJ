@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.LayoutManager;
 import java.io.File;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,53 +26,6 @@ public class security_settings {
 
 	JLabel filenamelabel;
 
-	public static void main(String[] args) {
-		JDialog askPermissionDialog;
-		JLabel filenamelabel = new JLabel();
-		filenamelabel.setText("/tmp/blah");
-		askPermissionDialog = new JDialog();
-		JPanel contents = new JPanel();
-		JPanel info = new JPanel();
-		askPermissionDialog.add(info);
-		info.setLayout(new BoxLayout(info, BoxLayout.X_AXIS));
-		contents.setLayout(new BoxLayout(contents, BoxLayout.Y_AXIS));
-		info.add(new JLabel(FileSystemView.getFileSystemView().getSystemIcon(
-				new File("/home/jeremy/lard.txt"))));
-		JPanel text = new JPanel();
-		text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
-		text.add(new JLabel("Script is trying to acess the following file:"));
-		text.add(filenamelabel);
-		text.add(new JLabel("Do you want to permit or deny this operation?"));
-		info.add(text);
-		contents.add(info);
-		JPanel buttons = new JPanel();
-		buttons.setLayout(new BoxLayout(buttons, BoxLayout.PAGE_AXIS));
-		ButtonGroup options = new ButtonGroup();
-		JRadioButton deny = new JRadioButton("Deny access to the file above");
-		options.add(deny);
-		JRadioButton once = new JRadioButton("Permit once for this file");
-		options.add(once);
-		JRadioButton always = new JRadioButton("Always permit for this file");
-		options.add(always);
-		JRadioButton directory = new JRadioButton();
-		options.add(directory);
-		deny.setSelected(true);
-		buttons.add(deny);
-		buttons.add(once);
-		buttons.add(always);
-		buttons.add(directory);
-		contents.add(buttons);
-		JPanel okcancel = new JPanel();
-		okcancel.setLayout(new BoxLayout(okcancel, BoxLayout.X_AXIS));
-		okcancel.add(new JButton("Ok"));
-		okcancel.add(new JButton("Cancel"));
-		contents.add(okcancel);
-		askPermissionDialog.add(contents);
-		askPermissionDialog.pack();
-		askPermissionDialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		askPermissionDialog.setVisible(true);
-	}
-
 	public security_settings(ide i) {
 		this.ide = i;
 		askPermissionDialog = new JDialog(ide);
@@ -85,6 +39,10 @@ public class security_settings {
 	Set<File> allowed_files = new HashSet<File>();
 
 	Set<File> allowed_directories = new HashSet<File>();
+
+	Set<URL> allowed_URLs = new HashSet<URL>();
+
+	Set<URL> allowed_domains = new HashSet<URL>();
 
 	public boolean hasAccess(String location) {
 		File f = new File(location);

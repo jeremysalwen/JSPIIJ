@@ -13,6 +13,11 @@ import javax.jnlp.UnavailableServiceException;
 import edu.js.interpreter.processing.pascal_plugin;
 
 public class srl_networking implements pascal_plugin {
+	
+	public static void main(String[] args) {
+		openwebpage("http://www.google.com");
+	}
+
 	public static void openwebpage(String URL) {
 		try {
 			((BasicService) ServiceManager.lookup("javax.jnlp.BasicService"))

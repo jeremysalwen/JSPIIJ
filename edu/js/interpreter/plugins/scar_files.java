@@ -32,16 +32,16 @@ public class scar_files implements pascal_plugin {
 		return f.exists() && f.isDirectory();
 	}
 
-	public int openfile(String location, boolean shared) {
+	public int openfileex(String location, boolean shared, String mode) {
 		File f = new File(location);
 		if (ide.settings.hasAccess(location)) {
 			RandomAccessFile openedfile = null;
 			try {
-				openedfile = new RandomAccessFile(f, "rw");
+				openedfile = new RandomAccessFile(f, mode);
 			} catch (Exception e) {
 				try {
 					if (shared) {
-						openedfile = new RandomAccessFile(f, "r");
+						openedfile = new RandomAccessFile(f, mode);
 					}
 				} catch (Exception e1) {
 				}
@@ -54,6 +54,22 @@ public class scar_files implements pascal_plugin {
 		} else {
 			return -1;
 		}
+	}
+
+	public int openfile(String location, boolean shared) {
+		return openfileex(location, shared, "r");
+
+	}
+
+	public int rewritefile(String location, boolean shared) {
+		int result = openfileex(location, shared, "w");
+		try {
+			open_files.get(result).setLength(0);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return -1;
+		}
+		return result;
 	}
 
 	public void closefile(int filenum) {
