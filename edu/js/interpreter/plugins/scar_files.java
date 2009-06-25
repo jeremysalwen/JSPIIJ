@@ -1,11 +1,13 @@
 package edu.js.interpreter.plugins;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
 
 import edu.js.interpreter.gui.ide;
+import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_plugin;
 
 public class scar_files implements pascal_plugin {
@@ -51,6 +53,95 @@ public class scar_files implements pascal_plugin {
 			return filecounter++;
 		} else {
 			return -1;
+		}
+	}
+
+	public void closefile(int filenum) {
+		try {
+			open_files.get(filenum).close();
+		} catch (Exception e) {
+		}
+	}
+
+	public boolean endoffile(int filenum) {
+		RandomAccessFile f = open_files.get(filenum);
+		try {
+			return f.getFilePointer() >= f.length();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public long filesize(int filenum) {
+		RandomAccessFile f = open_files.get(filenum);
+		try {
+			return f.length();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+
+	public boolean readfilebyte(int filenum, pointer<Byte> out) {
+		RandomAccessFile f = open_files.get(filenum);
+		try {
+			out.set(f.readByte());
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	public boolean readfileint(int filenum, pointer<Integer> out) {
+		RandomAccessFile f = open_files.get(filenum);
+		try {
+			out.set(f.readInt());
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	public boolean readfile(int filenum, pointer<String> out, int length) {
+		RandomAccessFile f = open_files.get(filenum);
+		try {
+			byte[] buffer = new byte[length];
+			f.read(buffer);
+			out.set(new String(buffer));
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	public boolean writefilebyte(int filenum, byte b) {
+		RandomAccessFile f = open_files.get(filenum);
+		try {
+			f.writeByte(b);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	public boolean writefileint(int filenum, int i) {
+		RandomAccessFile f = open_files.get(filenum);
+		try {
+			f.writeInt(i);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	public boolean writefilestring(int filenum, String s) {
+		RandomAccessFile f = open_files.get(filenum);
+		try {
+			f.write(s.getBytes());
+			return true;
+		} catch (IOException e) {
+			return false;
 		}
 	}
 }
