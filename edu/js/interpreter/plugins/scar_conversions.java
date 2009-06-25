@@ -23,7 +23,7 @@ public class scar_conversions implements pascal_plugin {
 		try {
 			return Integer.parseInt(s);
 		} catch (NumberFormatException e) {
-			return i; // Tested to be behavior
+			return i;
 		}
 	}
 

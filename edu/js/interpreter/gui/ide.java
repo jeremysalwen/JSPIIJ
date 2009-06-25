@@ -68,7 +68,7 @@ public class ide extends JFrame {
 
 	custom_type_generator type_generator;
 
-	security_settings settings;
+	public security_settings settings;
 
 	/**
 	 * @param args
@@ -108,7 +108,7 @@ public class ide extends JFrame {
 
 	public ide() {
 		super();
-		settings = new security_settings();
+		settings = new security_settings(this);
 		this.setTitle("pascalinterpreterinjava ide");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setSize(1200, 800);

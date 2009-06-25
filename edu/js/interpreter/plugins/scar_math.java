@@ -34,5 +34,28 @@ public class scar_math implements pascal_plugin {
 	public static int getsystemtime() {
 		return (int) System.currentTimeMillis();
 	}
-	
+
+	public static double pow(double base, double exponent) {
+		return Math.pow(base, exponent);
+	}
+
+	public static double sin(double d) {
+		return Math.sin(d);
+	}
+
+	public static double cos(double d) {
+		return Math.cos(d);
+	}
+
+	public static double sqr(double d) {
+		return d * d;
+	}
+
+	public static double sqrt(double d) {
+		return Math.sqrt(d);
+	}
+
+	public static boolean samevalue(double a, double b) {
+		return a == b;
+	}
 }

@@ -12,7 +12,6 @@ import edu.js.interpreter.preprocessed.interpreting_objects.variables.variable_i
 import edu.js.interpreter.processing.pascal_program;
 import edu.js.interpreter.processing.run_mode;
 
-
 public class function_on_stack implements contains_variables {
 	public HashMap<String, Object> local_variables = new HashMap<String, Object>();
 
@@ -82,7 +81,8 @@ public class function_on_stack implements contains_variables {
 		} else if (passed_variables.containsKey(name)) {
 			passed_variables.get(name).set(val);
 		} else {
-			System.err.println("Could not find requested variable '"+name+"'");
+			System.err.println("Could not find requested variable '" + name
+					+ "'");
 			System.exit(0);
 		}
 	}
@@ -93,6 +93,10 @@ public class function_on_stack implements contains_variables {
 		if (var_holder instanceof contains_variables) {
 			return ((contains_variables) var_holder).get_var(name.get(
 					name.size() - 1).string());
+		} else if (var_holder instanceof String) {
+			return ((String) var_holder)
+					.charAt(((Number) name.get(name.size() - 1).returnsvalue()
+							.get_value(this)).intValue());
 		} else {
 			return Array.get(var_holder, ((Number) name.get(name.size() - 1)
 					.returnsvalue().get_value(this)).intValue());
