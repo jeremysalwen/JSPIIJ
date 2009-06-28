@@ -34,7 +34,7 @@ public class scar_files implements pascal_plugin {
 
 	public int openfileex(String location, boolean shared, String mode) {
 		File f = new File(location);
-		if (ide.settings.hasAccess(location)) {
+		if (ide.settings.hasFileAccess(location)) {
 			RandomAccessFile openedfile = null;
 			try {
 				openedfile = new RandomAccessFile(f, mode);

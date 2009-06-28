@@ -58,4 +58,34 @@ public class scar_math implements pascal_plugin {
 	public static boolean samevalue(double a, double b) {
 		return a == b;
 	}
+
+	public static int max(int a, int b) {
+		return a > b ? a : b;
+	}
+
+	public static int min(int a, int b) {
+		return a < b ? a : b;
+	}
+
+	public static double maxE(double a, double b) {
+		return a > b ? a : b;
+	}
+
+	public static double minE(double a, double b) {
+		return a < b ? a : b;
+	}
+
+	public static double intpow(double base, int exp) {
+		double result = base;
+		while (exp != 0) {
+			if ((exp & 1) == 1) {
+				exp--;
+				result *= base;
+			} else {
+				exp = exp >> 2;
+				result *= result;
+			}
+		}
+		return result;
+	}
 }
