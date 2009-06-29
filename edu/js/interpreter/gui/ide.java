@@ -2,6 +2,7 @@ package edu.js.interpreter.gui;
 
 import java.awt.BorderLayout;
 import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -79,6 +80,8 @@ public class ide extends JFrame {
 	custom_type_generator type_generator;
 
 	public security_settings settings;
+
+	public Point windowloc = new Point(0, 0);
 
 	/**
 	 * @param args
