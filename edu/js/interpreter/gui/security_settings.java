@@ -28,12 +28,6 @@ public class security_settings {
 
 	public security_settings(ide i) {
 		this.ide = i;
-		askPermissionDialog = new JDialog(ide);
-		askPermissionDialog.add(new JLabel(
-				"Script is trying to acess the following file:"));
-		filenamelabel = new JLabel();
-		askPermissionDialog.add(filenamelabel);
-		askPermissionDialog.setVisible(true);
 	}
 
 	Set<File> allowed_files = new HashSet<File>();

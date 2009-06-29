@@ -84,15 +84,18 @@ public class function_on_stack implements contains_variables {
 	public Object get_var(variable_identifier name) {
 		zero_length_check(name);
 		Object var_holder = get_variable_holder(name);
-		int index = ((Number) name.get(name.size() - 1).returnsvalue()
-				.get_value(this)).intValue();
+
 		if (var_holder instanceof contains_variables) {
 			return ((contains_variables) var_holder).get_var(name.get(
 					name.size() - 1).string());
-		} else if (var_holder instanceof StringBuilder) {
-			return ((StringBuilder) var_holder).charAt(index);
 		} else {
-			return Array.get(var_holder, index);
+			int index = ((Number) name.get(name.size() - 1).returnsvalue()
+					.get_value(this)).intValue();
+			if (var_holder instanceof StringBuilder) {
+				return ((StringBuilder) var_holder).charAt(index);
+			} else {
+				return Array.get(var_holder, index);
+			}
 		}
 	}
 
