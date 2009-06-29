@@ -13,7 +13,7 @@ Result:=tostring(i)+'hello';
 end;
 var
 i, target:integer;
-r:real;
+r:extended;
 point:coords;
 cow:array[0 .. 10] of integer;
 begin

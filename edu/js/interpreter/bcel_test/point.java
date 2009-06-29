@@ -8,6 +8,11 @@ public class point implements contains_variables {
 
 	int y;
 
+	public point(double x2, int y2) {
+		this.x = x2;
+		this.y = y2;
+	}
+
 	public Object get_var(String name) {
 		name = name.intern();
 		if (name == "x") {
@@ -28,5 +33,8 @@ public class point implements contains_variables {
 		}
 	}
 
-	
+	public contains_variables clone() {
+		return new point(x, y);
+	}
+
 }

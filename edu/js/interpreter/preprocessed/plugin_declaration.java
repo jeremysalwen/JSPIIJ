@@ -23,6 +23,11 @@ public class plugin_declaration extends abstract_function {
 
 	public Object call(pascal_program program, Object[] arguments) {
 		try {
+			for (int i = 0; i < arguments.length; i++) {
+				if (arguments[i] instanceof StringBuilder) {
+					arguments[i] = arguments[i].toString();
+				}
+			}
 			return method.invoke(owner, arguments);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -39,6 +44,10 @@ public class plugin_declaration extends abstract_function {
 		Class[] types = method.getParameterTypes();
 		pascal_type[] result = new pascal_type[types.length];
 		for (int i = 0; i < types.length; i++) {
+
+			if (types[i] == String.class) {
+				types[i] = StringBuilder.class;
+			}
 			if (types[i] == pointer.class) {
 				types[i] = (Class) ((ParameterizedType) method
 						.getGenericParameterTypes()[i])

@@ -61,6 +61,9 @@ public class abstract_function_call implements returns_value, executable {
 				}
 			} else {
 				values[i] = arguments[i].get_value(f);
+				if (values[i] instanceof contains_variables) {
+					values[i] = ((contains_variables) values[i]).clone();
+				}
 			}
 		}
 		Object result = called_function.call(f.program, values);

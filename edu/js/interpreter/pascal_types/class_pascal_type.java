@@ -15,7 +15,8 @@ public class class_pascal_type extends pascal_type {
 
 	public static pascal_type Character = new class_pascal_type(Character.class);
 
-	public static pascal_type String = new class_pascal_type(String.class);
+	public static pascal_type StringBuilder = new class_pascal_type(
+			StringBuilder.class);
 
 	public static pascal_type Long = new class_pascal_type(Long.class);
 
@@ -24,7 +25,7 @@ public class class_pascal_type extends pascal_type {
 	public static pascal_type Integer = new class_pascal_type(Integer.class);
 	static {
 		default_values.put(class_pascal_type.Integer, 0);
-		default_values.put(class_pascal_type.String, "");
+		default_values.put(class_pascal_type.StringBuilder, "");
 		default_values.put(class_pascal_type.Double, 0.0D);
 		default_values.put(class_pascal_type.Long, 0L);
 		default_values.put(class_pascal_type.Character, '\0');
@@ -106,8 +107,8 @@ public class class_pascal_type extends pascal_type {
 		if (c == Double.class) {
 			return class_pascal_type.Double;
 		}
-		if (c == String.class) {
-			return class_pascal_type.String;
+		if (c == StringBuffer.class) {
+			return class_pascal_type.StringBuilder;
 		}
 		if (c == Long.class) {
 			return class_pascal_type.Long;

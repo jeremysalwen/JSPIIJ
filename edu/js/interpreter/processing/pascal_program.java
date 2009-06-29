@@ -155,6 +155,7 @@ public class pascal_program implements Runnable {
 			add_custom_type_declaration(i);
 		} else if (next instanceof begin_end_token) {
 			main.instructions = get_next_command(i);
+			next = i.take();
 			assert (next instanceof period_token);
 		} else if (next instanceof var_token) {
 			i.take();
@@ -162,6 +163,10 @@ public class pascal_program implements Runnable {
 			for (variable_declaration v : global_var_decs) {
 				main.local_variables.add(v);
 			}
+		} else {
+			i.take();
+			System.err.println("Unexpected token outside of any construct: "
+					+ next);
 		}
 	}
 
@@ -421,7 +426,8 @@ public class pascal_program implements Runnable {
 		} else if (next instanceof double_token) {
 			result = new constant_access(((double_token) next).value);
 		} else if (next instanceof string_token) {
-			result = new constant_access(((string_token) next).value);
+			result = new constant_access(new StringBuilder(
+					((string_token) next).value));
 		} else if (next instanceof word_token) {
 			String name = ((word_token) next).name;
 			if (!((next = iterator.peek()) instanceof EOF_token)) {
@@ -459,12 +465,12 @@ public class pascal_program implements Runnable {
 	}
 
 	pascal_type get_basic_type(String s) throws ClassNotFoundException {
-		s = s.intern();
+		s = s.toLowerCase().intern();
 		if (s == "integer") {
 			return class_pascal_type.Integer;
 		}
 		if (s == "string") {
-			return class_pascal_type.String;
+			return class_pascal_type.StringBuilder;
 		}
 		if (s == "single" || s == "extended" || s == "double") {
 			return class_pascal_type.Double;

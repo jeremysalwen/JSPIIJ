@@ -84,16 +84,15 @@ public class function_on_stack implements contains_variables {
 	public Object get_var(variable_identifier name) {
 		zero_length_check(name);
 		Object var_holder = get_variable_holder(name);
+		int index = ((Number) name.get(name.size() - 1).returnsvalue()
+				.get_value(this)).intValue();
 		if (var_holder instanceof contains_variables) {
 			return ((contains_variables) var_holder).get_var(name.get(
 					name.size() - 1).string());
-		} else if (var_holder instanceof String) {
-			return ((String) var_holder)
-					.charAt(((Number) name.get(name.size() - 1).returnsvalue()
-							.get_value(this)).intValue());
+		} else if (var_holder instanceof StringBuilder) {
+			return ((StringBuilder) var_holder).charAt(index);
 		} else {
-			return Array.get(var_holder, ((Number) name.get(name.size() - 1)
-					.returnsvalue().get_value(this)).intValue());
+			return Array.get(var_holder, index);
 		}
 	}
 
@@ -107,8 +106,14 @@ public class function_on_stack implements contains_variables {
 			((contains_variables) variable_holder).set_var(name.get(
 					name.size() - 1).string(), val);
 		} else {
-			Array.set(variable_holder, ((Number) name.get(name.size() - 1)
-					.returnsvalue().get_value(this)).intValue(), val);
+			int index = ((Number) name.get(name.size() - 1).returnsvalue()
+					.get_value(this)).intValue();
+			if (variable_holder instanceof StringBuilder) {
+				((StringBuilder) variable_holder).setCharAt(index,
+						(Character) val);
+			} else {
+				Array.set(variable_holder, index, val);
+			}
 		}
 	}
 
@@ -119,7 +124,11 @@ public class function_on_stack implements contains_variables {
 			if (index.isreturnsvalue()) {
 				int arrayindex = ((Number) index.returnsvalue().get_value(this))
 						.intValue();
-				v = Array.get(v, arrayindex);
+				if (v instanceof StringBuilder) {
+					v = ((StringBuilder) v).charAt(arrayindex);
+				} else {
+					v = Array.get(v, arrayindex);
+				}
 			} else {
 				v = ((contains_variables) v).get_var(name.get(i).string());
 			}
@@ -132,6 +141,10 @@ public class function_on_stack implements contains_variables {
 			System.err.println("Error 0 length variable!");
 			System.exit(0);
 		}
+	}
+
+	public contains_variables clone() {
+		return null;
 	}
 
 }

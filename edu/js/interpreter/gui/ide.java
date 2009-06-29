@@ -51,6 +51,8 @@ public class ide extends JFrame {
 
 	JButton runButton;
 
+	JButton pauseButton;
+
 	JButton stopButton;
 
 	JButton loadFileButton;
@@ -146,6 +148,14 @@ public class ide extends JFrame {
 						runProgram();
 					}
 				}).start();
+			}
+		});
+		pauseButton = new JButton();
+		pauseButton.setText("Pause");
+		buttonsPanel.add(pauseButton);
+		pauseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pauseProgram();
 			}
 		});
 		stopButton = new JButton();
@@ -302,19 +312,27 @@ public class ide extends JFrame {
 		}
 	}
 
-	void runProgram() {
-		program = new pascal_program(programInput.getText(), plugins,
-				type_generator);
-		program.run();
+	public void runProgram() {
+		if (program != null) {
+			resumeProgram();
+		} else {
+			program = new pascal_program(programInput.getText(), plugins,
+					type_generator);
+			program.run();
+		}
 	}
 
 	public void stopProgram() {
-		program.mode = run_mode.stopped;
-		this.program = null;
+		if (program != null) {
+			program.mode = run_mode.stopped;
+			this.program = null;
+		}
 	}
 
 	public void pauseProgram() {
-		program.mode = run_mode.paused;
+		if (program != null) {
+			program.mode = run_mode.paused;
+		}
 	}
 
 	public void resumeProgram() {

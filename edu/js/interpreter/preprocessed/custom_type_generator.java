@@ -234,8 +234,8 @@ public class custom_type_generator {
 	}
 
 	void add_clone(BCClass b) {
-		BCMethod clone_method = b.declareMethod("clone", Object.class,
-				new Class[0]);
+		BCMethod clone_method = b.declareMethod("clone",
+				contains_variables.class, new Class[0]);
 		clone_method.makePublic();
 		Code clone_code = clone_method.getCode(true);
 		try {
