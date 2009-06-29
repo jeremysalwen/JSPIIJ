@@ -1,5 +1,7 @@
 package edu.js.interpreter.gui;
 
+import java.awt.BorderLayout;
+import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -21,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -63,6 +66,8 @@ public class ide extends JFrame {
 	JButton clearPluginsButton;
 
 	JButton addPluginsButton;
+
+	public JLabel status_bar;
 
 	pascal_program program;
 
@@ -120,7 +125,10 @@ public class ide extends JFrame {
 				+ File.separatorChar + "interpreter" + File.separatorChar
 				+ "plugins" + File.separatorChar));
 		wholeWindow = new JPanel();
-		this.add(wholeWindow);
+		this.setLayout(new BorderLayout());
+		this.add(wholeWindow, BorderLayout.NORTH);
+		this.status_bar = new JLabel("Status bar");
+		this.add(status_bar, BorderLayout.SOUTH);
 		programInput = new JEditorPane();
 		debugBox = new JTextArea("Debug Box\n");
 		wholeWindow.setLayout(new BoxLayout(wholeWindow, BoxLayout.Y_AXIS));
@@ -193,6 +201,7 @@ public class ide extends JFrame {
 				+ "testprogram.pas"));
 		type_generator = new custom_type_generator(new File(System
 				.getProperty("user.dir")));
+		pack();
 		setVisible(true);
 	}
 
@@ -299,8 +308,18 @@ public class ide extends JFrame {
 		program.run();
 	}
 
-	void stopProgram() {
+	public void stopProgram() {
 		program.mode = run_mode.stopped;
+		this.program = null;
+	}
+
+	public void pauseProgram() {
+		program.mode = run_mode.paused;
+	}
+
+	public void resumeProgram() {
+		program.mode = run_mode.running;
+		program.notifyAll();
 	}
 
 	public void output_to_debug(String s) {

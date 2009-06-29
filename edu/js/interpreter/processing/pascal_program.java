@@ -117,8 +117,9 @@ public class pascal_program implements Runnable {
 	}
 
 	private void add_next_declaration(base_grouper_token i) {
-		token next = i.take();
+		token next = i.peek();
 		if (next instanceof procedure_token || next instanceof function_token) {
+			i.take();
 			boolean is_procedure = next instanceof procedure_token;
 			function_declaration declaration = new function_declaration();
 			declaration.name = get_word_value(i);
@@ -142,29 +143,25 @@ public class pascal_program implements Runnable {
 				i.take();
 				local_variables = get_variable_declarations(i);
 			}
-			List<executable> commands = get_function_body((begin_end_token) i
-					.take());
+			executable commands = get_next_command(i);
 			assert_next_semicolon(i);
 			declaration.instructions = commands;
 
 			declaration.local_variables = local_variables == null ? new ArrayList<variable_declaration>()
 					: local_variables;
 			callable_functions.put(declaration, declaration);
-			return;
 		} else if (next instanceof type_token) {
+			i.take();
 			add_custom_type_declaration(i);
-			return;
 		} else if (next instanceof begin_end_token) {
-			main.instructions = get_function_body((begin_end_token) next);
-			next = i.take();
+			main.instructions = get_next_command(i);
 			assert (next instanceof period_token);
-			return;
 		} else if (next instanceof var_token) {
+			i.take();
 			List<variable_declaration> global_var_decs = get_variable_declarations(i);
 			for (variable_declaration v : global_var_decs) {
 				main.local_variables.add(v);
 			}
-			return;
 		}
 	}
 

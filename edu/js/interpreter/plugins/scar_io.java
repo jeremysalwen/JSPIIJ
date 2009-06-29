@@ -5,10 +5,10 @@ import javax.swing.JOptionPane;
 import edu.js.interpreter.gui.ide;
 import edu.js.interpreter.processing.pascal_plugin;
 
-public class standard_io implements pascal_plugin {
+public class scar_io implements pascal_plugin {
 	ide ide;
 
-	public standard_io(ide ide) {
+	public scar_io(ide ide) {
 		this.ide = ide;
 	}
 
@@ -46,5 +46,13 @@ public class standard_io implements pascal_plugin {
 
 	public int getdebuglinecount() {
 		return ide.debugBox.getLineCount();
+	}
+
+	public void status(String text) {
+		ide.status_bar.setText(text);
+	}
+
+	public String getstatus() {
+		return ide.status_bar.getText();
 	}
 }

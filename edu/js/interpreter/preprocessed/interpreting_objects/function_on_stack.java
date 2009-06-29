@@ -49,13 +49,7 @@ public class function_on_stack implements contains_variables {
 	}
 
 	public Object execute() {
-		for (executable e : prototype.instructions) {
-			if (program.mode == run_mode.stopped) {
-				return null;
-			}
-			e.execute(this);
-
-		}
+		prototype.instructions.execute(this);
 		return local_variables.get("result");
 	}
 

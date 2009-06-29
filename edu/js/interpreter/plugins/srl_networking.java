@@ -5,11 +5,13 @@ import java.awt.Robot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -23,6 +25,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 
 import edu.js.interpreter.gui.ide;
+import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_plugin;
 
 public class srl_networking implements pascal_plugin {
@@ -30,7 +33,11 @@ public class srl_networking implements pascal_plugin {
 
 	Map<Integer, spedClient> clients = new HashMap<Integer, spedClient>();
 
+	Map<Integer, Socket> connections = new HashMap<Integer, Socket>();
+
 	int clientnumber = 0;
+
+	int connectionnumber = 0;
 
 	public srl_networking(ide i) {
 		this.ide = i;
@@ -156,5 +163,63 @@ public class srl_networking implements pascal_plugin {
 		public HttpClient client;
 
 		public PostMethod post;
+	}
+
+	public int openConnection(String host, int port, int timeout) {
+		try {
+			Socket s = new Socket(host, port);
+			s.setSoTimeout(timeout);
+			connections.put(connectionnumber, s);
+			return connectionnumber++;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+
+	public boolean readConnectionData(int connection, pointer<String> buffer) {
+		try {
+			Socket s = connections.get(connection);
+
+			InputStream stream = s.getInputStream();
+			byte[] buff = new byte[stream.available()];
+			stream.read(buff);
+			buffer.set(new String(buff));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean sendConnectionData(int connection, String tosend) {
+		try {
+			Socket s = connections.get(connection);
+			s.getOutputStream().write(tosend.getBytes());
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public void freeConnection(int i) {
+		try {
+			connections.get(i).close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		connections.remove(i);
+
+	}
+
+	public boolean isconnectionopen(int i) {
+		try {
+			return connections.get(i).isConnected();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

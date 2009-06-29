@@ -6,7 +6,6 @@ import java.util.List;
 import edu.js.interpreter.preprocessed.interpreting_objects.function_on_stack;
 import edu.js.interpreter.processing.run_mode;
 
-
 public class instruction_grouper implements executable {
 	List<executable> instructions;
 
@@ -20,8 +19,16 @@ public class instruction_grouper implements executable {
 
 	public boolean execute(function_on_stack f) {
 		for (executable e : instructions) {
-			if (f.program.mode == run_mode.stopped) {
+			switch (f.program.mode) {
+			case stopped:
 				return true;
+			case paused:
+				while (f.program.mode == run_mode.paused) {
+					try {
+						f.program.wait();
+					} catch (InterruptedException e1) {
+					}
+				}
 			}
 			if (e.execute(f)) {
 				return true;
