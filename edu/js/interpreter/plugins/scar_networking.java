@@ -28,7 +28,7 @@ import edu.js.interpreter.gui.ide;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_plugin;
 
-public class srl_networking implements pascal_plugin {
+public class scar_networking implements pascal_plugin {
 	ide ide;
 
 	Map<Integer, spedClient> clients = new HashMap<Integer, spedClient>();
@@ -39,7 +39,7 @@ public class srl_networking implements pascal_plugin {
 
 	int connectionnumber = 0;
 
-	public srl_networking(ide i) {
+	public scar_networking(ide i) {
 		this.ide = i;
 	}
 
