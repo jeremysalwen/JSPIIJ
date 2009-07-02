@@ -50,6 +50,7 @@ import edu.js.interpreter.tokens.basic.repeat_token;
 import edu.js.interpreter.tokens.basic.semicolon_token;
 import edu.js.interpreter.tokens.basic.then_token;
 import edu.js.interpreter.tokens.basic.to_token;
+import edu.js.interpreter.tokens.basic.until_token;
 import edu.js.interpreter.tokens.basic.var_token;
 import edu.js.interpreter.tokens.basic.while_token;
 import edu.js.interpreter.tokens.grouping.base_grouper_token;
@@ -254,6 +255,7 @@ public class pascal_program implements Runnable {
 		List<executable> commands = new ArrayList<executable>();
 		while (t.hasNext()) {
 			commands.add(get_next_command(t));
+			assert_next_semicolon(t);
 		}
 		return commands;
 	}
@@ -271,12 +273,14 @@ public class pascal_program implements Runnable {
 				token_iterator.take();
 				else_command = get_next_command(token_iterator);
 			}
+			assert (next instanceof semicolon_token);
 			return new if_statement(condition, command, else_command);
 		} else if (next instanceof while_token) {
 			returns_value condition = get_next_returns_value(token_iterator);
 			next = token_iterator.take();
 			assert (next instanceof do_token);
 			executable command = get_next_command(token_iterator);
+			assert_next_semicolon(token_iterator);
 			return new while_statement(condition, command);
 		} else if (next instanceof begin_end_token) {
 			instruction_grouper begin_end_preprocessed = new instruction_grouper();
@@ -284,6 +288,7 @@ public class pascal_program implements Runnable {
 			while (cast_token.hasNext()) {
 				begin_end_preprocessed
 						.add_command(get_next_command(cast_token));
+				assert_next_semicolon(cast_token);
 			}
 			return begin_end_preprocessed;
 		} else if (next instanceof for_token) {
@@ -302,15 +307,23 @@ public class pascal_program implements Runnable {
 			returns_value last_value = get_next_returns_value(token_iterator);
 			next = token_iterator.take();
 			assert (next instanceof do_token);
-			if (downto) {
-				return new downto_for_statement(tmp_var, first_value,
+			executable result;
+			if (downto) { // TODO probably should merge these two types
+				result = new downto_for_statement(tmp_var, first_value,
 						last_value, get_next_command(token_iterator));
 			} else {
-				return new for_statement(tmp_var, first_value, last_value,
+				result = new for_statement(tmp_var, first_value, last_value,
 						get_next_command(token_iterator));
 			}
+			assert_next_semicolon(token_iterator);
+			return result;
 		} else if (next instanceof repeat_token) {
-			executable command = get_next_command(token_iterator);
+			instruction_grouper command = new instruction_grouper();
+			while (!(token_iterator.peek_no_EOF() instanceof until_token)) {
+				get_next_command(token_iterator);
+			}
+			next = token_iterator.take();
+			assert (next instanceof until_token);
 			returns_value condition = get_next_returns_value(token_iterator);
 			return new repeat_instruction(command, condition);
 		} else if (next instanceof word_token) {
@@ -319,7 +332,6 @@ public class pascal_program implements Runnable {
 			if (next instanceof parenthesized_token) {
 				token_iterator.take();
 				returns_value[] arguments = get_arguments_for_call((parenthesized_token) next);
-				assert_next_semicolon(token_iterator);
 				return new abstract_function_call(name, arguments);
 			} else {
 				// at this point assuming it is a variable identifier.
@@ -328,7 +340,6 @@ public class pascal_program implements Runnable {
 				next = token_iterator.take();
 				assert (next instanceof assignment_token);
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
-				assert_next_semicolon(token_iterator);
 				return new variable_set(identifier, value_to_assign);
 			}
 		}
@@ -484,7 +495,6 @@ public class pascal_program implements Runnable {
 		if (s == "character") {
 			return class_pascal_type.Character;
 		}
-		// TODO add more types
 		return class_pascal_type.anew(Class
 				.forName("edu.js.interpreter.custom_types."
 						+ Integer.toHexString(custom_types.get(s).hashCode())));

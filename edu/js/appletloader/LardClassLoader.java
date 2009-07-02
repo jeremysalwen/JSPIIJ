@@ -1,26 +1,17 @@
 package edu.js.appletloader;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.jar.JarFile;
-import java.util.zip.ZipFile;
 
 import serp.bytecode.BCClass;
-import serp.bytecode.BCClassLoader;
-import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.Instruction;
-import serp.bytecode.MethodInstruction;
 import serp.bytecode.Project;
 import serp.bytecode.ReturnInstruction;
-import serp.bytecode.visitor.BCVisitor;
 
 public class LardClassLoader extends URLClassLoader {
 	Project p;
@@ -33,8 +24,11 @@ public class LardClassLoader extends URLClassLoader {
 		super(urls);
 		this.overRide = overRide;
 		try {
-			this.u = new URLClassLoader(
-					new URL[] { new File(overRide.getName()).toURI().toURL() });
+
+			if (overRide != null) {
+				this.u = new URLClassLoader(new URL[] { new File(overRide
+						.getName()).toURI().toURL() });
+			}
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,6 +64,7 @@ public class LardClassLoader extends URLClassLoader {
 		System.out.println(loadClass.getName());
 		clazz.removeDeclaredMethod("loadClass");
 		clazz.declareMethod(loadClass);
-		return defineClass(clazz.toByteArray(), 0, clazz.toByteArray().length);
+		return defineClass(clazz.getName(), clazz.toByteArray(), 0, clazz
+				.toByteArray().length);
 	}
 }

@@ -1,4 +1,5 @@
 package edu.js.appletloader;
+
 import java.applet.Applet;
 import java.awt.Insets;
 import java.awt.event.MouseMotionListener;
@@ -48,7 +49,8 @@ import serp.bytecode.PutFieldInstruction;
 public class LardLoader {
 	String script;
 
-	public static Applet getApplet(int world) throws Exception {
+	public static javawontletmepasspointers getApplet(int world)
+			throws Exception {
 		String scriptLoc = "http://world" + world + ".runescape.com/";
 		String javascript = downloadHTML(new URL(new URL(scriptLoc),
 				"plugin.js?param=o0,a2,m0,s0").toExternalForm());
@@ -68,8 +70,7 @@ public class LardLoader {
 		String code = m.group(1);
 		System.out.println(params);
 		System.out.println(archive);
-		URLClassLoader u = new LardClassLoader(new URL[] { archive },
-				new JarFile(new File("./JackMyAss.zip")));
+		URLClassLoader u = new LardClassLoader(new URL[] { archive }, null);
 		Applet rs = (Applet) (u.loadClass(code).newInstance());
 		appletStub a = new appletStub(scriptLoc, scriptLoc.substring(0,
 				scriptLoc.indexOf("runescape.com/") + 14), params);
@@ -84,7 +85,10 @@ public class LardLoader {
 		a.active = true;
 		rs.start();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		return rs;
+		javawontletmepasspointers result = new javawontletmepasspointers();
+		result.applet = rs;
+		result.stub = a;
+		return result;
 	}
 
 	public void outputReflectionData() throws Exception {
@@ -200,7 +204,7 @@ public class LardLoader {
 	}
 
 	public static void main(String[] args) throws Exception {
-		Applet a = getApplet(29);
+		getApplet(29);
 	}
 
 	public static Field getField(String name, ClassLoader c)
