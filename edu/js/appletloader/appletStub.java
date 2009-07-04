@@ -1,4 +1,5 @@
 package edu.js.appletloader;
+
 import java.applet.AppletContext;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,7 +42,8 @@ public class appletStub implements java.applet.AppletStub {
 		return null;
 	}
 
-	public void appletResize(int i, int i1) {
+	public void appletResize(int x, int y) {
+		System.out.println("resizing x:" + x + " y:" + y);
 	}
 
 }

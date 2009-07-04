@@ -1,7 +1,10 @@
 package edu.js.appletloader;
 
 import java.applet.Applet;
+import java.awt.Frame;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.appletProxy;
 import java.awt.event.MouseMotionListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -76,15 +79,19 @@ public class LardLoader {
 				scriptLoc.indexOf("runescape.com/") + 14), params);
 		rs.setStub(a);
 		JFrame f = new JFrame();
-		f.setResizable(false);
+
 		f.add(rs);
 		Insets in = f.getInsets();
-		f.setSize(in.right + in.left + 765, in.bottom + in.top + 503);
-		f.setVisible(true);
 		rs.init();
 		a.active = true;
 		rs.start();
+		f.setSize(in.right + in.left + 770, in.bottom + in.top + 540);
+		f.setResizable(false);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setVisible(true);
+		f.pack();
+		// rs.updateCanvas();
+		// rs.addEventFilter();
 		javawontletmepasspointers result = new javawontletmepasspointers();
 		result.applet = rs;
 		result.stub = a;
@@ -230,12 +237,6 @@ public class LardLoader {
 	static LinkedList<String> ToMessup;
 
 	static HashMap<String, String> params = new HashMap<String, String>();
-
-	private static String homePage;
-
-	private static String detail;
-
-	private static String firstpage;
 
 	private static URL archive;
 
