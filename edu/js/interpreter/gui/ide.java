@@ -32,6 +32,7 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import edu.js.SCARlib.SCARLib;
 import edu.js.appletloader.LardLoader;
 import edu.js.appletloader.appletStub;
 import edu.js.appletloader.javawontletmepasspointers;
@@ -85,9 +86,14 @@ public class ide extends JFrame {
 
 	public security_settings settings;
 
-	public Point windowloc = new Point(0, 0);
-
 	public Applet client = null;
+
+	/*
+	 * This is actually a native window, or a pointer to one.
+	 */
+	public long window;
+
+	public SCARLib connection;
 
 	/**
 	 * @param args
@@ -243,6 +249,8 @@ public class ide extends JFrame {
 				+ "testprogram.pas"));
 		type_generator = new custom_type_generator(new File(System
 				.getProperty("user.dir")));
+		connection = new SCARLib();
+		window=connection.getRootWindow();
 		pack();
 		setVisible(true);
 	}

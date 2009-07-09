@@ -1,6 +1,5 @@
 package java.awt;
 
-import java.awt.EventFilter;
 import java.awt.event.ActionEvent;
 
 /*

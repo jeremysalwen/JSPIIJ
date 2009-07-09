@@ -25,8 +25,6 @@ import java.util.EventListener;
 
 import javax.naming.event.EventDirContext;
 
-import sun.applet.AppletEvent;
-import sun.applet.AppletListener;
 
 public class appletProxy extends Applet implements FocusListener,
 		MouseListener, MouseMotionListener, KeyListener, InputMethodListener{

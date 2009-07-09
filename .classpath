@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="serp-1.14.2.jar"/>
 	<classpathentry kind="lib" path="commons-httpclient.jar"/>
-	<classpathentry kind="lib" path="runescape86893895.jar" sourcepath="/home/jeremy/Desktop/rs/runescource.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SCARlib"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

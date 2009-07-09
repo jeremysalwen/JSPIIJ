@@ -23,7 +23,6 @@ public class case_possibilty {
 	 *            the value being examined in this case statement.
 	 * @return Whether or not it has broken.
 	 */
-	// TODO this must be fixed. I need a break system!
 	public boolean execute(function_on_stack f, Object value) {
 		if (condition.fits(f, value)) {
 			for (executable e : commands) {

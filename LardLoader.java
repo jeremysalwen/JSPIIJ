@@ -1,11 +1,16 @@
-package edu.js.appletloader;
-
 import java.applet.Applet;
+import java.awt.BufferCapabilities;
+import java.awt.Canvas;
 import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.ImageCapabilities;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.appletProxy;
+import java.awt.BufferCapabilities.FlipContents;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -37,6 +42,9 @@ import java.util.zip.ZipInputStream;
 
 import javax.swing.JFrame;
 
+import edu.js.appletloader.appletStub;
+import edu.js.appletloader.javawontletmepasspointers;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
@@ -48,12 +56,13 @@ import serp.bytecode.MathInstruction;
 import serp.bytecode.MethodInstruction;
 import serp.bytecode.Project;
 import serp.bytecode.PutFieldInstruction;
+import sun.awt.image.SunVolatileImage;
 
 public class LardLoader {
 	String script;
 
-	public static javawontletmepasspointers getApplet(int world)
-			throws Exception {
+	@SuppressWarnings("deprecation")
+	public static void getApplet(int world) throws Exception {
 		String scriptLoc = "http://world" + world + ".runescape.com/";
 		String javascript = downloadHTML(new URL(new URL(scriptLoc),
 				"plugin.js?param=o0,a2,m0,s0").toExternalForm());
@@ -73,8 +82,8 @@ public class LardLoader {
 		String code = m.group(1);
 		System.out.println(params);
 		System.out.println(archive);
-		 URLClassLoader u = new LardClassLoader(new URL[] { archive }, null);
-		Applet rs = (Applet) ClassLoader.getSystemClassLoader().loadClass(code).newInstance();
+		// URLClassLoader u = new LardClassLoader(new URL[] { archive }, null);
+		client rs = new client();
 		appletStub a = new appletStub(scriptLoc, scriptLoc.substring(0,
 				scriptLoc.indexOf("runescape.com/") + 14), params);
 		rs.setStub(a);
@@ -92,10 +101,22 @@ public class LardLoader {
 		f.pack();
 		// rs.updateCanvas();
 		// rs.addEventFilter();
-		javawontletmepasspointers result = new javawontletmepasspointers();
-		result.applet = rs;
-		result.stub = a;
-		return result;
+		Thread.sleep(10000);
+		((Canvas) rs.getComponentAt(1, 1)).createBufferStrategy(1);
+		clientScreenReader s = new clientScreenReader();
+		s.image = rs.getGraphicsConfiguration().createCompatibleImage(800, 800);
+		JFrame j = new JFrame();
+		j.add(s);
+		j.pack();
+		j.setVisible(true);
+		while (true) {
+			Thread.sleep(500);
+			rs.getComponentAt(1, 1).update(s.image.getGraphics());
+		}
+		// javawontletmepasspointers result = new javawontletmepasspointers();
+		// result.applet = rs;
+		// result.stub = a;
+		// return result;
 	}
 
 	public void outputReflectionData() throws Exception {
