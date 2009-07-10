@@ -531,6 +531,99 @@ public class scar_robot implements pascal_plugin {
 		return null;
 	}
 
+	public Point FindColorToleranceInCircleBounded(int x0, int y0, int radius,
+			Rectangle bounds, Raster image, int color, int tolerance) {
+		if (isPointInBoundsAndMatchesColorTolerance(x0 + radius, y0, bounds,
+				color, image, tolerance)) {
+			return new Point(x0 + radius, y0);
+		}
+		if (isPointInBoundsAndMatchesColorTolerance(x0 - radius, y0, bounds,
+				color, image, tolerance)) {
+			return new Point(x0 - radius, y0);
+		}
+		if (isPointInBoundsAndMatchesColorTolerance(x0, y0 + radius, bounds,
+				color, image, tolerance)) {
+			return new Point(x0, y0 + radius);
+		}
+		if (isPointInBoundsAndMatchesColorTolerance(x0, y0 - radius, bounds,
+				color, image, tolerance)) {
+			return new Point(x0, y0 - radius);
+		}
+		int f = 1 - radius;
+		int ddF_x = 1;
+		int ddF_y = -2 * radius;
+		int x = 0;
+		int y = radius;
+		while (x < y) {
+			// ddF_x == 2 * x + 1;
+			// ddF_y == -2 * y;
+			// f == x*x + y*y - radius*radius + 2*x - y + 1;
+			if (f >= 0) {
+				y--;
+				ddF_y += 2;
+				f += ddF_y;
+			}
+			x++;
+			ddF_x += 2;
+			f += ddF_x;
+			if (isPointInBoundsAndMatchesColorTolerance(x0 + x, y0 + y, bounds,
+					color, image, tolerance))
+				return new Point(x0 + x, y0 + y);
+			if (isPointInBoundsAndMatchesColorTolerance(x0 - x, y0 + y, bounds,
+					color, image, tolerance))
+				return new Point(x0 - x, y0 + y);
+			if (isPointInBoundsAndMatchesColorTolerance(x0 + x, y0 - y, bounds,
+					color, image, tolerance))
+				return new Point(x0 + x, y0 - y);
+			if (isPointInBoundsAndMatchesColorTolerance(x0 - x, y0 - y, bounds,
+					color, image, tolerance))
+				return new Point(x0 - x, y0 - y);
+			if (isPointInBoundsAndMatchesColorTolerance(x0 + y, y0 + x, bounds,
+					color, image, tolerance))
+				return new Point(x0 + y, y0 + x);
+			if (isPointInBoundsAndMatchesColorTolerance(x0 - y, y0 + x, bounds,
+					color, image, tolerance))
+				return new Point(x0 - y, y0 + y);
+			if (isPointInBoundsAndMatchesColorTolerance(x0 + y, y0 - x, bounds,
+					color, image, tolerance))
+				return new Point(x0 + y, y0 - x);
+			if (isPointInBoundsAndMatchesColorTolerance(x0 - y, y0 - x, bounds,
+					color, image, tolerance))
+				return new Point(x0 - y, y0 - x);
+		}
+		return null;
+	}
+
+	public boolean isPointInBoundsAndMatchesColorTolerance(int x, int y,
+			Rectangle bounds, int color, Raster image, int tolerance) {
+		if (!bounds.contains(x, y)) {
+			return false;
+		}
+		int totaloff = 0;
+		/*
+		 * red
+		 */
+		totaloff += Math.abs(image.getSample(x, y, 0)
+				- ((color & 0x00FF0000) >>> 16));
+		if (totaloff > tolerance) {
+			return false;
+		}
+		/*
+		 * green
+		 */
+		totaloff += Math.abs(image.getSample(x, y, 1)
+				- ((color & 0x0000FF00) >>> 8));
+		/*
+		 * blue
+		 */
+		totaloff += Math.abs(image.getSample(x, y, 2) - (color & 0x000000FF));
+
+		if (totaloff > tolerance) {
+			return false;
+		}
+		return true;
+	}
+
 	public boolean isPointInBoundsAndMatchesColor(int x, int y,
 			Rectangle bounds, int color, Raster image) {
 		if (!bounds.contains(x, y)) {
