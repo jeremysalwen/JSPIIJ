@@ -376,27 +376,11 @@ public class scar_robot implements pascal_plugin {
 		WritableRaster data = image.getRaster();
 		for (int i = xstart; i <= xend; i++) {
 			for (int j = ystart; j < yend; j++) {
-				/*
-				 * red
-				 */
-				if (jcolor.getRed() != data.getSample(i, j, 0)) {
-					continue;
+				if (ColorsSame(jcolor, data, i, j)) {
+					x.set(i);
+					y.set(j);
+					return true;
 				}
-				/*
-				 * green
-				 */
-				if (jcolor.getGreen() != data.getSample(i, j, 1)) {
-					continue;
-				}
-				/*
-				 * blue
-				 */
-				if (jcolor.getGreen() != data.getSample(i, j, 2)) {
-					continue;
-				}
-				x.set(i);
-				y.set(j);
-				return true;
 			}
 		}
 		return false;
@@ -415,30 +399,11 @@ public class scar_robot implements pascal_plugin {
 		WritableRaster data = image.getRaster();
 		for (int i = xstart; i <= xend; i++) {
 			for (int j = ystart; j < yend; j++) {
-				int totaloff = 0;
-				/*
-				 * red
-				 */
-				totaloff += Math.abs(jcolor.getRed() - data.getSample(i, j, 0));
-				if (totaloff > tolerance) {
-					continue;
+				if (SimilarColor(jcolor, tolerance, data, i, j)) {
+					x.set(i);
+					y.set(j);
+					return true;
 				}
-				/*
-				 * green
-				 */
-				totaloff += Math.abs(jcolor.getGreen()
-						- data.getSample(i, j, 1));
-				/*
-				 * blue
-				 */
-				totaloff += Math
-						.abs(jcolor.getBlue() - data.getSample(i, j, 2));
-				if (totaloff > tolerance) {
-					continue;
-				}
-				x.set(i);
-				y.set(j);
-				return true;
 			}
 		}
 		return false;
@@ -644,27 +609,7 @@ public class scar_robot implements pascal_plugin {
 		if (!bounds.contains(x, y)) {
 			return false;
 		}
-		int totaloff = 0;
-		/*
-		 * red
-		 */
-		totaloff += Math.abs(image.getSample(x, y, 0) - color.getRed());
-		if (totaloff > tolerance) {
-			return false;
-		}
-		/*
-		 * green
-		 */
-		totaloff += Math.abs(image.getSample(x, y, 1) - color.getGreen());
-		/*
-		 * blue
-		 */
-		totaloff += Math.abs(image.getSample(x, y, 2) - color.getBlue());
-
-		if (totaloff > tolerance) {
-			return false;
-		}
-		return true;
+		return SimilarColor(color, tolerance, image, x, y);
 	}
 
 	public boolean isPointInBoundsAndMatchesColor(int x, int y,
@@ -672,16 +617,7 @@ public class scar_robot implements pascal_plugin {
 		if (!bounds.contains(x, y)) {
 			return false;
 		}
-		if (image.getSample(x, y, 0) != color.getRed()) {
-			return false;
-		}
-		if (image.getSample(x, y, 1) != color.getGreen()) {
-			return false;
-		}
-		if (image.getSample(x, y, 2) != color.getBlue()) {
-			return false;
-		}
-		return true;
+		return ColorsSame(color, image, x, y);
 	}
 
 	public boolean FindWindowTitlePart(String part, boolean casematters) {
@@ -709,7 +645,70 @@ public class scar_robot implements pascal_plugin {
 				+ Math.abs((color1 & 0x000000FF) - (color2 & 0x000000FF)) <= tolerance;
 	}
 
-	public int FindColor(int color, int x1, int y1, int x2, int y2) {
+	boolean SimilarColor(Color jcolor, int tolerance, Raster data, int x, int y) {
+
+		int totaloff = 0;
+		/*
+		 * red
+		 */
+		totaloff += Math.abs(jcolor.getRed() - data.getSample(x, y, 0));
+		if (totaloff > tolerance) {
+			return false;
+		}
+		/*
+		 * green
+		 */
+		totaloff += Math.abs(jcolor.getGreen() - data.getSample(x, y, 1));
+		/*
+		 * blue
+		 */
+		totaloff += Math.abs(jcolor.getBlue() - data.getSample(x, y, 2));
+		return totaloff <= tolerance;
+	}
+
+	boolean ColorsSame(Color color, Raster data, int x, int y) {
+		if (data.getSample(x, y, 0) != color.getRed()) {
+			return false;
+		}
+		if (data.getSample(x, y, 1) != color.getGreen()) {
+			return false;
+		}
+		if (data.getSample(x, y, 2) != color.getBlue()) {
+			return false;
+		}
+		return true;
+	}
+
+	public int CountColor(int color, int x1, int y1, int x2, int y2) {
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		Color jcolor = new Color(color);
+		x1 += windowloc.x;
+		x2 += windowloc.x;
+		y1 += windowloc.y;
+		y2 += windowloc.y;
+		BufferedImage image = r.createScreenCapture(new Rectangle(x1, y1, x2
+				- x1, y2 - y1));
+		Raster raster = image.getRaster();
+		int count = 0;
+		for (int i = x1; i <= x2; i++) {
+			for (int j = y1; j <= y2; j++) {
+				if (jcolor.getRed() != raster.getSample(i, j, 0)) {
+					continue;
+				}
+				if (jcolor.getGreen() != raster.getSample(i, j, 1)) {
+					continue;
+				}
+				if (jcolor.getBlue() != raster.getSample(i, j, 2)) {
+					continue;
+				}
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public int CountColorTolerance(int color, int x1, int y1, int x2, int y2,
+			int tolerance) {
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
 		Color jcolor = new Color(color);
 		x1 += windowloc.x;
