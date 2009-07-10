@@ -83,7 +83,7 @@ public class LardLoader {
 		System.out.println(params);
 		System.out.println(archive);
 		// URLClassLoader u = new LardClassLoader(new URL[] { archive }, null);
-		client rs = new client();
+		Applet rs = new Applet();//client();
 		appletStub a = new appletStub(scriptLoc, scriptLoc.substring(0,
 				scriptLoc.indexOf("runescape.com/") + 14), params);
 		rs.setStub(a);

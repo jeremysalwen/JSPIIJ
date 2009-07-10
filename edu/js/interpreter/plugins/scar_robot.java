@@ -1,16 +1,27 @@
 package edu.js.interpreter.plugins;
 
 import java.awt.AWTException;
+import java.awt.Color;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.util.Random;
+
+import javax.naming.OperationNotSupportedException;
+
+import com.sun.corba.se.internal.Interceptors.PIORB;
 
 import edu.js.interpreter.gui.ide;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_plugin;
+import edu.js.interpreter.tokens.value.integer_token;
 
 public class scar_robot implements pascal_plugin {
 	ide ide;
@@ -323,7 +334,239 @@ public class scar_robot implements pascal_plugin {
 		r.keyRelease(key);
 	}
 
-	public static void main(String[] args) {
+	public long GetClientWindowHandle() {
+		return ide.window;
+	}
+
+	public void SetClientWindowHandle(long window) {
+		ide.window = window;
+	}
+
+	public void FindWindow(String name) {
+		ide.window = ide.connection.getWindowByName(name);
+	}
+
+	public void ActivateClient() {
+		ide.connection.ActivateWindow(ide.window);
+	}
+
+	public void GetClientDimensions(pointer<Integer> x, pointer<Integer> y) {
+		Point result = ide.connection.GetWindowDimensions(ide.window);
+		x.set(result.x);
+		y.set(result.y);
+	}
+
+	public int GetColor(int x, int y) {
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		x += windowloc.x;
+		y += windowloc.y;
+		return r.getPixelColor(x, y).getRGB();
+	}
+
+	public boolean FindColor(pointer<Integer> x, pointer<Integer> y, int color,
+			int xstart, int ystart, int xend, int yend) {
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		xstart += windowloc.x;
+		ystart += windowloc.y;
+		xend += windowloc.x;
+		yend += windowloc.y;
+		BufferedImage image = r.createScreenCapture(new Rectangle(xstart,
+				ystart, xend - xstart, yend - ystart));
+		WritableRaster data = image.getRaster();
+		for (int i = xstart; i <= xend; i++) {
+			for (int j = ystart; j < yend; j++) {
+				/*
+				 * red
+				 */
+				if ((color & 0x00FF0000) >>> 16 != data.getSample(i, j, 0)) {
+					continue;
+				}
+				/*
+				 * green
+				 */
+				if ((color & 0x0000FF00) >>> 8 != data.getSample(i, j, 1)) {
+					continue;
+				}
+				/*
+				 * blue
+				 */
+				if ((color & 0x000000FF) != data.getSample(i, j, 2)) {
+					continue;
+				}
+				x.set(i);
+				y.set(j);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean FindColorTolerance(pointer<Integer> x, pointer<Integer> y,
+			int color, int xstart, int ystart, int xend, int yend, int tolerance) {
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		xstart += windowloc.x;
+		ystart += windowloc.y;
+		xend += windowloc.x;
+		yend += windowloc.y;
+		BufferedImage image = r.createScreenCapture(new Rectangle(xstart,
+				ystart, xend - xstart, yend - ystart));
+		WritableRaster data = image.getRaster();
+		for (int i = xstart; i <= xend; i++) {
+			for (int j = ystart; j < yend; j++) {
+				int totaloff = 0;
+				/*
+				 * red
+				 */
+				totaloff += Math.abs((((color & 0x00FF0000) >>> 16) - (data
+						.getSample(i, j, 0))));
+				if (totaloff > tolerance) {
+					continue;
+				}
+				/*
+				 * green
+				 */
+				totaloff += Math.abs((((color & 0x0000FF00) >>> 8) - (data
+						.getSample(i, j, 1))));
+				/*
+				 * blue
+				 */
+				totaloff += Math.abs(((color & 0x000000FF) - (data.getSample(i,
+						j, 2))));
+				if (totaloff > tolerance) {
+					continue;
+				}
+				x.set(i);
+				y.set(j);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean FindColorSpiral(pointer<Integer> x, pointer<Integer> y,
+			int color, int xs, int ys, int xe, int ye) {
+		int x0 = x.get();
+		int y0 = y.get();
+		int xdis = Math.max(Math.abs(x0 - xs), Math.abs(x0 - xe));
+		int ydis = Math.max(Math.abs(y0 - ys), Math.abs(y0 - ye));
+		int maxdis = (int) Math.floor(Math.sqrt(ydis * ydis + xdis * xdis));
+		Rectangle bounds = new Rectangle(xs, ys, xe - xs, ye - ys);
+		BufferedImage screencap = r.createScreenCapture(bounds);
+		Raster raster = screencap.getRaster();
+		for (int radius = 0; radius <= maxdis; radius++) {
+			Point result = FindColorInCircleBounded(x0, y0, radius, bounds,
+					raster, color);
+			if (result != null) {
+				x.set(result.x);
+				y.set(result.y);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*
+	 * Taken from the wikipedia article :) Thanks, wikipedia!
+	 */
+	public Point FindColorInCircleBounded(int x0, int y0, int radius,
+			Rectangle bounds, Raster image, int color) {
+		if (isPointInBoundsAndMatchesColor(x0 + radius, y0, bounds, color,
+				image)) {
+			return new Point(x0 + radius, y0);
+		}
+		if (isPointInBoundsAndMatchesColor(x0 - radius, y0, bounds, color,
+				image)) {
+			return new Point(x0 - radius, y0);
+		}
+		if (isPointInBoundsAndMatchesColor(x0, y0 + radius, bounds, color,
+				image)) {
+			return new Point(x0, y0 + radius);
+		}
+		if (isPointInBoundsAndMatchesColor(x0, y0 - radius, bounds, color,
+				image)) {
+			return new Point(x0, y0 - radius);
+		}
+		int f = 1 - radius;
+		int ddF_x = 1;
+		int ddF_y = -2 * radius;
+		int x = 0;
+		int y = radius;
+		while (x < y) {
+			// ddF_x == 2 * x + 1;
+			// ddF_y == -2 * y;
+			// f == x*x + y*y - radius*radius + 2*x - y + 1;
+			if (f >= 0) {
+				y--;
+				ddF_y += 2;
+				f += ddF_y;
+			}
+			x++;
+			ddF_x += 2;
+			f += ddF_x;
+			if (isPointInBoundsAndMatchesColor(x0 + x, y0 + y, bounds, color,
+					image))
+				return new Point(x0 + x, y0 + y);
+			if (isPointInBoundsAndMatchesColor(x0 - x, y0 + y, bounds, color,
+					image))
+				return new Point(x0 - x, y0 + y);
+			if (isPointInBoundsAndMatchesColor(x0 + x, y0 - y, bounds, color,
+					image))
+				return new Point(x0 + x, y0 - y);
+			if (isPointInBoundsAndMatchesColor(x0 - x, y0 - y, bounds, color,
+					image))
+				return new Point(x0 - x, y0 - y);
+			if (isPointInBoundsAndMatchesColor(x0 + y, y0 + x, bounds, color,
+					image))
+				return new Point(x0 + y, y0 + x);
+			if (isPointInBoundsAndMatchesColor(x0 - y, y0 + x, bounds, color,
+					image))
+				return new Point(x0 - y, y0 + y);
+			if (isPointInBoundsAndMatchesColor(x0 + y, y0 - x, bounds, color,
+					image))
+				return new Point(x0 + y, y0 - x);
+			if (isPointInBoundsAndMatchesColor(x0 - y, y0 - x, bounds, color,
+					image))
+				return new Point(x0 - y, y0 - x);
+		}
+		return null;
+	}
+
+	public boolean isPointInBoundsAndMatchesColor(int x, int y,
+			Rectangle bounds, int color, Raster image) {
+		if (!bounds.contains(x, y)) {
+			return false;
+		}
+		if (image.getSample(x, y, 0) != (color & 0x00FF0000) >>> 16) {
+			return false;
+		}
+		if (image.getSample(x, y, 1) != (color & 0x0000FF00) >>> 8) {
+			return false;
+		}
+		if (image.getSample(x, y, 2) != (color & 0x000000FF)) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean FindWindowTitlePart(String part, boolean casematters) {
+		long window = ide.connection.getWindowByNamePart(part, casematters);
+		if (window != 0) {
+			ide.window = window;
+			return true;
+		}
+		return false;
+	}
+
+	public boolean FindWindowBySize(int width, int height) {
+		long window = ide.connection.GetWindowBySize(width, height);
+		if (window != 0) {
+			ide.window = window;
+			return true;
+		}
+		return false;
+	}
+
+	public static void main(String[] arg) {
 		scar_robot scar = new scar_robot(null);
 		scar
 				.SendKeys("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=!@#$%^&*()_+<>?:\"{}|");
