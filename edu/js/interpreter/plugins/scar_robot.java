@@ -365,6 +365,7 @@ public class scar_robot implements pascal_plugin {
 
 	public boolean FindColor(pointer<Integer> x, pointer<Integer> y, int color,
 			int xstart, int ystart, int xend, int yend) {
+		Color jcolor = new Color(color);
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
 		xstart += windowloc.x;
 		ystart += windowloc.y;
@@ -378,19 +379,19 @@ public class scar_robot implements pascal_plugin {
 				/*
 				 * red
 				 */
-				if ((color & 0x00FF0000) >>> 16 != data.getSample(i, j, 0)) {
+				if (jcolor.getRed() != data.getSample(i, j, 0)) {
 					continue;
 				}
 				/*
 				 * green
 				 */
-				if ((color & 0x0000FF00) >>> 8 != data.getSample(i, j, 1)) {
+				if (jcolor.getGreen() != data.getSample(i, j, 1)) {
 					continue;
 				}
 				/*
 				 * blue
 				 */
-				if ((color & 0x000000FF) != data.getSample(i, j, 2)) {
+				if (jcolor.getGreen() != data.getSample(i, j, 2)) {
 					continue;
 				}
 				x.set(i);
@@ -404,6 +405,7 @@ public class scar_robot implements pascal_plugin {
 	public boolean FindColorTolerance(pointer<Integer> x, pointer<Integer> y,
 			int color, int xstart, int ystart, int xend, int yend, int tolerance) {
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		Color jcolor = new Color(color);
 		xstart += windowloc.x;
 		ystart += windowloc.y;
 		xend += windowloc.x;
@@ -417,21 +419,20 @@ public class scar_robot implements pascal_plugin {
 				/*
 				 * red
 				 */
-				totaloff += Math.abs((((color & 0x00FF0000) >>> 16) - (data
-						.getSample(i, j, 0))));
+				totaloff += Math.abs(jcolor.getRed() - data.getSample(i, j, 0));
 				if (totaloff > tolerance) {
 					continue;
 				}
 				/*
 				 * green
 				 */
-				totaloff += Math.abs((((color & 0x0000FF00) >>> 8) - (data
-						.getSample(i, j, 1))));
+				totaloff += Math.abs(jcolor.getGreen()
+						- data.getSample(i, j, 1));
 				/*
 				 * blue
 				 */
-				totaloff += Math.abs(((color & 0x000000FF) - (data.getSample(i,
-						j, 2))));
+				totaloff += Math
+						.abs(jcolor.getBlue() - data.getSample(i, j, 2));
 				if (totaloff > tolerance) {
 					continue;
 				}
@@ -443,10 +444,23 @@ public class scar_robot implements pascal_plugin {
 		return false;
 	}
 
+	/*
+	 * This method will actually double check certain pixels: it will test about
+	 * 1.12 times as many pixels as it needs to. However, I think it is still
+	 * fast. I could do better with clipping though.
+	 */
 	public boolean FindColorSpiral(pointer<Integer> x, pointer<Integer> y,
 			int color, int xs, int ys, int xe, int ye) {
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		Color jcolor = new Color(color);
 		int x0 = x.get();
 		int y0 = y.get();
+		x0 += windowloc.x;
+		xs += windowloc.x;
+		xe += windowloc.x;
+		y0 += windowloc.y;
+		ys += windowloc.y;
+		ye += windowloc.y;
 		int xdis = Math.max(Math.abs(x0 - xs), Math.abs(x0 - xe));
 		int ydis = Math.max(Math.abs(y0 - ys), Math.abs(y0 - ye));
 		int maxdis = (int) Math.floor(Math.sqrt(ydis * ydis + xdis * xdis));
@@ -455,7 +469,38 @@ public class scar_robot implements pascal_plugin {
 		Raster raster = screencap.getRaster();
 		for (int radius = 0; radius <= maxdis; radius++) {
 			Point result = FindColorInCircleBounded(x0, y0, radius, bounds,
-					raster, color);
+					raster, jcolor);
+			if (result != null) {
+				x.set(result.x);
+				y.set(result.y);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean FindColorSpiralTolerance(pointer<Integer> x,
+			pointer<Integer> y, int color, int xs, int ys, int xe, int ye,
+			int tolerance) {
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		Color jcolor = new Color(color);
+		int x0 = x.get();
+		int y0 = y.get();
+		x0 += windowloc.x;
+		xs += windowloc.x;
+		xe += windowloc.x;
+		y0 += windowloc.y;
+		ys += windowloc.y;
+		ye += windowloc.y;
+		int xdis = Math.max(Math.abs(x0 - xs), Math.abs(x0 - xe));
+		int ydis = Math.max(Math.abs(y0 - ys), Math.abs(y0 - ye));
+		int maxdis = (int) Math.floor(Math.sqrt(ydis * ydis + xdis * xdis));
+		Rectangle bounds = new Rectangle(xs, ys, xe - xs, ye - ys);
+		BufferedImage screencap = r.createScreenCapture(bounds);
+		Raster raster = screencap.getRaster();
+		for (int radius = 0; radius <= maxdis; radius++) {
+			Point result = FindColorToleranceInCircleBounded(x0, y0, radius,
+					bounds, raster, jcolor, tolerance);
 			if (result != null) {
 				x.set(result.x);
 				y.set(result.y);
@@ -469,7 +514,7 @@ public class scar_robot implements pascal_plugin {
 	 * Taken from the wikipedia article :) Thanks, wikipedia!
 	 */
 	public Point FindColorInCircleBounded(int x0, int y0, int radius,
-			Rectangle bounds, Raster image, int color) {
+			Rectangle bounds, Raster image, Color color) {
 		if (isPointInBoundsAndMatchesColor(x0 + radius, y0, bounds, color,
 				image)) {
 			return new Point(x0 + radius, y0);
@@ -532,7 +577,7 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	public Point FindColorToleranceInCircleBounded(int x0, int y0, int radius,
-			Rectangle bounds, Raster image, int color, int tolerance) {
+			Rectangle bounds, Raster image, Color color, int tolerance) {
 		if (isPointInBoundsAndMatchesColorTolerance(x0 + radius, y0, bounds,
 				color, image, tolerance)) {
 			return new Point(x0 + radius, y0);
@@ -595,7 +640,7 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	public boolean isPointInBoundsAndMatchesColorTolerance(int x, int y,
-			Rectangle bounds, int color, Raster image, int tolerance) {
+			Rectangle bounds, Color color, Raster image, int tolerance) {
 		if (!bounds.contains(x, y)) {
 			return false;
 		}
@@ -603,20 +648,18 @@ public class scar_robot implements pascal_plugin {
 		/*
 		 * red
 		 */
-		totaloff += Math.abs(image.getSample(x, y, 0)
-				- ((color & 0x00FF0000) >>> 16));
+		totaloff += Math.abs(image.getSample(x, y, 0) - color.getRed());
 		if (totaloff > tolerance) {
 			return false;
 		}
 		/*
 		 * green
 		 */
-		totaloff += Math.abs(image.getSample(x, y, 1)
-				- ((color & 0x0000FF00) >>> 8));
+		totaloff += Math.abs(image.getSample(x, y, 1) - color.getGreen());
 		/*
 		 * blue
 		 */
-		totaloff += Math.abs(image.getSample(x, y, 2) - (color & 0x000000FF));
+		totaloff += Math.abs(image.getSample(x, y, 2) - color.getBlue());
 
 		if (totaloff > tolerance) {
 			return false;
@@ -625,17 +668,17 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	public boolean isPointInBoundsAndMatchesColor(int x, int y,
-			Rectangle bounds, int color, Raster image) {
+			Rectangle bounds, Color color, Raster image) {
 		if (!bounds.contains(x, y)) {
 			return false;
 		}
-		if (image.getSample(x, y, 0) != (color & 0x00FF0000) >>> 16) {
+		if (image.getSample(x, y, 0) != color.getRed()) {
 			return false;
 		}
-		if (image.getSample(x, y, 1) != (color & 0x0000FF00) >>> 8) {
+		if (image.getSample(x, y, 1) != color.getGreen()) {
 			return false;
 		}
-		if (image.getSample(x, y, 2) != (color & 0x000000FF)) {
+		if (image.getSample(x, y, 2) != color.getBlue()) {
 			return false;
 		}
 		return true;
@@ -657,6 +700,41 @@ public class scar_robot implements pascal_plugin {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean SimilarColors(int color1, int color2, int tolerance) {
+		return Math.abs(((color1 & 0x00FF0000) - (color2 & 0x00FF0000)) >> 16)
+				+ Math
+						.abs(((color1 & 0x0000FF00) - (color2 & 0x0000FF00)) >> 8)
+				+ Math.abs((color1 & 0x000000FF) - (color2 & 0x000000FF)) <= tolerance;
+	}
+
+	public int FindColor(int color, int x1, int y1, int x2, int y2) {
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		Color jcolor = new Color(color);
+		x1 += windowloc.x;
+		x2 += windowloc.x;
+		y1 += windowloc.y;
+		y2 += windowloc.y;
+		BufferedImage image = r.createScreenCapture(new Rectangle(x1, y1, x2
+				- x1, y2 - y1));
+		Raster raster = image.getRaster();
+		int count = 0;
+		for (int i = x1; i <= x2; i++) {
+			for (int j = y1; j <= y2; j++) {
+				if (jcolor.getRed() != raster.getSample(i, j, 0)) {
+					continue;
+				}
+				if (jcolor.getGreen() != raster.getSample(i, j, 1)) {
+					continue;
+				}
+				if (jcolor.getBlue() != raster.getSample(i, j, 2)) {
+					continue;
+				}
+				count++;
+			}
+		}
+		return count;
 	}
 
 	public static void main(String[] arg) {
