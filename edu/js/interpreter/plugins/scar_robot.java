@@ -6,22 +6,17 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.util.Random;
-
-import javax.naming.OperationNotSupportedException;
-
-import com.sun.corba.se.internal.Interceptors.PIORB;
+import java.util.Stack;
 
 import edu.js.interpreter.gui.ide;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_plugin;
-import edu.js.interpreter.tokens.value.integer_token;
 
 public class scar_robot implements pascal_plugin {
 	ide ide;
@@ -29,6 +24,21 @@ public class scar_robot implements pascal_plugin {
 	Robot r;
 
 	Random rand;
+
+	WritableRaster lastCapture;
+
+	long lastScreenCapTime;
+
+	int maxDelay = 5; // TODO find a good value for this.
+
+	public void update_screen(Rectangle rect) {
+		long currenttime = System.currentTimeMillis();
+		if (currenttime - lastScreenCapTime > maxDelay
+				|| !lastCapture.getBounds().contains(rect)) {
+			lastCapture = r.createScreenCapture(rect).getRaster();
+			lastScreenCapTime = currenttime;
+		}
+	}
 
 	public scar_robot(ide i) {
 		this.ide = i;
@@ -52,30 +62,48 @@ public class scar_robot implements pascal_plugin {
 		r.mouseMove(x + windowloc.x, y + windowloc.y);
 	}
 
-	public void ClickMouse(int x, int y) {
+	public void ClickMouse(int x, int y, boolean left) {
+		ClickMouse(x, y, left ? InputEvent.BUTTON1_DOWN_MASK
+				: InputEvent.BUTTON2_DOWN_MASK);
+	}
+
+	public void ClickMouseMid(int x, int y) {
+		ClickMouse(x, y, InputEvent.BUTTON3_DOWN_MASK);
+	}
+
+	public void ClickMouse(int x, int y, int mask) {
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
 		x += windowloc.x;
 		y += windowloc.y;
+
 		long mouseclickduration = Math.max(
 				(long) (rand.nextGaussian() * 20) + 100, 1);
 		if (!MouseInfo.getPointerInfo().getLocation().equals(new Point(x, y))) {
 			r.mouseMove(x, y);
 		}
-		r.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+
+		r.mousePress(mask);
 		try {
 			Thread.sleep(mouseclickduration);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		r.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+		r.mouseRelease(mask);
 	}
 
 	public void HoldMouse(int x, int y, boolean left) {
+		HoldMouse(x, y, left ? InputEvent.BUTTON1_DOWN_MASK
+				: InputEvent.BUTTON2_DOWN_MASK);
+	}
+
+	public void HoldMouseMid(int x, int y) {
+		HoldMouse(x, y, InputEvent.BUTTON3_DOWN_MASK);
+	}
+
+	public void HoldMouse(int x, int y, int buttonmask) {
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
 		x += windowloc.x;
 		y += windowloc.y;
-		int buttonmask = left ? InputEvent.BUTTON1_DOWN_MASK
-				: InputEvent.BUTTON2_DOWN_MASK;
 		if (!MouseInfo.getPointerInfo().getLocation().equals(new Point(x, y))) {
 			r.mouseMove(x, y);
 		}
@@ -83,11 +111,19 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	public void ReleaseMouse(int x, int y, boolean left) {
+		ReleaseMouse(x, y, left ? InputEvent.BUTTON1_DOWN_MASK
+				: InputEvent.BUTTON2_DOWN_MASK);
+	}
+
+	public void ReleaseMouseMid(int x, int y) {
+		ReleaseMouse(x, y, InputEvent.BUTTON3_DOWN_MASK);
+	}
+
+	public void ReleaseMouse(int x, int y, int buttonmask) {
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
 		x += windowloc.x;
 		y += windowloc.y;
-		int buttonmask = left ? InputEvent.BUTTON1_DOWN_MASK
-				: InputEvent.BUTTON2_DOWN_MASK;
+
 		if (!MouseInfo.getPointerInfo().getLocation().equals(new Point(x, y))) {
 			r.mouseMove(x, y);
 		}
@@ -96,7 +132,13 @@ public class scar_robot implements pascal_plugin {
 
 	public void SendKeys(String tosend) {
 		for (char c : tosend.toCharArray()) {
-			GenerateKeyTyped(c);
+			GenerateKeyTypedWait(c, 0, 0);
+		}
+	}
+
+	public void SendKeysWait(String text, int wait, int randomness) {
+		for (char c : text.toCharArray()) {
+			GenerateKeyTypedWait(c, wait, randomness);
 		}
 	}
 
@@ -315,15 +357,24 @@ public class scar_robot implements pascal_plugin {
 		return false;
 	}
 
-	public void GenerateKeyTyped(char c) {
+	public void GenerateKeyTypedWait(char c, int wait, int random) {
 		if (needsShift(c)) {
 			r.keyPress(KeyEvent.VK_SHIFT);
+			WaitRandom(wait, random);
 		}
+
 		r.keyPress(GetKeyCode(c));
+		WaitRandom(wait, random);
 		r.keyRelease(GetKeyCode(c));
 		if (needsShift(c)) {
+			WaitRandom(wait, random);
 			r.keyRelease(KeyEvent.VK_SHIFT);
 		}
+		WaitRandom(wait, random);
+	}
+
+	public void WaitRandom(int wait, int random) {
+		scar_script_control.wait(wait + rand.nextInt(random));
 	}
 
 	public void KeyDown(int key) {
@@ -332,6 +383,34 @@ public class scar_robot implements pascal_plugin {
 
 	public void KeyUp(int key) {
 		r.keyRelease(key);
+	}
+
+	public void SendArrow(int key) {
+		SendArrowWait(key, 0);
+	}
+
+	public void SendArrowWait(int key, int waittime) {
+		int keycode = 0;
+		switch (key) {
+		case 0:
+			keycode = KeyEvent.VK_UP;
+			break;
+		case 1:
+			keycode = KeyEvent.VK_RIGHT;
+			break;
+		case 2:
+			keycode = KeyEvent.VK_DOWN;
+			break;
+		case 3:
+			keycode = KeyEvent.VK_LEFT;
+		}
+		if (keycode != 0) {
+			r.keyPress(keycode);
+			scar_script_control.wait(waittime);
+			r.keyRelease(keycode);
+		} else {
+			System.err.println("Expected 0-3 for sendkeys");
+		}
 	}
 
 	public long GetClientWindowHandle() {
@@ -371,12 +450,11 @@ public class scar_robot implements pascal_plugin {
 		ystart += windowloc.y;
 		xend += windowloc.x;
 		yend += windowloc.y;
-		BufferedImage image = r.createScreenCapture(new Rectangle(xstart,
-				ystart, xend - xstart, yend - ystart));
-		WritableRaster data = image.getRaster();
+		update_screen(new Rectangle(xstart, ystart, xend - xstart, yend
+				- ystart));
 		for (int i = xstart; i <= xend; i++) {
 			for (int j = ystart; j < yend; j++) {
-				if (ColorsSame(jcolor, data, i, j)) {
+				if (ColorsSame(jcolor, lastCapture, i, j)) {
 					x.set(i);
 					y.set(j);
 					return true;
@@ -394,12 +472,11 @@ public class scar_robot implements pascal_plugin {
 		ystart += windowloc.y;
 		xend += windowloc.x;
 		yend += windowloc.y;
-		BufferedImage image = r.createScreenCapture(new Rectangle(xstart,
-				ystart, xend - xstart, yend - ystart));
-		WritableRaster data = image.getRaster();
+		update_screen(new Rectangle(xstart, ystart, xend - xstart, yend
+				- ystart));
 		for (int i = xstart; i <= xend; i++) {
 			for (int j = ystart; j < yend; j++) {
-				if (SimilarColor(jcolor, tolerance, data, i, j)) {
+				if (SimilarColor(jcolor, tolerance, lastCapture, i, j)) {
 					x.set(i);
 					y.set(j);
 					return true;
@@ -409,6 +486,54 @@ public class scar_robot implements pascal_plugin {
 		return false;
 	}
 
+	public boolean FindColorSpiral2(pointer<Integer> x, pointer<Integer> y,
+			int color, int xs, int ys, int xe, int ye) {
+		boolean found = FindColorSpiral(x, y, color, xs, ys, xe, ye);
+		if (!found) {
+			return false;
+		} else {
+			Point center = findClusterCenter(x.get(), y.get());
+			x.set(center.x);
+			y.set(center.y);
+			return true;
+		}
+	}
+
+	/*
+	 * Hey, this might be grossly inefficient!
+	 */
+	Point findClusterCenter(int x, int y) {
+		boolean[][] hasVisited = new boolean[lastCapture.getWidth()][lastCapture
+				.getHeight()];
+		int numincluster = 1;
+		Stack<Point> need_to_visit = new Stack<Point>();
+		need_to_visit.push(new Point(x, y));
+		while (!need_to_visit.isEmpty()) {
+			Point next = need_to_visit.pop();
+			hasVisited[next.x][next.y] = true;
+			x += next.x;
+			y += next.y;
+			numincluster++;
+			if (next.x != lastCapture.getMinY() + lastCapture.getHeight() - 1
+					&& !hasVisited[next.x][next.y + 1]) {
+				need_to_visit.push(new Point(next.x, next.y + 1));
+			}
+			if (next.x != lastCapture.getMinY()
+					&& !hasVisited[next.x][next.y - 1]) {
+				need_to_visit.push(new Point(next.x, next.y - 1));
+			}
+			if (next.x != lastCapture.getMinX() + lastCapture.getWidth() - 1
+					&& !hasVisited[next.x + 1][next.y]) {
+				need_to_visit.push(new Point(next.x + 1, next.y));
+			}
+			if (next.x != lastCapture.getMinX()
+					&& !hasVisited[next.x - 1][next.y]) {
+				need_to_visit.push(new Point(next.x - 1, next.y));
+			}
+		}
+		return new Point(((int) x / numincluster), ((int) y / numincluster));
+	}
+
 	/*
 	 * This method will actually double check certain pixels: it will test about
 	 * 1.12 times as many pixels as it needs to. However, I think it is still
@@ -416,32 +541,7 @@ public class scar_robot implements pascal_plugin {
 	 */
 	public boolean FindColorSpiral(pointer<Integer> x, pointer<Integer> y,
 			int color, int xs, int ys, int xe, int ye) {
-		Point windowloc = ide.connection.getWindowLocation(ide.window);
-		Color jcolor = new Color(color);
-		int x0 = x.get();
-		int y0 = y.get();
-		x0 += windowloc.x;
-		xs += windowloc.x;
-		xe += windowloc.x;
-		y0 += windowloc.y;
-		ys += windowloc.y;
-		ye += windowloc.y;
-		int xdis = Math.max(Math.abs(x0 - xs), Math.abs(x0 - xe));
-		int ydis = Math.max(Math.abs(y0 - ys), Math.abs(y0 - ye));
-		int maxdis = (int) Math.floor(Math.sqrt(ydis * ydis + xdis * xdis));
-		Rectangle bounds = new Rectangle(xs, ys, xe - xs, ye - ys);
-		BufferedImage screencap = r.createScreenCapture(bounds);
-		Raster raster = screencap.getRaster();
-		for (int radius = 0; radius <= maxdis; radius++) {
-			Point result = FindColorInCircleBounded(x0, y0, radius, bounds,
-					raster, jcolor);
-			if (result != null) {
-				x.set(result.x);
-				y.set(result.y);
-				return true;
-			}
-		}
-		return false;
+		return FindColorSpiralTolerance(x, y, color, xs, ys, xe, ye, 0);
 	}
 
 	public boolean FindColorSpiralTolerance(pointer<Integer> x,
@@ -457,15 +557,18 @@ public class scar_robot implements pascal_plugin {
 		y0 += windowloc.y;
 		ys += windowloc.y;
 		ye += windowloc.y;
-		int xdis = Math.max(Math.abs(x0 - xs), Math.abs(x0 - xe));
-		int ydis = Math.max(Math.abs(y0 - ys), Math.abs(y0 - ye));
-		int maxdis = (int) Math.floor(Math.sqrt(ydis * ydis + xdis * xdis));
+		int xmax = Math.max(Math.abs(x0 - xs), Math.abs(x0 - xe));
+		int xmin = Math.min(Math.abs(x0 - xs), Math.abs(x0 - xe));
+		int ymax = Math.max(Math.abs(y0 - ys), Math.abs(y0 - ye));
+		int ymin = Math.min(Math.abs(y0 - ys), Math.abs(y0 - ye));
+		int maxdis = (int) Math.floor(Math.sqrt(ymax * ymax + xmax * xmax));
+		int mindis = (int) Math.ceil(Math.sqrt(ymin * ymin + xmin * xmin));
 		Rectangle bounds = new Rectangle(xs, ys, xe - xs, ye - ys);
-		BufferedImage screencap = r.createScreenCapture(bounds);
-		Raster raster = screencap.getRaster();
+		update_screen(bounds);
 		for (int radius = 0; radius <= maxdis; radius++) {
 			Point result = FindColorToleranceInCircleBounded(x0, y0, radius,
-					bounds, raster, jcolor, tolerance);
+					radius < mindis ? null : bounds, lastCapture, jcolor,
+					tolerance);
 			if (result != null) {
 				x.set(result.x);
 				y.set(result.y);
@@ -478,71 +581,9 @@ public class scar_robot implements pascal_plugin {
 	/*
 	 * Taken from the wikipedia article :) Thanks, wikipedia!
 	 */
-	public Point FindColorInCircleBounded(int x0, int y0, int radius,
-			Rectangle bounds, Raster image, Color color) {
-		if (isPointInBoundsAndMatchesColor(x0 + radius, y0, bounds, color,
-				image)) {
-			return new Point(x0 + radius, y0);
-		}
-		if (isPointInBoundsAndMatchesColor(x0 - radius, y0, bounds, color,
-				image)) {
-			return new Point(x0 - radius, y0);
-		}
-		if (isPointInBoundsAndMatchesColor(x0, y0 + radius, bounds, color,
-				image)) {
-			return new Point(x0, y0 + radius);
-		}
-		if (isPointInBoundsAndMatchesColor(x0, y0 - radius, bounds, color,
-				image)) {
-			return new Point(x0, y0 - radius);
-		}
-		int f = 1 - radius;
-		int ddF_x = 1;
-		int ddF_y = -2 * radius;
-		int x = 0;
-		int y = radius;
-		while (x < y) {
-			// ddF_x == 2 * x + 1;
-			// ddF_y == -2 * y;
-			// f == x*x + y*y - radius*radius + 2*x - y + 1;
-			if (f >= 0) {
-				y--;
-				ddF_y += 2;
-				f += ddF_y;
-			}
-			x++;
-			ddF_x += 2;
-			f += ddF_x;
-			if (isPointInBoundsAndMatchesColor(x0 + x, y0 + y, bounds, color,
-					image))
-				return new Point(x0 + x, y0 + y);
-			if (isPointInBoundsAndMatchesColor(x0 - x, y0 + y, bounds, color,
-					image))
-				return new Point(x0 - x, y0 + y);
-			if (isPointInBoundsAndMatchesColor(x0 + x, y0 - y, bounds, color,
-					image))
-				return new Point(x0 + x, y0 - y);
-			if (isPointInBoundsAndMatchesColor(x0 - x, y0 - y, bounds, color,
-					image))
-				return new Point(x0 - x, y0 - y);
-			if (isPointInBoundsAndMatchesColor(x0 + y, y0 + x, bounds, color,
-					image))
-				return new Point(x0 + y, y0 + x);
-			if (isPointInBoundsAndMatchesColor(x0 - y, y0 + x, bounds, color,
-					image))
-				return new Point(x0 - y, y0 + y);
-			if (isPointInBoundsAndMatchesColor(x0 + y, y0 - x, bounds, color,
-					image))
-				return new Point(x0 + y, y0 - x);
-			if (isPointInBoundsAndMatchesColor(x0 - y, y0 - x, bounds, color,
-					image))
-				return new Point(x0 - y, y0 - x);
-		}
-		return null;
-	}
-
 	public Point FindColorToleranceInCircleBounded(int x0, int y0, int radius,
 			Rectangle bounds, Raster image, Color color, int tolerance) {
+
 		if (isPointInBoundsAndMatchesColorTolerance(x0 + radius, y0, bounds,
 				color, image, tolerance)) {
 			return new Point(x0 + radius, y0);
@@ -606,18 +647,10 @@ public class scar_robot implements pascal_plugin {
 
 	public boolean isPointInBoundsAndMatchesColorTolerance(int x, int y,
 			Rectangle bounds, Color color, Raster image, int tolerance) {
-		if (!bounds.contains(x, y)) {
+		if (bounds != null && !bounds.contains(x, y)) {
 			return false;
 		}
 		return SimilarColor(color, tolerance, image, x, y);
-	}
-
-	public boolean isPointInBoundsAndMatchesColor(int x, int y,
-			Rectangle bounds, Color color, Raster image) {
-		if (!bounds.contains(x, y)) {
-			return false;
-		}
-		return ColorsSame(color, image, x, y);
 	}
 
 	public boolean FindWindowTitlePart(String part, boolean casematters) {
@@ -646,7 +679,6 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	boolean SimilarColor(Color jcolor, int tolerance, Raster data, int x, int y) {
-
 		int totaloff = 0;
 		/*
 		 * red
@@ -686,19 +718,17 @@ public class scar_robot implements pascal_plugin {
 		x2 += windowloc.x;
 		y1 += windowloc.y;
 		y2 += windowloc.y;
-		BufferedImage image = r.createScreenCapture(new Rectangle(x1, y1, x2
-				- x1, y2 - y1));
-		Raster raster = image.getRaster();
+		update_screen(new Rectangle(x1, y1, x2 - x1, y2 - y1));
 		int count = 0;
 		for (int i = x1; i <= x2; i++) {
 			for (int j = y1; j <= y2; j++) {
-				if (jcolor.getRed() != raster.getSample(i, j, 0)) {
+				if (jcolor.getRed() != lastCapture.getSample(i, j, 0)) {
 					continue;
 				}
-				if (jcolor.getGreen() != raster.getSample(i, j, 1)) {
+				if (jcolor.getGreen() != lastCapture.getSample(i, j, 1)) {
 					continue;
 				}
-				if (jcolor.getBlue() != raster.getSample(i, j, 2)) {
+				if (jcolor.getBlue() != lastCapture.getSample(i, j, 2)) {
 					continue;
 				}
 				count++;

@@ -76,6 +76,8 @@ public class pascal_program implements Runnable {
 
 	public HashMap<String, custom_type_declaration> custom_types;
 
+	public HashMap<String, pascal_type> typedefs;
+
 	public custom_type_generator type_generator;
 
 	/*
