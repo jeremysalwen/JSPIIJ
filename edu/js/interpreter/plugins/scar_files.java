@@ -1,9 +1,16 @@
 package edu.js.interpreter.plugins;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.math.BigInteger;
 import java.nio.channels.FileChannel;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 import edu.js.interpreter.gui.ide;
@@ -159,5 +166,51 @@ public class scar_files implements pascal_plugin {
 		} catch (IOException e) {
 			return false;
 		}
+	}
+
+	public String ExtractFileName(String name) {
+		return new File(name).getName();
+	}
+
+	public String ExtractPathName(String name) {
+		return new File(name).getParent();
+	}
+
+	public String ExtractFileExt(String name) {
+		return name.substring(name.lastIndexOf('.') + 1);
+	}
+
+	public String MD5FromFile(String filename) {
+		MessageDigest digest;
+		DigestInputStream is = null;
+		try {
+			try {
+				digest = MessageDigest.getInstance("MD5");
+
+				try {
+					is = new DigestInputStream(new FileInputStream(filename),
+							digest);
+					while (is.available() > 0) {
+						is.read();
+					}
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return new BigInteger(1, digest.digest()).toString(16);
+			} catch (NoSuchAlgorithmException e2) {
+				e2.printStackTrace();
+			}
+		} finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		System.err.println("Some sort of error trying to md5sum a file");
+		return null;
 	}
 }

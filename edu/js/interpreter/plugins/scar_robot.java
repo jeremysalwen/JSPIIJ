@@ -544,6 +544,32 @@ public class scar_robot implements pascal_plugin {
 		return FindColorSpiralTolerance(x, y, color, xs, ys, xe, ye, 0);
 	}
 
+	public boolean FindColorCircle(pointer<Integer> x, pointer<Integer> y,
+			int color, int mx, int my, int radius) {
+		return FindColorCirlceTolerance(x, y, color, mx, my, radius, 0);
+	}
+
+	public boolean FindColorCirlceTolerance(pointer<Integer> x,
+			pointer<Integer> y, int color, int mx, int my, int radius,
+			int tolerance) {
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		Color jcolor = new Color(color);
+		mx += windowloc.x;
+		my += windowloc.y;
+		update_screen(new Rectangle(mx - radius, mx + radius, 2 * radius,
+				2 * radius));
+		for (int i = 0; i <= radius; i++) {
+			Point result = FindColorToleranceInCircleBounded(mx, my, i, null,
+					lastCapture, jcolor, tolerance);
+			if (result != null) {
+				x.set(result.x);
+				y.set(result.y);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean FindColorSpiralTolerance(pointer<Integer> x,
 			pointer<Integer> y, int color, int xs, int ys, int xe, int ye,
 			int tolerance) {
