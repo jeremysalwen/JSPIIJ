@@ -1,17 +1,5 @@
 package edu.js.interpreter.plugins;
 
-import java.applet.Applet;
-import java.awt.Canvas;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.image.PixelGrabber;
-import java.util.Random;
-
-import edu.js.appletloader.LardLoader;
-import edu.js.interpreter.gui.ide;
 import edu.js.interpreter.processing.pascal_plugin;
 
 public class scar_STUPID_interface implements pascal_plugin {

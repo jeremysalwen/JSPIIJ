@@ -2,7 +2,6 @@ package edu.js.interpreter.gui;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;

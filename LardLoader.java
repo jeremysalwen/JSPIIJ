@@ -1,16 +1,6 @@
 import java.applet.Applet;
-import java.awt.BufferCapabilities;
 import java.awt.Canvas;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.ImageCapabilities;
 import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.appletProxy;
-import java.awt.BufferCapabilities.FlipContents;
-import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -22,13 +12,10 @@ import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.Map.Entry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -42,21 +29,15 @@ import java.util.zip.ZipInputStream;
 
 import javax.swing.JFrame;
 
-import edu.js.appletloader.appletStub;
-import edu.js.appletloader.javawontletmepasspointers;
-
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
-import serp.bytecode.Code;
 import serp.bytecode.ConstantInstruction;
-import serp.bytecode.FieldInstruction;
 import serp.bytecode.Instruction;
-import serp.bytecode.MathInstruction;
 import serp.bytecode.MethodInstruction;
 import serp.bytecode.Project;
 import serp.bytecode.PutFieldInstruction;
-import sun.awt.image.SunVolatileImage;
+import edu.js.appletloader.appletStub;
 
 public class LardLoader {
 	String script;

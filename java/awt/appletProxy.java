@@ -1,13 +1,6 @@
 package java.awt;
 
 import java.applet.Applet;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.InputMethodEvent;
@@ -18,12 +11,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.awt.peer.ComponentPeer;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.EventListener;
-
-import javax.naming.event.EventDirContext;
 
 
 public class appletProxy extends Applet implements FocusListener,

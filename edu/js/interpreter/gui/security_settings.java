@@ -1,23 +1,13 @@
 package edu.js.interpreter.gui;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.LayoutManager;
 import java.io.File;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.filechooser.FileSystemView;
 
 public class security_settings {
 	ide ide;
