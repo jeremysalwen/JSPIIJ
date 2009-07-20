@@ -1,5 +1,7 @@
 package edu.js.interpreter.preprocessed.instructions.returns_value;
 
+import javax.naming.OperationNotSupportedException;
+
 import edu.js.interpreter.pascal_types.class_pascal_type;
 import edu.js.interpreter.pascal_types.pascal_type;
 import edu.js.interpreter.preprocessed.function_declaration;
@@ -22,141 +24,31 @@ public class binary_operator_evaluation implements returns_value {
 	}
 
 	public Object get_value(function_on_stack f) {
-		Object value1 = operon1.get_value(f);
-		Object value2 = operon2.get_value(f);
-		if (value1 instanceof String || value2 instanceof String) {
-			String val1 = value1.toString();
-			String val2 = value2.toString();
-			switch (operator_type) {
-			case EQUALS:
-				return val1.equals(val2);
-			case PLUS:
-				return new StringBuilder(val1).append(val2).toString();
-			default:
+		try {
+			Object value1 = operon1.get_value(f);
+			Object value2 = operon2.get_value(f);
+			if (value1 instanceof String || value2 instanceof String) {
+				String val1 = value1.toString();
+				String val2 = value2.toString();
+				operator_type.operate(val1, val2);
+			} else if (get_GCF(value1.getClass(), value2.getClass()) == Double.class) {
+				double d1 = ((Number) value1).doubleValue();
+				double d2 = ((Number) value2).doubleValue();
+				return operator_type.operate(d1, d2);
+			} else if (get_GCF(value1.getClass(), value2.getClass()) == Long.class) {
+				long l1 = ((Number) value1).longValue();
+				long l2 = ((Number) value2).longValue();
+				return operator_type.operate(l1, l2);
+
+			} else if (value1 instanceof Boolean && value2 instanceof Boolean) {
+				boolean b1 = (Boolean) value1;
+				boolean b2 = (Boolean) value2;
+				return operator_type.operate(b1, b2);
+			} else {
 				return null;
 			}
-		} else if (get_GCF(value1.getClass(), value2.getClass()) == Double.class) {
-			double d1 = ((Number) value1).doubleValue();
-			double d2 = ((Number) value2).doubleValue();
-			switch (operator_type) {
-			case DIV:
-				return ((int) d1) / ((int) d2);
-			case DIVIDE:
-				return d1 / d2;
-			case EQUALS:
-				return d1 == d2;
-			case GREATEREQ:
-				return d1 >= d2;
-			case GREATERTHAN:
-				return d1 > d2;
-			case LESSEQ:
-				return d1 <= d2;
-			case LESSTHAN:
-				return d1 < d2;
-			case MINUS:
-				return d1 - d2;
-			case MOD:
-				return d1 % d2;
-			case MULTIPLY:
-				return d1 * d2;
-			case NOTEQUAL:
-				return d1 != d2;
-			case PLUS:
-				return d1 + d2;
-			default:
-				return null;
-			}
-		} else if (get_GCF(value1.getClass(), value2.getClass()) == Long.class) {
-			long l1 = ((Number) value1).longValue();
-			long l2 = ((Number) value2).longValue();
-			switch (operator_type) {
-			case DIV:
-			case DIVIDE:
-				return l1 / l2;
-			case EQUALS:
-				return (l1 == l2);
-			case GREATEREQ:
-				return l1 >= l2;
-			case GREATERTHAN:
-				return l1 > l2;
-			case LESSEQ:
-				return l1 <= l2;
-			case LESSTHAN:
-				return l1 < l2;
-			case MINUS:
-				return l1 - l2;
-			case MOD:
-				return l1 % l2;
-			case MULTIPLY:
-				return l1 * l2;
-			case NOTEQUAL:
-				return l1 != l2;
-			case PLUS:
-				return l1 + l2;
-			case SHIFTLEFT:
-				return l1 << l2;
-			case SHIFTRIGHT:
-				return l1 >> l2;
-			case XOR:
-				return l1 ^ l2;
-			default:
-				return null;
-			}
-		} else if (get_GCF(value1.getClass(), value2.getClass()) == Integer.class) {
-			int l1 = ((Number) value1).intValue();
-			int l2 = ((Number) value2).intValue();
-			switch (operator_type) {
-			case DIV:
-			case DIVIDE:
-				return l1 / l2;
-			case EQUALS:
-				return (l1 == l2);
-			case GREATEREQ:
-				return l1 >= l2;
-			case GREATERTHAN:
-				return l1 > l2;
-			case LESSEQ:
-				return l1 <= l2;
-			case LESSTHAN:
-				return l1 < l2;
-			case MINUS:
-				return l1 - l2;
-			case MOD:
-				return l1 % l2;
-			case MULTIPLY:
-				return l1 * l2;
-			case NOTEQUAL:
-				return l1 != l2;
-			case PLUS:
-				return l1 + l2;
-			case SHIFTLEFT:
-				return l1 << l2;
-			case SHIFTRIGHT:
-				return l1 >> l2;
-			case XOR:
-				return l1 ^ l2;
-			default:
-				return null;
-			}
-		} else if (value1 instanceof Boolean && value2 instanceof Boolean) {
-			boolean b1 = (Boolean) value1;
-			boolean b2 = (Boolean) value2;
-			switch (operator_type) {
-			case AND:
-				return b1 && b2;
-			case EQUALS:
-				return b1 == b2;
-			case NOTEQUAL:
-				return b1 != b2;
-			case OR:
-				return b1 || b2;
-			case XOR:
-				return b1 ^ b2;
-			default:
-				return null;
-			}
-		} else {
-			return null;
+		} catch (OperationNotSupportedException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -204,9 +96,6 @@ public class binary_operator_evaluation implements returns_value {
 		}
 		if (one == Long.class || two == Long.class) {
 			return Long.class;
-		}
-		if (one == Integer.class || two == Integer.class) {
-			return Integer.class;
 		}
 		if (one == Boolean.class || two == Boolean.class) {
 			return Boolean.class;

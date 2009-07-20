@@ -21,26 +21,7 @@ public class unary_operator_evaluation implements returns_value {
 	public Object get_value(function_on_stack f) {
 		Object value = operon.get_value(f);
 		Class operon_type = value.getClass();
-		switch (type) {
-		case PLUS:
-			return value;
-		case MINUS:
-			if (operon_type == Integer.class) {
-				return new Integer(-(Integer) value);
-			} else if (operon_type == Double.class) {
-				return new Double(-(Double) value);
-			} else {
-				throw new wrong_type_for_operator_exception(
-						operator_types.MINUS);
-			}
-		case NOT:
-			assert (operon_type == Boolean.class);
-			return new Boolean(!((Boolean) value));
-		default:
-			System.err.println("Operator type " + type
-					+ " is not a unary operator");
-			return value;
-		}
+		return type.operate(value);
 	}
 
 	@Override

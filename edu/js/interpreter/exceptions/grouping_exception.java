@@ -7,7 +7,17 @@ public class grouping_exception extends RuntimeException {
 	private static final long serialVersionUID = 5878580280861132626L;
 
 	public static enum grouping_exception_types {
-		MISMATCHED_PARENS, MISMATCHED_BEGIN_END, UNFINISHED_BEGIN_END, UNFINISHED_PARENS, EXTRA_END_PARENS, EXTRA_END,
+		MISMATCHED_PARENS("Mismatched parenthesis"), MISMATCHED_BEGIN_END(
+				"Mismatched begin-end construct"), UNFINISHED_BEGIN_END(
+				"Unfinished begin-end construct"), UNFINISHED_PARENS(
+				"You forgot to close your parentheses"), EXTRA_END_PARENS(
+				"You have an extra closing parenthesis"), EXTRA_END(
+				"You have an extra 'end' in your program"), ;
+		public String message;
+
+		grouping_exception_types(String message) {
+			this.message = message;
+		}
 	};
 
 	grouping_exception_types grouping_exception_type;
@@ -17,21 +27,6 @@ public class grouping_exception extends RuntimeException {
 	}
 
 	public String toString() {
-		switch (grouping_exception_type) {
-		case EXTRA_END:
-			return "Unmatched 'end' token";
-		case EXTRA_END_PARENS:
-			return "Unmatched end parentheses";
-		case MISMATCHED_BEGIN_END:
-			return "Mismatched begin-end construct";
-		case MISMATCHED_PARENS:
-			return "Mismatched parenthesized construct";
-		case UNFINISHED_BEGIN_END:
-			return "Unfinished begin-end construct";
-		case UNFINISHED_PARENS:
-			return "Unfinished parenthesized construct";
-		default:
-			return "Unknown exception type";
-		}
+		return grouping_exception_type.message;
 	}
 }
