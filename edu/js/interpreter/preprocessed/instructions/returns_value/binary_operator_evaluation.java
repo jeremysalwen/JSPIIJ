@@ -50,6 +50,7 @@ public class binary_operator_evaluation implements returns_value {
 		} catch (OperationNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+		return null;
 	}
 
 	@Override
