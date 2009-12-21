@@ -39,7 +39,7 @@ import serp.bytecode.Project;
 import serp.bytecode.PutFieldInstruction;
 import edu.js.appletloader.appletStub;
 
-public class LardLoader {
+public class LardLoaderCopy {
 	String script;
 
 	@SuppressWarnings("deprecation")

@@ -11,5 +11,8 @@ public class string_subvar_identifier extends subvar_identifier {
 	public boolean isreturnsvalue() {
 		return false;
 	}
-
+@Override
+public String toString() {
+	return s;
+}
 }

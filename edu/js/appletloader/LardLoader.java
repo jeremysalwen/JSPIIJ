@@ -47,8 +47,8 @@ public class LardLoader {
 			throws Exception {
 		String scriptLoc = "http://world" + world + ".runescape.com/";
 		String javascript = downloadHTML(new URL(new URL(scriptLoc),
-				"plugin.js?param=o0,a2,m0,s0").toExternalForm());
-		String regex = "<param name=(\\w+) value=(.+)>";
+				"plugin.js?param=o0,a0,s0").toExternalForm());
+		String regex = "<param name=(\\w+) value=\\\"?([^\\\">]*)\\\"?>";
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(javascript);
 		while (m.find()) {
@@ -65,7 +65,7 @@ public class LardLoader {
 		System.out.println(params);
 		System.out.println(archive);
 		 URLClassLoader u = new LardClassLoader(new URL[] { archive }, null);
-		Applet rs = (Applet) ClassLoader.getSystemClassLoader().loadClass(code).newInstance();
+		Applet rs = (Applet) u.loadClass(code).newInstance();
 		appletStub a = new appletStub(scriptLoc, scriptLoc.substring(0,
 				scriptLoc.indexOf("runescape.com/") + 14), params);
 		rs.setStub(a);
@@ -80,7 +80,7 @@ public class LardLoader {
 		f.setResizable(false);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
-		f.pack();
+		//f.pack();
 		// rs.updateCanvas();
 		// rs.addEventFilter();
 		javawontletmepasspointers result = new javawontletmepasspointers();
@@ -202,7 +202,7 @@ public class LardLoader {
 	}
 
 	public static void main(String[] args) throws Exception {
-		getApplet(29);
+		getApplet(23);
 	}
 
 	public static Field getField(String name, ClassLoader c)

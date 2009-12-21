@@ -13,5 +13,8 @@ public class returnsvalue_subvar_identifier extends subvar_identifier {
 	public boolean isreturnsvalue() {
 		return true;
 	}
-
+@Override
+public String toString() {
+	return '['+value.toString()+']';
+}
 }

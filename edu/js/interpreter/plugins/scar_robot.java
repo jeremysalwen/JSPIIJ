@@ -374,7 +374,7 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	public void WaitRandom(int wait, int random) {
-		scar_script_control.wait(wait + rand.nextInt(random));
+		scar_script_control.wait(wait + random==0?0:rand.nextInt(random));
 	}
 
 	public void KeyDown(int key) {
