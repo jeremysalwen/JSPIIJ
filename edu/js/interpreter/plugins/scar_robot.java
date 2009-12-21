@@ -9,10 +9,15 @@ import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.util.Random;
 import java.util.Stack;
+
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import edu.js.interpreter.gui.ide;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
@@ -27,16 +32,22 @@ public class scar_robot implements pascal_plugin {
 
 	WritableRaster lastCapture;
 
+	Point lastCaptureOffset;
+
 	long lastScreenCapTime;
 
 	int maxDelay = 5; // TODO find a good value for this.
 
 	public void update_screen(Rectangle rect) {
 		long currenttime = System.currentTimeMillis();
+		Rectangle bounds = (Rectangle) lastCapture.getBounds().clone();
+		bounds.translate(lastCaptureOffset.x, lastCaptureOffset.y);
 		if (currenttime - lastScreenCapTime > maxDelay
-				|| !lastCapture.getBounds().contains(rect)) {
+				|| !bounds.contains(rect)) {
 			lastCapture = r.createScreenCapture(rect).getRaster();
 			lastScreenCapTime = currenttime;
+			lastCaptureOffset.x = rect.x;
+			lastCaptureOffset.y = rect.y;
 		}
 	}
 
@@ -63,22 +74,24 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	public void ClickMouse(int x, int y, boolean left) {
-		ClickMouse(x, y, left ? InputEvent.BUTTON1_DOWN_MASK
-				: InputEvent.BUTTON2_DOWN_MASK);
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		ClickMouse(x + windowloc.x, y + windowloc.y,
+				left ? InputEvent.BUTTON1_DOWN_MASK
+						: InputEvent.BUTTON2_DOWN_MASK);
 	}
 
 	public void ClickMouseMid(int x, int y) {
-		ClickMouse(x, y, InputEvent.BUTTON3_DOWN_MASK);
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		ClickMouse(x + windowloc.x, y + windowloc.y,
+				InputEvent.BUTTON3_DOWN_MASK);
 	}
 
 	public void ClickMouse(int x, int y, int mask) {
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
-		x += windowloc.x;
-		y += windowloc.y;
-
 		long mouseclickduration = Math.max(
 				(long) (rand.nextGaussian() * 20) + 100, 1);
-		if (!MouseInfo.getPointerInfo().getLocation().equals(new Point(x, y))) {
+		if (!MouseInfo.getPointerInfo().getLocation().equals(
+				new Point(x + windowloc.x, y + windowloc.y))) {
 			r.mouseMove(x, y);
 		}
 
@@ -92,39 +105,44 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	public void HoldMouse(int x, int y, boolean left) {
-		HoldMouse(x, y, left ? InputEvent.BUTTON1_DOWN_MASK
-				: InputEvent.BUTTON2_DOWN_MASK);
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		HoldMouse(x + windowloc.x, y + windowloc.y,
+				left ? InputEvent.BUTTON1_DOWN_MASK
+						: InputEvent.BUTTON2_DOWN_MASK);
 	}
 
 	public void HoldMouseMid(int x, int y) {
-		HoldMouse(x, y, InputEvent.BUTTON3_DOWN_MASK);
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		HoldMouse(x + windowloc.x, y + windowloc.y,
+				InputEvent.BUTTON3_DOWN_MASK);
 	}
 
 	public void HoldMouse(int x, int y, int buttonmask) {
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
-		x += windowloc.x;
-		y += windowloc.y;
-		if (!MouseInfo.getPointerInfo().getLocation().equals(new Point(x, y))) {
+		if (!MouseInfo.getPointerInfo().getLocation().equals(
+				new Point(x + windowloc.x, y + windowloc.y))) {
 			r.mouseMove(x, y);
 		}
 		r.mousePress(buttonmask);
 	}
 
 	public void ReleaseMouse(int x, int y, boolean left) {
-		ReleaseMouse(x, y, left ? InputEvent.BUTTON1_DOWN_MASK
-				: InputEvent.BUTTON2_DOWN_MASK);
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		ReleaseMouse(x + windowloc.x, y + windowloc.y,
+				left ? InputEvent.BUTTON1_DOWN_MASK
+						: InputEvent.BUTTON2_DOWN_MASK);
 	}
 
 	public void ReleaseMouseMid(int x, int y) {
-		ReleaseMouse(x, y, InputEvent.BUTTON3_DOWN_MASK);
+		Point windowloc = ide.connection.getWindowLocation(ide.window);
+		ReleaseMouse(x + windowloc.x, y + windowloc.y,
+				InputEvent.BUTTON3_DOWN_MASK);
 	}
 
 	public void ReleaseMouse(int x, int y, int buttonmask) {
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
-		x += windowloc.x;
-		y += windowloc.y;
-
-		if (!MouseInfo.getPointerInfo().getLocation().equals(new Point(x, y))) {
+		if (!MouseInfo.getPointerInfo().getLocation().equals(
+				new Point(x + windowloc.x, y + windowloc.y))) {
 			r.mouseMove(x, y);
 		}
 		r.mouseRelease(buttonmask);
@@ -374,7 +392,7 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	public void WaitRandom(int wait, int random) {
-		scar_script_control.wait(wait + random==0?0:rand.nextInt(random));
+		scar_script_control.wait(wait + random == 0 ? 0 : rand.nextInt(random));
 	}
 
 	public void KeyDown(int key) {
@@ -452,11 +470,15 @@ public class scar_robot implements pascal_plugin {
 		yend += windowloc.y;
 		update_screen(new Rectangle(xstart, ystart, xend - xstart, yend
 				- ystart));
+		xstart -= lastCaptureOffset.x;
+		xend -= lastCaptureOffset.x;
+		ystart -= lastCaptureOffset.y;
+		yend -= lastCaptureOffset.y;
 		for (int i = xstart; i <= xend; i++) {
 			for (int j = ystart; j < yend; j++) {
 				if (ColorsSame(jcolor, lastCapture, i, j)) {
-					x.set(i);
-					y.set(j);
+					x.set(i + lastCaptureOffset.x);
+					y.set(j + lastCaptureOffset.y);
 					return true;
 				}
 			}
@@ -474,11 +496,15 @@ public class scar_robot implements pascal_plugin {
 		yend += windowloc.y;
 		update_screen(new Rectangle(xstart, ystart, xend - xstart, yend
 				- ystart));
+		xstart -= lastCaptureOffset.x;
+		xend -= lastCaptureOffset.x;
+		ystart -= lastCaptureOffset.y;
+		yend -= lastCaptureOffset.y;
 		for (int i = xstart; i <= xend; i++) {
 			for (int j = ystart; j < yend; j++) {
 				if (SimilarColor(jcolor, tolerance, lastCapture, i, j)) {
-					x.set(i);
-					y.set(j);
+					x.set(i + lastCaptureOffset.x);
+					y.set(j + lastCaptureOffset.y);
 					return true;
 				}
 			}
@@ -503,6 +529,8 @@ public class scar_robot implements pascal_plugin {
 	 * Hey, this might be grossly inefficient!
 	 */
 	Point findClusterCenter(int x, int y) {
+		x -= lastCaptureOffset.x;
+		y -= lastCaptureOffset.y;
 		boolean[][] hasVisited = new boolean[lastCapture.getWidth()][lastCapture
 				.getHeight()];
 		int numincluster = 1;
@@ -514,24 +542,23 @@ public class scar_robot implements pascal_plugin {
 			x += next.x;
 			y += next.y;
 			numincluster++;
-			if (next.x != lastCapture.getMinY() + lastCapture.getHeight() - 1
+			if (next.x != lastCapture.getHeight() - 1
 					&& !hasVisited[next.x][next.y + 1]) {
 				need_to_visit.push(new Point(next.x, next.y + 1));
 			}
-			if (next.x != lastCapture.getMinY()
-					&& !hasVisited[next.x][next.y - 1]) {
+			if (next.x != 0 && !hasVisited[next.x][next.y - 1]) {
 				need_to_visit.push(new Point(next.x, next.y - 1));
 			}
-			if (next.x != lastCapture.getMinX() + lastCapture.getWidth() - 1
+			if (next.x != lastCapture.getWidth() - 1
 					&& !hasVisited[next.x + 1][next.y]) {
 				need_to_visit.push(new Point(next.x + 1, next.y));
 			}
-			if (next.x != lastCapture.getMinX()
-					&& !hasVisited[next.x - 1][next.y]) {
+			if (next.x != 0 && !hasVisited[next.x - 1][next.y]) {
 				need_to_visit.push(new Point(next.x - 1, next.y));
 			}
 		}
-		return new Point(((int) x / numincluster), ((int) y / numincluster));
+		return new Point(((int) x / numincluster) + lastCaptureOffset.x,
+				((int) y / numincluster) + lastCaptureOffset.y);
 	}
 
 	/*
@@ -705,6 +732,8 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	boolean SimilarColor(Color jcolor, int tolerance, Raster data, int x, int y) {
+		x -= lastCaptureOffset.x;
+		y -= lastCaptureOffset.y;
 		int totaloff = 0;
 		/*
 		 * red
@@ -725,6 +754,8 @@ public class scar_robot implements pascal_plugin {
 	}
 
 	boolean ColorsSame(Color color, Raster data, int x, int y) {
+		x -= lastCaptureOffset.x;
+		y -= lastCaptureOffset.y;
 		if (data.getSample(x, y, 0) != color.getRed()) {
 			return false;
 		}
@@ -745,6 +776,10 @@ public class scar_robot implements pascal_plugin {
 		y1 += windowloc.y;
 		y2 += windowloc.y;
 		update_screen(new Rectangle(x1, y1, x2 - x1, y2 - y1));
+		x1 -= lastCaptureOffset.x;
+		y1 -= lastCaptureOffset.y;
+		x2 -= lastCaptureOffset.x;
+		y2 -= lastCaptureOffset.y;
 		int count = 0;
 		for (int i = x1; i <= x2; i++) {
 			for (int j = y1; j <= y2; j++) {
@@ -771,22 +806,17 @@ public class scar_robot implements pascal_plugin {
 		x2 += windowloc.x;
 		y1 += windowloc.y;
 		y2 += windowloc.y;
-		BufferedImage image = r.createScreenCapture(new Rectangle(x1, y1, x2
-				- x1, y2 - y1));
-		Raster raster = image.getRaster();
+		update_screen(new Rectangle(x1, y1, x2 - x1, y2 - y1));
+		x1 -= lastCaptureOffset.x;
+		y1 -= lastCaptureOffset.y;
+		x2 -= lastCaptureOffset.x;
+		y2 -= lastCaptureOffset.y;
 		int count = 0;
 		for (int i = x1; i <= x2; i++) {
 			for (int j = y1; j <= y2; j++) {
-				if (jcolor.getRed() != raster.getSample(i, j, 0)) {
-					continue;
+				if (SimilarColor(jcolor, tolerance, lastCapture, i, j)) {
+					count++;
 				}
-				if (jcolor.getGreen() != raster.getSample(i, j, 1)) {
-					continue;
-				}
-				if (jcolor.getBlue() != raster.getSample(i, j, 2)) {
-					continue;
-				}
-				count++;
 			}
 		}
 		return count;
@@ -794,7 +824,16 @@ public class scar_robot implements pascal_plugin {
 
 	public static void main(String[] arg) {
 		scar_robot scar = new scar_robot(null);
-		scar
-				.SendKeys("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=!@#$%^&*()_+<>?:\"{}|");
+		int x = 100;
+		int y = 130;
+		BufferedImage b = scar.r.createScreenCapture(new Rectangle(x, y, 400,
+				300));
+		WritableRaster r = b.getRaster();
+		int[] lol = r.getPixel(0, 0, (int[]) null);
+		System.out.println(lol[0] + " " + lol[1] + " " + lol[2]);
+		System.out.println(scar.r.getPixelColor(x, y));
+		// ImageIcon icon = new ImageIcon();
+		// icon.setImage(new BufferedImage(b.getColorModel(),r,false,null));
+		// JOptionPane.showMessageDialog(null, icon);
 	}
 }
