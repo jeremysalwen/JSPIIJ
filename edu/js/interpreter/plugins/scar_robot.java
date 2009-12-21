@@ -6,6 +6,7 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -20,6 +21,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import edu.js.interpreter.gui.ide;
+import edu.js.interpreter.preprocessed.interpreting_objects.object_based_pointer;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_plugin;
 
@@ -32,7 +34,7 @@ public class scar_robot implements pascal_plugin {
 
 	WritableRaster lastCapture;
 
-	Point lastCaptureOffset;
+	Point lastCaptureOffset = new Point();
 
 	long lastScreenCapTime;
 
@@ -40,15 +42,18 @@ public class scar_robot implements pascal_plugin {
 
 	public void update_screen(Rectangle rect) {
 		long currenttime = System.currentTimeMillis();
-		Rectangle bounds = (Rectangle) lastCapture.getBounds().clone();
-		bounds.translate(lastCaptureOffset.x, lastCaptureOffset.y);
-		if (currenttime - lastScreenCapTime > maxDelay
-				|| !bounds.contains(rect)) {
-			lastCapture = r.createScreenCapture(rect).getRaster();
-			lastScreenCapTime = currenttime;
-			lastCaptureOffset.x = rect.x;
-			lastCaptureOffset.y = rect.y;
+		if (lastCapture != null) {
+			Rectangle bounds = (Rectangle) lastCapture.getBounds().clone();
+			bounds.translate(lastCaptureOffset.x, lastCaptureOffset.y);
+			if (currenttime - lastScreenCapTime <= maxDelay
+					|| bounds.contains(rect)) {
+				return;
+			}
 		}
+		lastCapture = r.createScreenCapture(rect).getRaster();
+		lastScreenCapTime = currenttime;
+		lastCaptureOffset.x = rect.x;
+		lastCaptureOffset.y = rect.y;
 	}
 
 	public scar_robot(ide i) {
@@ -453,10 +458,21 @@ public class scar_robot implements pascal_plugin {
 		y.set(result.y);
 	}
 
+	/**
+	 * Returns the color at given coordinates on screen.
+	 * 
+	 * Be careful about specifying offscreen coordinates, it seems to still
+	 * return nonzero values.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public int GetColor(int x, int y) {
 		Point windowloc = ide.connection.getWindowLocation(ide.window);
 		x += windowloc.x;
 		y += windowloc.y;
+
 		return r.getPixelColor(x, y).getRGB();
 	}
 
@@ -468,17 +484,13 @@ public class scar_robot implements pascal_plugin {
 		ystart += windowloc.y;
 		xend += windowloc.x;
 		yend += windowloc.y;
-		update_screen(new Rectangle(xstart, ystart, xend - xstart, yend
-				- ystart));
-		xstart -= lastCaptureOffset.x;
-		xend -= lastCaptureOffset.x;
-		ystart -= lastCaptureOffset.y;
-		yend -= lastCaptureOffset.y;
+		update_screen(new Rectangle(xstart, ystart, xend - xstart + 1, yend
+				- ystart + 1));
 		for (int i = xstart; i <= xend; i++) {
-			for (int j = ystart; j < yend; j++) {
+			for (int j = ystart; j <= yend; j++) {
 				if (ColorsSame(jcolor, lastCapture, i, j)) {
-					x.set(i + lastCaptureOffset.x);
-					y.set(j + lastCaptureOffset.y);
+					x.set(i);
+					y.set(j);
 					return true;
 				}
 			}
@@ -494,17 +506,13 @@ public class scar_robot implements pascal_plugin {
 		ystart += windowloc.y;
 		xend += windowloc.x;
 		yend += windowloc.y;
-		update_screen(new Rectangle(xstart, ystart, xend - xstart, yend
-				- ystart));
-		xstart -= lastCaptureOffset.x;
-		xend -= lastCaptureOffset.x;
-		ystart -= lastCaptureOffset.y;
-		yend -= lastCaptureOffset.y;
+		update_screen(new Rectangle(xstart, ystart, xend - xstart+1, yend
+				- ystart+1));
 		for (int i = xstart; i <= xend; i++) {
-			for (int j = ystart; j < yend; j++) {
+			for (int j = ystart; j <= yend; j++) {
 				if (SimilarColor(jcolor, tolerance, lastCapture, i, j)) {
-					x.set(i + lastCaptureOffset.x);
-					y.set(j + lastCaptureOffset.y);
+					x.set(i);
+					y.set(j);
 					return true;
 				}
 			}
@@ -616,7 +624,7 @@ public class scar_robot implements pascal_plugin {
 		int ymin = Math.min(Math.abs(y0 - ys), Math.abs(y0 - ye));
 		int maxdis = (int) Math.floor(Math.sqrt(ymax * ymax + xmax * xmax));
 		int mindis = (int) Math.ceil(Math.sqrt(ymin * ymin + xmin * xmin));
-		Rectangle bounds = new Rectangle(xs, ys, xe - xs, ye - ys);
+		Rectangle bounds = new Rectangle(xs, ys, xe - xs+1, ye - ys+1);
 		update_screen(bounds);
 		for (int radius = 0; radius <= maxdis; radius++) {
 			Point result = FindColorToleranceInCircleBounded(x0, y0, radius,
@@ -775,7 +783,7 @@ public class scar_robot implements pascal_plugin {
 		x2 += windowloc.x;
 		y1 += windowloc.y;
 		y2 += windowloc.y;
-		update_screen(new Rectangle(x1, y1, x2 - x1, y2 - y1));
+		update_screen(new Rectangle(x1, y1, x2 - x1+1, y2 - y1+1));
 		x1 -= lastCaptureOffset.x;
 		y1 -= lastCaptureOffset.y;
 		x2 -= lastCaptureOffset.x;
@@ -806,7 +814,7 @@ public class scar_robot implements pascal_plugin {
 		x2 += windowloc.x;
 		y1 += windowloc.y;
 		y2 += windowloc.y;
-		update_screen(new Rectangle(x1, y1, x2 - x1, y2 - y1));
+		update_screen(new Rectangle(x1, y1, x2 - x1+1, y2 - y1+1));
 		x1 -= lastCaptureOffset.x;
 		y1 -= lastCaptureOffset.y;
 		x2 -= lastCaptureOffset.x;
@@ -824,16 +832,17 @@ public class scar_robot implements pascal_plugin {
 
 	public static void main(String[] arg) {
 		scar_robot scar = new scar_robot(null);
-		int x = 100;
-		int y = 130;
-		BufferedImage b = scar.r.createScreenCapture(new Rectangle(x, y, 400,
-				300));
-		WritableRaster r = b.getRaster();
-		int[] lol = r.getPixel(0, 0, (int[]) null);
-		System.out.println(lol[0] + " " + lol[1] + " " + lol[2]);
-		System.out.println(scar.r.getPixelColor(x, y));
-		// ImageIcon icon = new ImageIcon();
-		// icon.setImage(new BufferedImage(b.getColorModel(),r,false,null));
-		// JOptionPane.showMessageDialog(null, icon);
+		scar.ide = new ide();
+		pointer<Integer> x = new object_based_pointer<Integer>();
+		pointer<Integer> y = new object_based_pointer<Integer>();
+		if (scar.FindColorTolerance(x, y, new Color(236, 238, 238).getRGB(), 500, 500,
+				650, 600,2)) {
+			scar.MoveMouse(x.get(), y.get());
+		}
+		ImageIcon icon = new ImageIcon();
+		icon.setImage(new BufferedImage(scar.r.createScreenCapture(
+				new Rectangle(0, 0, 1, 1)).getColorModel(), scar.lastCapture,
+				false, null));
+		JOptionPane.showMessageDialog(null, icon);
 	}
 }
