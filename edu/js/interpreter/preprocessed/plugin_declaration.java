@@ -6,6 +6,7 @@ import java.lang.reflect.ParameterizedType;
 
 import ncsa.tools.common.util.TypeUtils;
 
+import edu.js.interpreter.pascal_types.array_type;
 import edu.js.interpreter.pascal_types.class_pascal_type;
 import edu.js.interpreter.pascal_types.pascal_type;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
@@ -53,13 +54,24 @@ public class plugin_declaration extends abstract_function {
 						.getGenericParameterTypes()[i])
 						.getActualTypeArguments()[0];
 			}
-			result[i] = class_pascal_type
-					.anew(types[i].isPrimitive() ? TypeUtils
-							.getClassForType(types[i]) : types[i]);
+			if (types[i].isArray()) {
+				array_type type=new array_type(types[i])
+			} else {
+				result[i] = class_pascal_type
+						.anew(types[i].isPrimitive() ? TypeUtils
+								.getClassForType(types[i]) : types[i]);
+			}
 		}
 		return result;
 	}
 
+pascal_type wrap_to_array_type(Class c) {
+	if(!c.isArray()) {
+		return class_pascal_type.anew(c);
+	}
+	pascal_type elem_type=c.getComponentType();
+	return new array_type(elem_type,)
+}
 	@Override
 	public String get_name() {
 		return method.getName();
@@ -83,8 +95,4 @@ public class plugin_declaration extends abstract_function {
 		return method.getParameterTypes()[i] == pointer.class;
 	}
 
-	@Override
-	public String toString() {
-		return method.toString();
-	}
 }

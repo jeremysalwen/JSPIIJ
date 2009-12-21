@@ -2,6 +2,8 @@ package edu.js.interpreter.preprocessed.interpreting_objects;
 
 import java.lang.reflect.Array;
 
+import edu.js.interpreter.pascal_types.pascal_type;
+
 public class arraypointer<T> extends pointer<T> {
 	Object array;
 

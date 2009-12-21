@@ -3,8 +3,9 @@ package edu.js.interpreter.pascal_types;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-import serp.bytecode.Code;
+import edu.js.interpreter.tokens.value.integer_token;
 
+import serp.bytecode.Code;
 
 //This class gets the version 1.0 stamp of approval.  Hopefully I won't have to change it any more.
 public class array_type extends pascal_type {
@@ -72,8 +73,22 @@ public class array_type extends pascal_type {
 
 	@Override
 	public void get_default_value_on_stack(Code code) {
+		for (int i : array_sizes) {
+			code.constant().setValue(i);
+		}
 		code.multianewarray().setDimensions(array_sizes.length).setType(
 				element_type.toclass());
 
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder(element_type.toString());
+		for (int i = 0; i < array_sizes.length; i++) {
+			result.append('[');
+			result.append(array_sizes[i]);
+			result.append(']');
+		}
+		return result.toString();
 	}
 }

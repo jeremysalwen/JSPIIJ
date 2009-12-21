@@ -37,7 +37,7 @@ public class abstract_function_call implements returns_value, executable {
 		abstract_function called_function = f.program.callable_functions
 				.get(header);
 		if (called_function == null) {
-			System.err.println("Could not find called function");
+			System.err.println("Could not find called function " + name);
 			System.exit(0);
 		}
 		for (int i = 0; i < values.length; i++) {
@@ -85,6 +85,14 @@ public class abstract_function_call implements returns_value, executable {
 			arg_types[i] = arguments[i].get_type(p, f);
 		}
 		dummy_declaration header = new dummy_declaration(name, arg_types);
-		return p.callable_functions.get(header).get_return_type();
+		abstract_function decl = p.callable_functions.get(header);
+		for (abstract_function lol : p.callable_functions.keySet()) {
+			System.out.println(lol);
+		}
+		if (decl == null) {
+			System.err.println("could not find function " + header);
+			System.exit(1);
+		}
+		return decl.get_return_type();
 	}
 }

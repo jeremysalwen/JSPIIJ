@@ -46,6 +46,7 @@ import edu.js.interpreter.tokens.basic.if_token;
 import edu.js.interpreter.tokens.basic.of_token;
 import edu.js.interpreter.tokens.basic.period_token;
 import edu.js.interpreter.tokens.basic.procedure_token;
+import edu.js.interpreter.tokens.basic.program_token;
 import edu.js.interpreter.tokens.basic.repeat_token;
 import edu.js.interpreter.tokens.basic.semicolon_token;
 import edu.js.interpreter.tokens.basic.then_token;
@@ -79,6 +80,8 @@ public class pascal_program implements Runnable {
 	public HashMap<String, pascal_type> typedefs;
 
 	public custom_type_generator type_generator;
+
+	public String program_name;
 
 	/*
 	 * plugins and functions
@@ -134,7 +137,7 @@ public class pascal_program implements Runnable {
 			if (!is_procedure && next instanceof colon_token) {
 				try {
 					i.take();
-					declaration.return_type = get_next_java_class(i);
+					declaration.return_type = get_next_pascal_type(i);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -166,7 +169,12 @@ public class pascal_program implements Runnable {
 			for (variable_declaration v : global_var_decs) {
 				main.local_variables.add(v);
 			}
+		} else if (next instanceof program_token) {
+			i.take();
+			this.program_name = get_word_value(i);
+			assert_next_semicolon(i);
 		} else {
+
 			i.take();
 			System.err.println("Unexpected token outside of any construct: "
 					+ next);
@@ -209,7 +217,7 @@ public class pascal_program implements Runnable {
 				assert (next instanceof colon_token);
 				pascal_type type;
 				try {
-					type = get_next_java_class(arguments_token);
+					type = get_next_pascal_type(arguments_token);
 					while (j > 0) {
 						types.add(type);
 						j--;
@@ -236,7 +244,7 @@ public class pascal_program implements Runnable {
 			assert (next instanceof colon_token);
 			pascal_type type;
 			try {
-				type = get_next_java_class(i);
+				type = get_next_pascal_type(i);
 				assert_next_semicolon(i);
 				for (String s : names) {
 					result.add(new variable_declaration(s, type));
@@ -502,7 +510,7 @@ public class pascal_program implements Runnable {
 						+ Integer.toHexString(custom_types.get(s).hashCode())));
 	}
 
-	pascal_type get_next_java_class(grouper_token i)
+	pascal_type get_next_pascal_type(grouper_token i)
 			throws ClassNotFoundException {
 		String s = get_word_value(i.peek_no_EOF());
 		if (s == "array") {
@@ -510,14 +518,24 @@ public class pascal_program implements Runnable {
 			ArrayList<Integer> upper = new ArrayList<Integer>(1);
 			while (s == "array") {
 				i.take();
-				bracketed_token bounds = (bracketed_token) i.take();
-				lower.add(((integer_token) bounds.take()).value);
-				token next = bounds.take();
-				assert (next instanceof period_token);
-				next = bounds.take();
-				assert (next instanceof period_token);
-				upper.add(((integer_token) bounds.take()).value);
-				next = i.take();
+				token next = i.take();
+				if (next instanceof bracketed_token) {
+					bracketed_token bounds = (bracketed_token) next;
+					lower.add(((integer_token) bounds.take()).value);
+					next = bounds.take();
+					assert (next instanceof period_token);
+					// The first period gets absorbed into the first bound as a
+					// decimal place.
+					/*
+					 * next = bounds.take(); assert (next instanceof
+					 * period_token);
+					 */
+					upper.add(((integer_token) bounds.take()).value);
+					next = i.take();
+				} else {
+					lower.add(0);
+					upper.add(-1); // So it is a zero length array
+				}
 				assert (next instanceof of_token);
 				s = get_word_value(i.peek_no_EOF());
 			}
