@@ -23,10 +23,10 @@ public class variable_access implements returns_value {
 		return "get_variable[" + variable_name + ']';
 	}
 
-	public pascal_type get_type(pascal_program p, function_declaration f) {
+	public pascal_type get_type(function_declaration f) {
 		pascal_type type = f.get_variable_type(variable_name.get(0).string());
 		if (type == null) {
-			type = p.main.get_variable_type(variable_name.get(0).string());
+			type = f.program.main.get_variable_type(variable_name.get(0).string());
 		}
 		for (int i = 1; i < variable_name.size(); i++) {
 			if (variable_name.get(i).isstring()) {

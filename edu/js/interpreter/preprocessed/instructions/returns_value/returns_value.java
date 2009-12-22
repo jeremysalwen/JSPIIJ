@@ -8,6 +8,5 @@ import edu.js.interpreter.processing.pascal_program;
 public interface returns_value {
 	public abstract Object get_value(function_on_stack f);
 
-	public abstract pascal_type get_type(pascal_program p,
-			function_declaration f);
+	public abstract pascal_type get_type(function_declaration f);
 }

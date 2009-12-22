@@ -58,9 +58,9 @@ public class binary_operator_evaluation implements returns_value {
 		return "[" + operon1 + "] " + operator_type + " [" + operon2 + ']';
 	}
 
-	public pascal_type get_type(pascal_program p, function_declaration f) {
-		pascal_type type1 = operon1.get_type(p, f);
-		pascal_type type2 = operon2.get_type(p, f);
+	public pascal_type get_type(function_declaration f) {
+		pascal_type type1 = operon1.get_type(f);
+		pascal_type type2 = operon2.get_type(f);
 		switch (operator_type) {
 		case AND:
 		case EQUALS:

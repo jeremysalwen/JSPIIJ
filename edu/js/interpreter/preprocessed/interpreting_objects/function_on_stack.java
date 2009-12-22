@@ -33,10 +33,10 @@ public class function_on_stack implements contains_variables {
 		passed_variables = new HashMap<String, pointer>();
 		for (int i = 0; i < arguments.length; i++) {
 			if (arguments[i] instanceof pointer) {
-				passed_variables.put(prototype.argument_names.get(i),
+				passed_variables.put(prototype.argument_names[i],
 						(pointer) arguments[i]);
 			} else {
-				local_variables.put(prototype.argument_names.get(i),
+				local_variables.put(prototype.argument_names[i],
 						arguments[i]);
 			}
 		}

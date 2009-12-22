@@ -29,8 +29,8 @@ public class unary_operator_evaluation implements returns_value {
 		return "operator [" + type + "] on [" + operon + ']';
 	}
 
-	public pascal_type get_type(pascal_program p, function_declaration f) {
-		return operon.get_type(p, f);
+	public pascal_type get_type(function_declaration f) {
+		return operon.get_type( f);
 	}
 
 }

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
+
 import edu.js.interpreter.pascal_types.array_type;
 import edu.js.interpreter.pascal_types.class_pascal_type;
 import edu.js.interpreter.pascal_types.custom_type_declaration;
@@ -86,7 +90,7 @@ public class pascal_program implements Runnable {
 	/*
 	 * plugins and functions
 	 */
-	public HashMap<abstract_function, abstract_function> callable_functions;
+	public ListMultimap<String, abstract_function> callable_functions;
 
 	public void run() {
 		mode = run_mode.running;
@@ -97,15 +101,12 @@ public class pascal_program implements Runnable {
 
 	pascal_program(List<plugin_declaration> plugins,
 			custom_type_generator type_generator) {
-		callable_functions = new HashMap<abstract_function, abstract_function>();
+		callable_functions = ArrayListMultimap.create();
 		custom_types = new HashMap<String, custom_type_declaration>();
 		for (plugin_declaration p : plugins) {
-			callable_functions.put(p, p);
+			add_callable_function(p);
 		}
 		this.type_generator = type_generator;
-		main = new function_declaration();
-		main.name = "main";
-		main.argument_types = new ArrayList<pascal_type>();
 	}
 
 	public pascal_program(String program, List<plugin_declaration> plugins,
@@ -127,40 +128,16 @@ public class pascal_program implements Runnable {
 		if (next instanceof procedure_token || next instanceof function_token) {
 			i.take();
 			boolean is_procedure = next instanceof procedure_token;
-			function_declaration declaration = new function_declaration();
-			declaration.name = get_word_value(i);
-			get_arguments_for_declaration(i, is_procedure,
-					declaration.argument_names, declaration.argument_types,
-					declaration.are_varargs);
-			next = i.peek();
-			assert (is_procedure ^ (next instanceof colon_token));
-			if (!is_procedure && next instanceof colon_token) {
-				try {
-					i.take();
-					declaration.return_type = get_next_pascal_type(i);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-			assert_next_semicolon(i);
-			List<variable_declaration> local_variables = null;
-			next = i.peek();
-			if (next instanceof var_token) {
-				i.take();
-				local_variables = get_variable_declarations(i);
-			}
-			executable commands = get_next_command(i);
-			assert_next_semicolon(i);
-			declaration.instructions = commands;
-
-			declaration.local_variables = local_variables == null ? new ArrayList<variable_declaration>()
-					: local_variables;
-			callable_functions.put(declaration, declaration);
+			function_declaration declaration = new function_declaration(i,
+					is_procedure);
+			add_callable_function(declaration);
 		} else if (next instanceof type_token) {
 			i.take();
 			add_custom_type_declaration(i);
 		} else if (next instanceof begin_end_token) {
-			main.instructions = get_next_command(i);
+			main = new function_declaration();
+			main.name = "main";
+			main.instructions = main.get_next_command(i);
 			next = i.take();
 			assert (next instanceof period_token);
 		} else if (next instanceof var_token) {
@@ -181,6 +158,10 @@ public class pascal_program implements Runnable {
 		}
 	}
 
+	public void add_callable_function(abstract_function f) {
+		callable_functions.put(f.get_name(), f);
+	}
+
 	private void add_custom_type_declaration(grouper_token i) {
 		custom_type_declaration result = new custom_type_declaration();
 		result.name = get_word_value(i);
@@ -194,42 +175,7 @@ public class pascal_program implements Runnable {
 		type_generator.output_class(result);
 	}
 
-	private void get_arguments_for_declaration(grouper_token i,
-			boolean is_procedure, List<String> names, List<pascal_type> types,
-			List<Boolean> are_varargs) { // need
-		token next = i.take();
-		if (next instanceof parenthesized_token) {
-			parenthesized_token arguments_token = (parenthesized_token) next;
-			while (arguments_token.hasNext()) {
-				int j = 0; // counts number added of this type
-				next = arguments_token.take();
-				boolean is_varargs = false;
-				if (next instanceof var_token) {
-					is_varargs = true;
-					next = arguments_token.take();
-				}
-				do {
-					are_varargs.add(is_varargs);
-					names.add(((word_token) next).name);
-					j++;
-				} while ((next = arguments_token.take()) instanceof comma_token);
-
-				assert (next instanceof colon_token);
-				pascal_type type;
-				try {
-					type = get_next_pascal_type(arguments_token);
-					while (j > 0) {
-						types.add(type);
-						j--;
-					}
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	private List<variable_declaration> get_variable_declarations(grouper_token i) {
+	public List<variable_declaration> get_variable_declarations(grouper_token i) {
 		List<variable_declaration> result = new ArrayList<variable_declaration>();
 		/*
 		 * reusing it, so it is further out of scope than necessary
@@ -261,222 +207,12 @@ public class pascal_program implements Runnable {
 		return result;
 	}
 
-	private List<executable> get_function_body(begin_end_token t) {
-		List<executable> commands = new ArrayList<executable>();
-		while (t.hasNext()) {
-			commands.add(get_next_command(t));
-			assert_next_semicolon(t);
-		}
-		return commands;
-	}
-
-	executable get_next_command(grouper_token token_iterator) {
-		token next = token_iterator.take();
-		if (next instanceof if_token) {
-			returns_value condition = get_next_returns_value(token_iterator);
-			next = token_iterator.take();
-			assert (next instanceof then_token);
-			executable command = get_next_command(token_iterator);
-			executable else_command = null;
-			next = token_iterator.peek();
-			if (next instanceof else_token) {
-				token_iterator.take();
-				else_command = get_next_command(token_iterator);
-			}
-			assert (next instanceof semicolon_token);
-			return new if_statement(condition, command, else_command);
-		} else if (next instanceof while_token) {
-			returns_value condition = get_next_returns_value(token_iterator);
-			next = token_iterator.take();
-			assert (next instanceof do_token);
-			executable command = get_next_command(token_iterator);
-			assert_next_semicolon(token_iterator);
-			return new while_statement(condition, command);
-		} else if (next instanceof begin_end_token) {
-			instruction_grouper begin_end_preprocessed = new instruction_grouper();
-			begin_end_token cast_token = (begin_end_token) next;
-			while (cast_token.hasNext()) {
-				begin_end_preprocessed
-						.add_command(get_next_command(cast_token));
-				assert_next_semicolon(cast_token);
-			}
-			return begin_end_preprocessed;
-		} else if (next instanceof for_token) {
-			variable_identifier tmp_var = get_next_var_identifier(token_iterator);
-			next = token_iterator.take();
-			assert (next instanceof assignment_token);
-			returns_value first_value = get_next_returns_value(token_iterator);
-			next = token_iterator.take();
-			boolean downto = false;
-			if (next instanceof downto_token) {
-				downto = true;
-			} else if (!(next instanceof to_token)) {
-				System.err.println("Expected to or downto");
-				System.exit(1);
-			}
-			returns_value last_value = get_next_returns_value(token_iterator);
-			next = token_iterator.take();
-			assert (next instanceof do_token);
-			executable result;
-			if (downto) { // TODO probably should merge these two types
-				result = new downto_for_statement(tmp_var, first_value,
-						last_value, get_next_command(token_iterator));
-			} else {
-				result = new for_statement(tmp_var, first_value, last_value,
-						get_next_command(token_iterator));
-			}
-			assert_next_semicolon(token_iterator);
-			return result;
-		} else if (next instanceof repeat_token) {
-			instruction_grouper command = new instruction_grouper();
-			while (!(token_iterator.peek_no_EOF() instanceof until_token)) {
-				get_next_command(token_iterator);
-			}
-			next = token_iterator.take();
-			assert (next instanceof until_token);
-			returns_value condition = get_next_returns_value(token_iterator);
-			return new repeat_instruction(command, condition);
-		} else if (next instanceof word_token) {
-			String name = get_word_value(next);
-			next = token_iterator.peek_no_EOF();
-			if (next instanceof parenthesized_token) {
-				token_iterator.take();
-				returns_value[] arguments = get_arguments_for_call((parenthesized_token) next);
-				return new abstract_function_call(name, arguments);
-			} else {
-				// at this point assuming it is a variable identifier.
-				variable_identifier identifier = get_next_var_identifier(name,
-						token_iterator);
-				next = token_iterator.take();
-				assert (next instanceof assignment_token);
-				returns_value value_to_assign = get_next_returns_value(token_iterator);
-				return new variable_set(identifier, value_to_assign);
-			}
-		}
-		System.err
-				.println("Could not identify token "
-						+ next
-						+ ", because it did not match any of the criteria for an instruction");
-		return null;
-	}
-
-	void assert_next_semicolon(grouper_token i) {
+	public void assert_next_semicolon(grouper_token i) {
 		token next = i.take();
 		assert (next instanceof semicolon_token);
 	}
 
-	variable_identifier get_next_var_identifier(grouper_token i) {
-		token next;
-		variable_identifier identifier = new variable_identifier();
-		identifier.add(new string_subvar_identifier(get_word_value(i)));
-		while (true) {
-			if (i.peek() instanceof period_token) {
-				i.take();
-				next = i.take();
-				if (next instanceof word_token) {
-					identifier.add(new string_subvar_identifier(
-							((word_token) next).name));
-				} else {
-					error();
-				}
-			} else if (i.peek() instanceof bracketed_token) {
-				identifier.add(new returnsvalue_subvar_identifier(
-						get_next_returns_value((bracketed_token) i.take())));
-			} else {
-				break;
-			}
-		}
-		return identifier;
-	}
-
-	variable_identifier get_next_var_identifier(String initial, grouper_token i) {
-		token next;
-		variable_identifier identifier = new variable_identifier();
-		identifier.add(new string_subvar_identifier(initial));
-		while (true) {
-			if (i.peek() instanceof period_token) {
-				i.take();
-				next = i.take();
-				if (next instanceof word_token) {
-					identifier.add(new string_subvar_identifier(
-							((word_token) next).name));
-				} else {
-					error();
-				}
-			} else if (i.peek() instanceof bracketed_token) {
-				identifier.add(new returnsvalue_subvar_identifier(
-						get_next_returns_value((bracketed_token) i.take())));
-			} else {
-				break;
-			}
-		}
-		return identifier;
-	}
-
-	returns_value get_single_value(parenthesized_token t) {
-		returns_value result = get_next_returns_value(t);
-		assert (!t.hasNext());
-		return result;
-	}
-
-	returns_value[] get_arguments_for_call(parenthesized_token t) {
-		List<returns_value> result = new ArrayList<returns_value>();
-		while (t.hasNext()) {
-			result.add(get_next_returns_value(t));
-			if (t.hasNext()) {
-				token next = t.take();
-				assert (next instanceof comma_token);
-			}
-		}
-		return result.toArray(new returns_value[result.size()]);
-	}
-
-	returns_value get_next_returns_value(grouper_token iterator) {
-		token next = iterator.take();
-		if (next instanceof operator_token) {
-			assert ((operator_token) next).can_be_unary();
-			return new unary_operator_evaluation(
-					get_next_returns_value(iterator),
-					((operator_token) next).type);
-		}
-		returns_value result = null;
-		if (next instanceof parenthesized_token) {
-			result = get_single_value((parenthesized_token) next);
-		} else if (next instanceof integer_token) {
-			result = new constant_access(((integer_token) next).value);
-		} else if (next instanceof double_token) {
-			result = new constant_access(((double_token) next).value);
-		} else if (next instanceof string_token) {
-			result = new constant_access(new StringBuilder(
-					((string_token) next).value));
-		} else if (next instanceof word_token) {
-			String name = ((word_token) next).name;
-			if (!((next = iterator.peek()) instanceof EOF_token)) {
-				if (next instanceof parenthesized_token) {
-					result = new abstract_function_call(
-							name,
-							get_arguments_for_call((parenthesized_token) iterator
-									.take()));
-				} else {
-					result = new variable_access(get_next_var_identifier(name,
-							iterator));
-				}
-			} else {
-				result = new variable_access(get_next_var_identifier(name,
-						iterator));
-			}
-		}
-		assert (result != null);
-		if ((next = iterator.peek()) instanceof operator_token) {
-			iterator.take();
-			result = new binary_operator_evaluation(result,
-					get_next_returns_value(iterator),
-					((operator_token) next).type);
-		}
-		return result;
-	}
-
-	String get_word_value(token t) {
+	public String get_word_value(token t) {
 		assert (t instanceof word_token);
 		return ((word_token) t).name;
 	}
@@ -510,7 +246,7 @@ public class pascal_program implements Runnable {
 						+ Integer.toHexString(custom_types.get(s).hashCode())));
 	}
 
-	pascal_type get_next_pascal_type(grouper_token i)
+	public pascal_type get_next_pascal_type(grouper_token i)
 			throws ClassNotFoundException {
 		String s = get_word_value(i.peek_no_EOF());
 		if (s == "array") {
@@ -553,9 +289,20 @@ public class pascal_program implements Runnable {
 		return get_basic_type(s);
 	}
 
-	void error() {
+	public void error() {
 		System.err
 				.println("problem with your code that the interpreter has not been taught to identify");
 		System.exit(0);
+	}
+
+	public abstract_function find_function_with_header(String name,
+			returns_value[] args) {
+		List<abstract_function> possibilities = callable_functions.get(name);
+		for (abstract_function a : possibilities) {
+			if (a.can_accept(args)) {
+				return a;
+			}
+		}
+		return null;
 	}
 }

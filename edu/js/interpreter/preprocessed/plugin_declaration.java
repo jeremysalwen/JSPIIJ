@@ -4,11 +4,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Annotation;
+
 import ncsa.tools.common.util.TypeUtils;
 
 import edu.js.interpreter.pascal_types.array_type;
 import edu.js.interpreter.pascal_types.class_pascal_type;
 import edu.js.interpreter.pascal_types.pascal_type;
+import edu.js.interpreter.plugins.annotations.array_bounds_info;
+import edu.js.interpreter.plugins.annotations.method_type_data;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.processing.pascal_program;
 
@@ -40,12 +44,13 @@ public class plugin_declaration extends abstract_function {
 		return null;
 	}
 
-	@Override
+	
 	public pascal_type[] get_arg_types() {
 		Class[] types = method.getParameterTypes();
 		pascal_type[] result = new pascal_type[types.length];
+		method_type_data tmp = method.getAnnotation(method_type_data.class);
+		array_bounds_info[] type_data = tmp == null ? null : tmp.info();
 		for (int i = 0; i < types.length; i++) {
-
 			if (types[i] == String.class) {
 				types[i] = StringBuilder.class;
 			}
@@ -55,7 +60,14 @@ public class plugin_declaration extends abstract_function {
 						.getActualTypeArguments()[0];
 			}
 			if (types[i].isArray()) {
-				array_type type=new array_type(types[i])
+				int[] starts = new int[] { 0 };
+				int[] lengths = new int[] { 0 };
+				if (type_data != null) {
+					starts = type_data[i].starts();
+					lengths = type_data[i].lengths();
+				}
+				result[i] = new array_type(class_pascal_type.anew(types[i]
+						.getComponentType()), starts, lengths);
 			} else {
 				result[i] = class_pascal_type
 						.anew(types[i].isPrimitive() ? TypeUtils
@@ -65,19 +77,12 @@ public class plugin_declaration extends abstract_function {
 		return result;
 	}
 
-pascal_type wrap_to_array_type(Class c) {
-	if(!c.isArray()) {
-		return class_pascal_type.anew(c);
-	}
-	pascal_type elem_type=c.getComponentType();
-	return new array_type(elem_type,)
-}
 	@Override
 	public String get_name() {
 		return method.getName();
 	}
 
-	@Override
+	
 	public pascal_type get_return_type() {
 		Class result = method.getReturnType();
 		if (result == pointer.class) {

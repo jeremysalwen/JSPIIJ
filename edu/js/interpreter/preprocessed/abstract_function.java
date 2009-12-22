@@ -1,51 +1,24 @@
 package edu.js.interpreter.preprocessed;
 
 import edu.js.interpreter.pascal_types.pascal_type;
+import edu.js.interpreter.preprocessed.instructions.returns_value.returns_value;
 import edu.js.interpreter.processing.pascal_program;
 
 public abstract class abstract_function {
 
 	public abstract String get_name();
 
-	public abstract pascal_type[] get_arg_types();
+	public pascal_type[] argument_types = null;
 
-	public abstract pascal_type get_return_type();
+	public pascal_type return_type = null;
 
 	public abstract boolean is_varargs(int i);
-
-	public int hashCode() {
-		int hashcode = get_name().hashCode();
-		pascal_type[] types = get_arg_types();
-		for (int i = 0; i < types.length; i++) {
-			hashcode ^= types[i].hashCode();
-		}
-		return hashcode;
-	}
-
-	public boolean equals(Object obj) {
-		if (obj instanceof abstract_function) {
-			abstract_function other = (abstract_function) obj;
-			if (get_name().equals(other.get_name())) {
-				pascal_type[] types = get_arg_types();
-				pascal_type[] other_types = other.get_arg_types();
-				if (types.length == other_types.length) {
-					for (int i = 0; i < types.length; i++) {
-						if (!types[i].equals(other_types[i])) {
-							return false;
-						}
-					}
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder(get_name());
 		result.append('(');
-		for (pascal_type c : get_arg_types()) {
+		for (pascal_type c : argument_types) {
 			result.append(c);
 			result.append(',');
 		}
@@ -62,4 +35,8 @@ public abstract class abstract_function {
 	 * @return The return value of the called function.
 	 */
 	public abstract Object call(pascal_program program, Object[] arguments);
+
+	public boolean can_accept(returns_value[] values) {
+		return false;
+	}
 }

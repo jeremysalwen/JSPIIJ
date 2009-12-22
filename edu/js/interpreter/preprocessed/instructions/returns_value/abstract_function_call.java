@@ -2,7 +2,6 @@ package edu.js.interpreter.preprocessed.instructions.returns_value;
 
 import edu.js.interpreter.pascal_types.pascal_type;
 import edu.js.interpreter.preprocessed.abstract_function;
-import edu.js.interpreter.preprocessed.dummy_declaration;
 import edu.js.interpreter.preprocessed.function_declaration;
 import edu.js.interpreter.preprocessed.instructions.executable;
 import edu.js.interpreter.preprocessed.interpreting_objects.arraypointer;
@@ -14,12 +13,13 @@ import edu.js.interpreter.preprocessed.interpreting_objects.variables.variable_i
 import edu.js.interpreter.processing.pascal_program;
 
 public class abstract_function_call implements returns_value, executable {
-	String name;
+	abstract_function function;
 
 	returns_value[] arguments;
 
-	public abstract_function_call(String name, returns_value[] arguments) {
-		this.name = name;
+	public abstract_function_call(abstract_function function,
+			returns_value[] arguments) {
+		this.function = function;
 		this.arguments = arguments;
 	}
 
@@ -27,21 +27,14 @@ public class abstract_function_call implements returns_value, executable {
 		pascal_type[] arg_types = new pascal_type[arguments.length];
 		Object[] values = new Object[arguments.length];
 		for (int i = 0; i < arguments.length; i++) {
-			arg_types[i] = arguments[i].get_type(f.program, f.prototype);
+			arg_types[i] = arguments[i].get_type(f.prototype);
 			if (arg_types[i] == null || arg_types[i].toclass() == null) {
 				System.out.println(arguments[i]);
-				arguments[i].get_type(f.program, f.prototype);
+				arguments[i].get_type(f.prototype);
 			}
 		}
-		dummy_declaration header = new dummy_declaration(name, arg_types);
-		abstract_function called_function = f.program.callable_functions
-				.get(header);
-		if (called_function == null) {
-			System.err.println("Could not find called function " + name);
-			System.exit(0);
-		}
 		for (int i = 0; i < values.length; i++) {
-			if (called_function.is_varargs(i)) {
+			if (function.is_varargs(i)) {
 				if (!(arguments[i] instanceof variable_access)) {
 					System.err
 							.println("Attempted to pass non-variable as variable argument");
@@ -66,12 +59,12 @@ public class abstract_function_call implements returns_value, executable {
 				}
 			}
 		}
-		Object result = called_function.call(f.program, values);
+		Object result = function.call(f.program, values);
 		return result;
 	}
 
 	public String toString() {
-		return "call function [" + name + "] with args [" + arguments + ']';
+		return "call function [" + function + "] with args [" + arguments + ']';
 	}
 
 	public boolean execute(function_on_stack f) {
@@ -79,20 +72,11 @@ public class abstract_function_call implements returns_value, executable {
 		return false;
 	}
 
-	public pascal_type get_type(pascal_program p, function_declaration f) {
+	public pascal_type get_type(function_declaration f) {
 		pascal_type[] arg_types = new pascal_type[arguments.length];
 		for (int i = 0; i < arguments.length; i++) {
-			arg_types[i] = arguments[i].get_type(p, f);
+			arg_types[i] = arguments[i].get_type(f);
 		}
-		dummy_declaration header = new dummy_declaration(name, arg_types);
-		abstract_function decl = p.callable_functions.get(header);
-		for (abstract_function lol : p.callable_functions.keySet()) {
-			System.out.println(lol);
-		}
-		if (decl == null) {
-			System.err.println("could not find function " + header);
-			System.exit(1);
-		}
-		return decl.get_return_type();
+		return function.return_type;
 	}
 }

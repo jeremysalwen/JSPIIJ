@@ -47,4 +47,13 @@ public class StaticMethods {
 		}
 		return result.toArray(new String[result.size()]);
 	}
+
+	public static int indexOf(Object[] array, Object o) {
+		for (int i = 0; i < array.length; i++) {
+			if (o.equals(array[i])) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }

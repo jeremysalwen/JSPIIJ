@@ -78,7 +78,6 @@ public class array_type extends pascal_type {
 		}
 		code.multianewarray().setDimensions(array_sizes.length).setType(
 				element_type.toclass());
-
 	}
 
 	@Override

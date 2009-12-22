@@ -22,7 +22,7 @@ public class constant_access implements returns_value {
 		return "get_constant[" + constant_value + ']';
 	}
 
-	public pascal_type get_type(pascal_program p, function_declaration f) {
+	public pascal_type get_type(function_declaration f) {
 		return class_pascal_type.anew(constant_value.getClass());
 	}
 }
