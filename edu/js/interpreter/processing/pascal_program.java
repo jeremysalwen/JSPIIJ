@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multiset.Entry;
 
 import edu.js.interpreter.pascal_types.array_type;
 import edu.js.interpreter.pascal_types.class_pascal_type;
@@ -60,7 +61,7 @@ public class pascal_program implements Runnable {
 	/*
 	 * plugins and functions
 	 */
-	public ListMultimap<String, abstract_function> callable_functions;
+	private ListMultimap<String, abstract_function> callable_functions;
 
 	public void run() {
 		mode = run_mode.running;
@@ -78,6 +79,9 @@ public class pascal_program implements Runnable {
 		}
 		this.type_generator = type_generator;
 		main = new function_declaration(this);
+		main.are_varargs = new boolean[0];
+		main.argument_names = new String[0];
+		main.argument_types = new pascal_type[0];
 		main.name = "main";
 	}
 
@@ -129,7 +133,7 @@ public class pascal_program implements Runnable {
 	}
 
 	public void add_callable_function(abstract_function f) {
-		callable_functions.put(f.name(), f);
+		callable_functions.put(f.name().toLowerCase(), f);
 	}
 
 	private void add_custom_type_declaration(grouper_token i) {
@@ -264,7 +268,8 @@ public class pascal_program implements Runnable {
 
 	public abstract_function_call generate_function_call(String name,
 			returns_value[] args, function_declaration f) {
-		List<abstract_function> possibilities = callable_functions.get(name);
+		List<abstract_function> possibilities = callable_functions.get(name
+				.toLowerCase());
 		returns_value[] converted;
 		for (abstract_function a : possibilities) {
 			converted = a.format_args(args, f);

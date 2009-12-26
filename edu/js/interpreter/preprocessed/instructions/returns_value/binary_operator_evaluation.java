@@ -94,7 +94,7 @@ public class binary_operator_evaluation implements returns_value {
 		if (one == Double.class || two == Double.class) {
 			return Double.class;
 		}
-		if (one == Long.class || two == Long.class) {
+		if (one == Long.class || two == Long.class ||one == Integer.class || two == Integer.class) {
 			return Long.class;
 		}
 		if (one == Boolean.class || two == Boolean.class) {

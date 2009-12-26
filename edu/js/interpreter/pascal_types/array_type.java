@@ -70,7 +70,10 @@ public class array_type extends pascal_type {
  */
 	@Override
 	public Object initialize() {
-		return Array.newInstance(element_type.toclass(), array_sizes);
+		Object result= Array.newInstance(element_type.toclass(), array_sizes);
+		Object default_value=element_type.initialize();
+		//TODO lopp through multidimensional array
+		return result;
 	}
 
 	@Override

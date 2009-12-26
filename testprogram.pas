@@ -2,14 +2,13 @@ type coords= record
 x:integer;
 y:integer;
 end
-
+function appendhello(i:integer):string;
+begin
+Result:=inttostr(i)+'hello';
+end;
 procedure printhello(x:integer);
 begin
 writeln(appendhello(x));
-end;
-function appendhello(i:integer):string;
-begin
-Result:=tostring(i)+'hello';
 end;
 var
 i, target:integer;
@@ -27,4 +26,5 @@ begin
 	cow[i]:=cow[i-1]+cow[i-2];
 	printhello(cow[i]);
 end;
+
 end.
