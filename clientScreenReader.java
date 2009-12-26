@@ -4,6 +4,10 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class clientScreenReader extends Canvas {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public BufferedImage image;
 
 	@Override

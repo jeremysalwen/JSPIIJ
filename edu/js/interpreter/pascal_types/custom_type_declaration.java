@@ -3,7 +3,9 @@ package edu.js.interpreter.pascal_types;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.js.interpreter.preprocessed.function_declaration;
 import edu.js.interpreter.preprocessed.variable_declaration;
+import edu.js.interpreter.preprocessed.instructions.returns_value.returns_value;
 
 import serp.bytecode.Code;
 
@@ -71,17 +73,32 @@ public class custom_type_declaration extends pascal_type {
 		if (!(obj instanceof custom_type_declaration)) {
 			return false;
 		}
-		return variable_types.equals((custom_type_declaration) obj)
-				&& name.equals((custom_type_declaration) obj);
+		return variable_types.equals(obj)
+				&& name.equals(obj);
 	}
 
 	@Override
 	public Class toclass() {
 		try {
-			return Class.forName("edu.js.interpreter.custom_types." + hashCode());
+			return Class.forName("edu.js.interpreter.custom_types."
+					+ hashCode());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+
+	@Override
+	public returns_value convert(returns_value value, function_declaration f) {
+		pascal_type other_type = value.get_type(f);
+		if (this.equals(other_type)) {
+			/**
+			 * technically this should be == to conform to pascal specs, but we
+			 * can be a bit more lenient
+			 */
+			return value;
+		}
+		return null;
+	}
+
 }

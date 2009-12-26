@@ -4,8 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Annotation;
-
 import ncsa.tools.common.util.TypeUtils;
 
 import edu.js.interpreter.pascal_types.array_type;
@@ -26,6 +24,7 @@ public class plugin_declaration extends abstract_function {
 		method = m;
 	}
 
+	@Override
 	public Object call(pascal_program program, Object[] arguments) {
 		try {
 			for (int i = 0; i < arguments.length; i++) {
@@ -45,7 +44,8 @@ public class plugin_declaration extends abstract_function {
 	}
 
 	
-	public pascal_type[] get_arg_types() {
+	@Override
+	public pascal_type[] argument_types() {
 		Class[] types = method.getParameterTypes();
 		pascal_type[] result = new pascal_type[types.length];
 		method_type_data tmp = method.getAnnotation(method_type_data.class);
@@ -78,12 +78,13 @@ public class plugin_declaration extends abstract_function {
 	}
 
 	@Override
-	public String get_name() {
+	public String name() {
 		return method.getName();
 	}
 
 	
-	public pascal_type get_return_type() {
+	@Override
+	public pascal_type return_type() {
 		Class result = method.getReturnType();
 		if (result == pointer.class) {
 			result = (Class) ((ParameterizedType) method.getGenericReturnType())

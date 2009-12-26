@@ -10,7 +10,6 @@ import edu.js.interpreter.preprocessed.interpreting_objects.function_on_stack;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.contains_variables;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.subvar_identifier;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.variable_identifier;
-import edu.js.interpreter.processing.pascal_program;
 
 public class abstract_function_call implements returns_value, executable {
 	abstract_function function;
@@ -20,6 +19,9 @@ public class abstract_function_call implements returns_value, executable {
 	public abstract_function_call(abstract_function function,
 			returns_value[] arguments) {
 		this.function = function;
+		if(function==null) {
+			System.err.println("Warning: Null function call");
+		}
 		this.arguments = arguments;
 	}
 
@@ -63,6 +65,7 @@ public class abstract_function_call implements returns_value, executable {
 		return result;
 	}
 
+	@Override
 	public String toString() {
 		return "call function [" + function + "] with args [" + arguments + ']';
 	}
@@ -77,6 +80,6 @@ public class abstract_function_call implements returns_value, executable {
 		for (int i = 0; i < arguments.length; i++) {
 			arg_types[i] = arguments[i].get_type(f);
 		}
-		return function.return_type;
+		return function.return_type();
 	}
 }

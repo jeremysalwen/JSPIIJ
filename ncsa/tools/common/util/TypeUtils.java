@@ -64,8 +64,9 @@ public class TypeUtils
             Void.class, Void.class, String.class, String.class, String.class,
             File.class, File.class, File.class, URI.class, URI.class, URI.class
       };
-      for ( int i = 0; i < keys.length; i++ )
-         typeMap.put( keys[i], clazzes[i] );
+      for ( int i = 0; i < keys.length; i++ ) {
+		typeMap.put( keys[i], clazzes[i] );
+	}
       
       primTypes = new HashMap();
       wrappers = new HashMap();
@@ -93,12 +94,14 @@ public class TypeUtils
             Double.class, Float.class, Integer.class, Long.class, Short.class
       };
       
-      for ( int i = 0; i < types.length; i++ )
-         numTypes.put( types[i], types[i] );
+      for ( int i = 0; i < types.length; i++ ) {
+		numTypes.put( types[i], types[i] );
+	}
       
       assignable = new HashMap();
-      for ( int i = 0; i < primitiveAssignable.length; i++ ) 
-      		assignable.put( primitiveAssignable[i], null );
+      for ( int i = 0; i < primitiveAssignable.length; i++ ) {
+		assignable.put( primitiveAssignable[i], null );
+	}
       
    } // static
    
@@ -114,7 +117,9 @@ public class TypeUtils
    public static Class getClassForName( String s )
       throws ClassNotFoundException
    {
-   		if ( typeMap.containsKey( s ) ) return ( Class )typeMap.get( s );
+   		if ( typeMap.containsKey( s ) ) {
+			return ( Class )typeMap.get( s );
+		}
 		return Class.forName( s );
    } // getClassForName
    
@@ -284,7 +289,9 @@ public class TypeUtils
                    && c.equals( Long.class ) )
             || ( toMatch.equals( Short.TYPE )
                    && c.equals( Short.class ) );
-         if ( matches ) break;
+         if ( matches ) {
+			break;
+		}
          c = c.getSuperclass();
       }
       return matches;
@@ -308,7 +315,9 @@ public class TypeUtils
                                     Class c2 )
    {
       // we'll consider a null to match any type
-      if ( o1 == null || o2 == null ) return true;
+      if ( o1 == null || o2 == null ) {
+		return true;
+	}
       Class c3 = o1.getClass();
       Class c4 = o2.getClass();
       return ( ( c3.equals( c1 ) && c4.equals( c1 ) ) ||
@@ -330,7 +339,9 @@ public class TypeUtils
    public static boolean typesMatch( Object o1, Object o2 )
    {
       // we'll consider a null to match any type
-      if ( o1 == null || o2 == null ) return true;
+      if ( o1 == null || o2 == null ) {
+		return true;
+	}
       Class c1 = o1.getClass();
       Class c2 = o2.getClass();
       return c1.equals( c2 );
@@ -338,7 +349,9 @@ public class TypeUtils
    
    public static boolean arePrimitiveAnalogous( Class c1, Class c2 )
    {
-   		if ( c1 == null || c2 == null ) return false;
+   		if ( c1 == null || c2 == null ) {
+			return false;
+		}
    		return c1.equals( c2 ) ||
    			c1.equals( wrappers.get( c2 ) ) ||
    			c1.equals( primTypes.get( c2 ) );
@@ -382,10 +395,14 @@ public class TypeUtils
    public static Object convertPrim( Class type, Object value )
       throws TypeConversionException
    {
-      if ( value == null ) return null;
+      if ( value == null ) {
+		return null;
+	}
       
       Class c = value.getClass();
-      if ( isTypeOf( c, type ) ) return value;
+      if ( isTypeOf( c, type ) ) {
+		return value;
+	}
       
       String s = null;
       if ( isNumber( type ) && isNumber( c ) ) {
@@ -431,7 +448,9 @@ public class TypeUtils
             return new File( s );
          } else if ( type.equals( URI.class ) ) {
             return new URI( s );
-         } else return s;
+         } else {
+			return s;
+		}
       } catch ( Throwable t ) {
          throw new TypeConversionException( "convertPrim", t );
       }

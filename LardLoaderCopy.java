@@ -167,12 +167,13 @@ public class LardLoaderCopy {
 		}
 		BCField bytes = null;
 		for (BCField f : StringWrapper.getDeclaredFields()) {
-			if (!f.isStatic())
+			if (!f.isStatic()) {
 				if (f.getTypeName().equals("[B")) {
 					System.out.println("Found the bytes of stringWrapper "
 							+ StringWrapper.getName() + "." + f.getName());
 					bytes = f;
 				}
+			}
 		}
 		BCClass c = clases.get("client");
 		int index = 0;
@@ -191,8 +192,9 @@ public class LardLoaderCopy {
 					}
 				}
 			}
-			if (index != 0)
+			if (index != 0) {
 				break;
+			}
 		}
 
 		for (int i = index; i < instructions.length; i++) {
@@ -268,8 +270,9 @@ public class LardLoaderCopy {
 		c.setRequestProperty("Accept-Encoding", "gzip,deflate");
 		c.setRequestProperty("Accept-Charset", "UTF-8,*");
 
-		if (referer != null)
+		if (referer != null) {
 			c.setRequestProperty("Referer", referer);
+		}
 
 		c.setRequestProperty("Keep-Alive", "300");
 
@@ -280,8 +283,9 @@ public class LardLoaderCopy {
 		printout.flush();
 		printout.close();
 		String contsize = c.getHeaderField("Content-length");
-		if (contsize == null)
+		if (contsize == null) {
 			contsize = "0";
+		}
 		byte buffer[] = new byte[Integer.parseInt(contsize)];
 		DataInputStream ds = new DataInputStream(c.getInputStream());
 		ds.readFully(buffer);
@@ -304,12 +308,14 @@ public class LardLoaderCopy {
 		conn.setRequestProperty("Accept-Language", "en-us,en;q=0.5");
 		conn.setRequestProperty("Accept-Encoding", "gzip,deflate");
 		conn.setRequestProperty("Accept-Charset", "UTF-8,*");
-		if (referer != null)
+		if (referer != null) {
 			conn.setRequestProperty("Referer", referer);
+		}
 		conn.setRequestProperty("Keep-Alive", "300");
 		String contsize = conn.getHeaderField("Content-length");
-		if (contsize == null)
+		if (contsize == null) {
 			contsize = "0";
+		}
 		byte buffer[] = new byte[Integer.parseInt(contsize)];
 		DataInputStream ds = new DataInputStream(conn.getInputStream());
 		ds.readFully(buffer);
@@ -405,8 +411,9 @@ public class LardLoaderCopy {
 			Pack200.Packer pk = Pack200.newPacker();
 			pk.pack(j, gzos);
 			gzos.finish();
-			if (!out.exists())
+			if (!out.exists()) {
 				out.createNewFile();
+			}
 			FileOutputStream fos = new FileOutputStream(out);
 			byte[] data = baos.toByteArray();
 			fos.write(data, 2, data.length - 2);

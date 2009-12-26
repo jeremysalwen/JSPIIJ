@@ -17,6 +17,11 @@ import java.net.URL;
 
 public class appletProxy extends Applet implements FocusListener,
 		MouseListener, MouseMotionListener, KeyListener, InputMethodListener{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public Applet realApplet;
 
 	public Component canvas;

@@ -1,8 +1,6 @@
 package edu.js.interpreter.plugins;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-
 import edu.js.interpreter.plugins.annotations.array_bounds_info;
 import edu.js.interpreter.plugins.annotations.method_type_data;
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;

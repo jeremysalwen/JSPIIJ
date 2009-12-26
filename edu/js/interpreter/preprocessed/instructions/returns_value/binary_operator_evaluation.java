@@ -6,7 +6,6 @@ import edu.js.interpreter.pascal_types.class_pascal_type;
 import edu.js.interpreter.pascal_types.pascal_type;
 import edu.js.interpreter.preprocessed.function_declaration;
 import edu.js.interpreter.preprocessed.interpreting_objects.function_on_stack;
-import edu.js.interpreter.processing.pascal_program;
 import edu.js.interpreter.tokens.value.operator_types;
 
 public class binary_operator_evaluation implements returns_value {

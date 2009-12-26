@@ -119,6 +119,7 @@ public enum operator_types {
 			return b1 ^ b2;
 		}
 
+		@Override
 		public Object operate(long l1, long l2)
 				throws OperationNotSupportedException {
 			return l1 ^ l2;
@@ -299,13 +300,13 @@ public enum operator_types {
 
 	public Object operate(Object o) {
 		if (o instanceof Boolean) {
-			return operate((Boolean) o);
+			return operate(o);
 		}
 		if (o instanceof Long) {
-			return operate((Long) o);
+			return operate(o);
 		}
 		if (o instanceof Double) {
-			return operate((Double) o);
+			return operate(o);
 		}
 		throw new RuntimeException("unrecognized type " + o.getClass()
 				+ " for operation " + this);

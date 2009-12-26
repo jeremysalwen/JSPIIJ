@@ -6,12 +6,9 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.util.Random;
@@ -565,8 +562,8 @@ public class scar_robot implements pascal_plugin {
 				need_to_visit.push(new Point(next.x - 1, next.y));
 			}
 		}
-		return new Point(((int) x / numincluster) + lastCaptureOffset.x,
-				((int) y / numincluster) + lastCaptureOffset.y);
+		return new Point((x / numincluster) + lastCaptureOffset.x,
+				(y / numincluster) + lastCaptureOffset.y);
 	}
 
 	/*
@@ -679,29 +676,37 @@ public class scar_robot implements pascal_plugin {
 			ddF_x += 2;
 			f += ddF_x;
 			if (isPointInBoundsAndMatchesColorTolerance(x0 + x, y0 + y, bounds,
-					color, image, tolerance))
+					color, image, tolerance)) {
 				return new Point(x0 + x, y0 + y);
+			}
 			if (isPointInBoundsAndMatchesColorTolerance(x0 - x, y0 + y, bounds,
-					color, image, tolerance))
+					color, image, tolerance)) {
 				return new Point(x0 - x, y0 + y);
+			}
 			if (isPointInBoundsAndMatchesColorTolerance(x0 + x, y0 - y, bounds,
-					color, image, tolerance))
+					color, image, tolerance)) {
 				return new Point(x0 + x, y0 - y);
+			}
 			if (isPointInBoundsAndMatchesColorTolerance(x0 - x, y0 - y, bounds,
-					color, image, tolerance))
+					color, image, tolerance)) {
 				return new Point(x0 - x, y0 - y);
+			}
 			if (isPointInBoundsAndMatchesColorTolerance(x0 + y, y0 + x, bounds,
-					color, image, tolerance))
+					color, image, tolerance)) {
 				return new Point(x0 + y, y0 + x);
+			}
 			if (isPointInBoundsAndMatchesColorTolerance(x0 - y, y0 + x, bounds,
-					color, image, tolerance))
+					color, image, tolerance)) {
 				return new Point(x0 - y, y0 + y);
+			}
 			if (isPointInBoundsAndMatchesColorTolerance(x0 + y, y0 - x, bounds,
-					color, image, tolerance))
+					color, image, tolerance)) {
 				return new Point(x0 + y, y0 - x);
+			}
 			if (isPointInBoundsAndMatchesColorTolerance(x0 - y, y0 - x, bounds,
-					color, image, tolerance))
+					color, image, tolerance)) {
 				return new Point(x0 - y, y0 - x);
+			}
 		}
 		return null;
 	}

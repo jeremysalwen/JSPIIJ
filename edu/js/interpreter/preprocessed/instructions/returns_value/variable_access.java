@@ -5,10 +5,9 @@ import edu.js.interpreter.pascal_types.pascal_type;
 import edu.js.interpreter.preprocessed.function_declaration;
 import edu.js.interpreter.preprocessed.interpreting_objects.function_on_stack;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.variable_identifier;
-import edu.js.interpreter.processing.pascal_program;
 
 public class variable_access implements returns_value {
-	variable_identifier variable_name;
+	public variable_identifier variable_name;
 
 	public variable_access(variable_identifier name) {
 		this.variable_name = name;

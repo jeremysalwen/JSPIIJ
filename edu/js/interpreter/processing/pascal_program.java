@@ -1,12 +1,12 @@
 package edu.js.interpreter.processing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
 
 import edu.js.interpreter.pascal_types.array_type;
 import edu.js.interpreter.pascal_types.class_pascal_type;
@@ -18,58 +18,28 @@ import edu.js.interpreter.preprocessed.custom_type_generator;
 import edu.js.interpreter.preprocessed.function_declaration;
 import edu.js.interpreter.preprocessed.plugin_declaration;
 import edu.js.interpreter.preprocessed.variable_declaration;
-import edu.js.interpreter.preprocessed.instructions.downto_for_statement;
-import edu.js.interpreter.preprocessed.instructions.executable;
-import edu.js.interpreter.preprocessed.instructions.for_statement;
-import edu.js.interpreter.preprocessed.instructions.if_statement;
-import edu.js.interpreter.preprocessed.instructions.instruction_grouper;
-import edu.js.interpreter.preprocessed.instructions.repeat_instruction;
-import edu.js.interpreter.preprocessed.instructions.variable_set;
-import edu.js.interpreter.preprocessed.instructions.while_statement;
 import edu.js.interpreter.preprocessed.instructions.returns_value.abstract_function_call;
-import edu.js.interpreter.preprocessed.instructions.returns_value.binary_operator_evaluation;
-import edu.js.interpreter.preprocessed.instructions.returns_value.constant_access;
 import edu.js.interpreter.preprocessed.instructions.returns_value.returns_value;
-import edu.js.interpreter.preprocessed.instructions.returns_value.unary_operator_evaluation;
-import edu.js.interpreter.preprocessed.instructions.returns_value.variable_access;
 import edu.js.interpreter.preprocessed.interpreting_objects.function_on_stack;
-import edu.js.interpreter.preprocessed.interpreting_objects.variables.returnsvalue_subvar_identifier;
-import edu.js.interpreter.preprocessed.interpreting_objects.variables.string_subvar_identifier;
-import edu.js.interpreter.preprocessed.interpreting_objects.variables.variable_identifier;
-import edu.js.interpreter.tokens.EOF_token;
 import edu.js.interpreter.tokens.token;
-import edu.js.interpreter.tokens.basic.assignment_token;
 import edu.js.interpreter.tokens.basic.colon_token;
 import edu.js.interpreter.tokens.basic.comma_token;
-import edu.js.interpreter.tokens.basic.do_token;
-import edu.js.interpreter.tokens.basic.downto_token;
-import edu.js.interpreter.tokens.basic.else_token;
-import edu.js.interpreter.tokens.basic.for_token;
 import edu.js.interpreter.tokens.basic.function_token;
-import edu.js.interpreter.tokens.basic.if_token;
 import edu.js.interpreter.tokens.basic.of_token;
 import edu.js.interpreter.tokens.basic.period_token;
 import edu.js.interpreter.tokens.basic.procedure_token;
 import edu.js.interpreter.tokens.basic.program_token;
-import edu.js.interpreter.tokens.basic.repeat_token;
 import edu.js.interpreter.tokens.basic.semicolon_token;
-import edu.js.interpreter.tokens.basic.then_token;
-import edu.js.interpreter.tokens.basic.to_token;
-import edu.js.interpreter.tokens.basic.until_token;
 import edu.js.interpreter.tokens.basic.var_token;
-import edu.js.interpreter.tokens.basic.while_token;
 import edu.js.interpreter.tokens.grouping.base_grouper_token;
 import edu.js.interpreter.tokens.grouping.begin_end_token;
 import edu.js.interpreter.tokens.grouping.bracketed_token;
 import edu.js.interpreter.tokens.grouping.grouper_token;
-import edu.js.interpreter.tokens.grouping.parenthesized_token;
 import edu.js.interpreter.tokens.grouping.record_token;
 import edu.js.interpreter.tokens.grouping.type_token;
-import edu.js.interpreter.tokens.value.double_token;
 import edu.js.interpreter.tokens.value.integer_token;
 import edu.js.interpreter.tokens.value.operator_token;
 import edu.js.interpreter.tokens.value.operator_types;
-import edu.js.interpreter.tokens.value.string_token;
 import edu.js.interpreter.tokens.value.word_token;
 
 public class pascal_program implements Runnable {
@@ -107,6 +77,8 @@ public class pascal_program implements Runnable {
 			add_callable_function(p);
 		}
 		this.type_generator = type_generator;
+		main = new function_declaration(this);
+		main.name = "main";
 	}
 
 	public pascal_program(String program, List<plugin_declaration> plugins,
@@ -128,15 +100,13 @@ public class pascal_program implements Runnable {
 		if (next instanceof procedure_token || next instanceof function_token) {
 			i.take();
 			boolean is_procedure = next instanceof procedure_token;
-			function_declaration declaration = new function_declaration(i,
-					is_procedure);
+			function_declaration declaration = new function_declaration(this,
+					i, is_procedure);
 			add_callable_function(declaration);
 		} else if (next instanceof type_token) {
 			i.take();
 			add_custom_type_declaration(i);
 		} else if (next instanceof begin_end_token) {
-			main = new function_declaration();
-			main.name = "main";
 			main.instructions = main.get_next_command(i);
 			next = i.take();
 			assert (next instanceof period_token);
@@ -159,7 +129,7 @@ public class pascal_program implements Runnable {
 	}
 
 	public void add_callable_function(abstract_function f) {
-		callable_functions.put(f.get_name(), f);
+		callable_functions.put(f.name(), f);
 	}
 
 	private void add_custom_type_declaration(grouper_token i) {
@@ -217,7 +187,7 @@ public class pascal_program implements Runnable {
 		return ((word_token) t).name;
 	}
 
-	String get_word_value(grouper_token i) {
+	public String get_word_value(grouper_token i) {
 		return get_word_value(i.take());
 	}
 
@@ -260,12 +230,9 @@ public class pascal_program implements Runnable {
 					lower.add(((integer_token) bounds.take()).value);
 					next = bounds.take();
 					assert (next instanceof period_token);
-					// The first period gets absorbed into the first bound as a
-					// decimal place.
-					/*
-					 * next = bounds.take(); assert (next instanceof
-					 * period_token);
-					 */
+					next = bounds.take();
+					assert (next instanceof period_token);
+
 					upper.add(((integer_token) bounds.take()).value);
 					next = i.take();
 				} else {
@@ -295,14 +262,18 @@ public class pascal_program implements Runnable {
 		System.exit(0);
 	}
 
-	public abstract_function find_function_with_header(String name,
-			returns_value[] args) {
+	public abstract_function_call generate_function_call(String name,
+			returns_value[] args, function_declaration f) {
 		List<abstract_function> possibilities = callable_functions.get(name);
+		returns_value[] converted;
 		for (abstract_function a : possibilities) {
-			if (a.can_accept(args)) {
-				return a;
+			converted = a.format_args(args, f);
+			if (converted != null) {
+				return new abstract_function_call(a, converted);
 			}
 		}
+		System.err.println("Could not find function call " + name
+				+ Arrays.toString(args));
 		return null;
 	}
 }

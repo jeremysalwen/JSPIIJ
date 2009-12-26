@@ -3,8 +3,8 @@ package edu.js.interpreter.pascal_types;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-import edu.js.interpreter.tokens.value.integer_token;
-
+import edu.js.interpreter.preprocessed.function_declaration;
+import edu.js.interpreter.preprocessed.instructions.returns_value.returns_value;
 import serp.bytecode.Code;
 
 //This class gets the version 1.0 stamp of approval.  Hopefully I won't have to change it any more.
@@ -26,18 +26,38 @@ public class array_type extends pascal_type {
 		return true;
 	}
 
+	/**
+	 * This basically tells if the types are assignable from each other
+	 * according to pascal.
+	 */
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
 		if (obj instanceof array_type) {
 			array_type o = (array_type) obj;
 			if (o.element_type.equals(element_type)
-					&& o.lower_bounds.length == lower_bounds.length
-					&& Arrays.equals(lower_bounds, o.lower_bounds)
-					&& Arrays.equals(array_sizes, o.array_sizes)) {
+					&& o.lower_bounds.length == lower_bounds.length) {
+				for (int i = 0; i < array_sizes.length; i++) {
+					if (array_sizes[i] != 0) {
+						return false;
+					}
+					if (lower_bounds[i] != 0) {
+						return false;
+					}
+					if (o.array_sizes[i] != 0) {
+						return false;
+					}
+					if (o.lower_bounds[i] != 0) {
+						return false;
+					}
+
+				}
 				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	@Override
@@ -45,7 +65,9 @@ public class array_type extends pascal_type {
 		return (element_type.hashCode() * 31 + Arrays.hashCode(lower_bounds))
 				* 31 + Arrays.hashCode(array_sizes);
 	}
-
+/**
+ * TODO: Must make this actually fill in array with default values
+ */
 	@Override
 	public Object initialize() {
 		return Array.newInstance(element_type.toclass(), array_sizes);
@@ -70,7 +92,9 @@ public class array_type extends pascal_type {
 			return null;
 		}
 	}
-
+/**
+ * TODO: Make this fill in array with default values.
+ */
 	@Override
 	public void get_default_value_on_stack(Code code) {
 		for (int i : array_sizes) {
@@ -89,5 +113,19 @@ public class array_type extends pascal_type {
 			result.append(']');
 		}
 		return result.toString();
+	}
+
+	/**
+	 * This basically won't do any conversions, as array types have to be exact,
+	 * except variable length arrays, but they are checked in the
+	 * {@link array_type.equals(Object o)}.
+	 */
+	@Override
+	public returns_value convert(returns_value value, function_declaration f) {
+		pascal_type other = value.get_type(f);
+		if (other == this || this.equals(other)) {
+			return value;
+		}
+		return null;
 	}
 }

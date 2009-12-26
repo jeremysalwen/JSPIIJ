@@ -26,5 +26,5 @@ for i:=2 to 10 do
 begin
 	cow[i]:=cow[i-1]+cow[i-2];
 	printhello(cow[i]);
-end
+end;
 end.

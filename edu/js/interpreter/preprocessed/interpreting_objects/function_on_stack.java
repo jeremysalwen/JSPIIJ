@@ -5,12 +5,10 @@ import java.util.HashMap;
 
 import edu.js.interpreter.preprocessed.function_declaration;
 import edu.js.interpreter.preprocessed.variable_declaration;
-import edu.js.interpreter.preprocessed.instructions.executable;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.contains_variables;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.subvar_identifier;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.variable_identifier;
 import edu.js.interpreter.processing.pascal_program;
-import edu.js.interpreter.processing.run_mode;
 
 public class function_on_stack implements contains_variables {
 	public HashMap<String, Object> local_variables = new HashMap<String, Object>();
@@ -146,6 +144,7 @@ public class function_on_stack implements contains_variables {
 		}
 	}
 
+	@Override
 	public contains_variables clone() {
 		return null;
 	}

@@ -33,6 +33,7 @@ public class point implements contains_variables {
 		}
 	}
 
+	@Override
 	public contains_variables clone() {
 		return new point(x, y);
 	}

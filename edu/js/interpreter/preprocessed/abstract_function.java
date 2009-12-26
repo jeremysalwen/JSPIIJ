@@ -6,19 +6,19 @@ import edu.js.interpreter.processing.pascal_program;
 
 public abstract class abstract_function {
 
-	public abstract String get_name();
+	public abstract String name();
 
-	public pascal_type[] argument_types = null;
+	public abstract pascal_type[] argument_types();
 
-	public pascal_type return_type = null;
+	public abstract pascal_type return_type();
 
 	public abstract boolean is_varargs(int i);
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder(get_name());
+		StringBuilder result = new StringBuilder(name());
 		result.append('(');
-		for (pascal_type c : argument_types) {
+		for (pascal_type c : argument_types()) {
 			result.append(c);
 			result.append(',');
 		}
@@ -36,7 +36,26 @@ public abstract class abstract_function {
 	 */
 	public abstract Object call(pascal_program program, Object[] arguments);
 
-	public boolean can_accept(returns_value[] values) {
-		return false;
+	/**
+	 * 
+	 * @param values
+	 * @return converted arguments, or null, if they do not fit.
+	 */
+	public returns_value[] format_args(returns_value[] values,
+			function_declaration f) {
+		pascal_type[] accepted_types = argument_types();
+		if (values.length != accepted_types.length) {
+			return null;
+		}
+		returns_value[] result = new returns_value[accepted_types.length];
+		for (int i = 0; i < values.length; i++) {
+			result[i] = accepted_types[i].convert(values[i], f);
+			if (result[i] == null) {/*
+									 * This indicates that it cannot fit.
+									 */
+				return null;
+			}
+		}
+		return result;
 	}
 }

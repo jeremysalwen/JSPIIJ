@@ -2,6 +2,9 @@ package edu.js.interpreter.pascal_types;
 
 import java.util.HashMap;
 
+import edu.js.interpreter.preprocessed.function_declaration;
+import edu.js.interpreter.preprocessed.instructions.returns_value.returns_value;
+
 import ncsa.tools.common.util.TypeUtils;
 
 import serp.bytecode.Code;
@@ -42,6 +45,9 @@ public class class_pascal_type extends pascal_type {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
 		if (obj instanceof class_pascal_type) {
 			return c.equals(((class_pascal_type) obj).c);
 		}
@@ -78,6 +84,7 @@ public class class_pascal_type extends pascal_type {
 		return c;
 	}
 
+	@Override
 	public void get_default_value_on_stack(Code code) {
 		Object result;
 		if ((result = class_pascal_type.default_values.get(this)) != null) {
@@ -121,4 +128,17 @@ public class class_pascal_type extends pascal_type {
 		}
 		return new class_pascal_type(c);
 	}
+
+	@Override
+	public returns_value convert(returns_value value, function_declaration f) {
+		pascal_type other_type = value.get_type(f);
+		if (this.equals(other_type)) {
+			return value;
+		}
+		/*
+		 * TODO: Add some conversions here.
+		 */
+		return null;
+	}
+
 }

@@ -26,6 +26,7 @@ public class grouping_exception extends RuntimeException {
 		this.grouping_exception_type = t;
 	}
 
+	@Override
 	public String toString() {
 		return grouping_exception_type.message;
 	}

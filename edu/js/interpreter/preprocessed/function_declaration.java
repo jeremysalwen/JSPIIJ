@@ -1,7 +1,6 @@
 package edu.js.interpreter.preprocessed;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import edu.js.interpreter.pascal_types.pascal_type;
@@ -13,7 +12,6 @@ import edu.js.interpreter.preprocessed.instructions.instruction_grouper;
 import edu.js.interpreter.preprocessed.instructions.repeat_instruction;
 import edu.js.interpreter.preprocessed.instructions.variable_set;
 import edu.js.interpreter.preprocessed.instructions.while_statement;
-import edu.js.interpreter.preprocessed.instructions.returns_value.abstract_function_call;
 import edu.js.interpreter.preprocessed.instructions.returns_value.binary_operator_evaluation;
 import edu.js.interpreter.preprocessed.instructions.returns_value.constant_access;
 import edu.js.interpreter.preprocessed.instructions.returns_value.returns_value;
@@ -62,16 +60,20 @@ public class function_declaration extends abstract_function {
 
 	public executable instructions;
 
+	public pascal_type return_type;
+
 	/* These go together ----> */
 	public String[] argument_names;
 
-	// argument_types
+	public pascal_type[] argument_types;
 
 	public boolean[] are_varargs;
 
 	/* <----- */
 
-	public function_declaration(grouper_token i, boolean is_procedure) {
+	public function_declaration(pascal_program p, grouper_token i,
+			boolean is_procedure) {
+		this.program = p;
 		instructions = new instruction_grouper();
 		name = program.get_word_value(i);
 		get_arguments_for_declaration(i, is_procedure);
@@ -101,7 +103,9 @@ public class function_declaration extends abstract_function {
 		local_variables.add(v);
 	}
 
-	public function_declaration() {
+	public function_declaration(pascal_program p) {
+		this.program = p;
+		this.local_variables = new ArrayList<variable_declaration>();
 	}
 
 	public function_declaration(List<variable_declaration> local_variables,
@@ -111,7 +115,7 @@ public class function_declaration extends abstract_function {
 	}
 
 	@Override
-	public String get_name() {
+	public String name() {
 		return name;
 	}
 
@@ -211,9 +215,8 @@ public class function_declaration extends abstract_function {
 				if (next instanceof parenthesized_token) {
 					returns_value[] arguments = get_arguments_for_call((parenthesized_token) iterator
 							.take());
-					abstract_function function = program
-							.find_function_with_header(name,arguments);
-					result = new abstract_function_call(function, arguments);
+					result = program.generate_function_call(name, arguments,
+							this);
 				} else {
 					result = new variable_access(get_next_var_identifier(name,
 							iterator));
@@ -344,7 +347,6 @@ public class function_declaration extends abstract_function {
 				result = new for_statement(tmp_var, first_value, last_value,
 						get_next_command(token_iterator));
 			}
-			program.assert_next_semicolon(token_iterator);
 			return result;
 		} else if (next instanceof repeat_token) {
 			instruction_grouper command = new instruction_grouper();
@@ -361,9 +363,8 @@ public class function_declaration extends abstract_function {
 			if (next instanceof parenthesized_token) {
 				token_iterator.take();
 				returns_value[] arguments = get_arguments_for_call((parenthesized_token) next);
-				abstract_function function = program.find_function_with_header(
-						name, arguments);
-				return new abstract_function_call(function, arguments);
+				return program.generate_function_call(
+						name, arguments, this);
 			} else {
 				// at this point assuming it is a variable identifier.
 				variable_identifier identifier = get_next_var_identifier(name,
@@ -406,5 +407,15 @@ public class function_declaration extends abstract_function {
 			program.assert_next_semicolon(t);
 		}
 		return commands;
+	}
+
+	@Override
+	public pascal_type[] argument_types() {
+		return argument_types;
+	}
+
+	@Override
+	public pascal_type return_type() {
+		return return_type;
 	}
 }
