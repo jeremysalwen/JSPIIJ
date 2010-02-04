@@ -8,10 +8,10 @@ import edu.js.interpreter.preprocessed.instructions.returns_value.variable_acces
 import edu.js.interpreter.preprocessed.interpreting_objects.pointer;
 import edu.js.interpreter.preprocessed.interpreting_objects.variables.variable_identifier;
 
-public class pointer_type extends pascal_type {
+public class reference_type extends pascal_type {
 	pascal_type child_type;
 
-	public pointer_type(pascal_type child) {
+	public reference_type(pascal_type child) {
 		this.child_type = child;
 	}
 

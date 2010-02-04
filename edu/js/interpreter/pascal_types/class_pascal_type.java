@@ -114,7 +114,7 @@ public class class_pascal_type extends pascal_type {
 		if (c == Double.class) {
 			return class_pascal_type.Double;
 		}
-		if (c == StringBuffer.class) {
+		if (c == StringBuilder.class) {
 			return class_pascal_type.StringBuilder;
 		}
 		if (c == Long.class) {
@@ -134,6 +134,12 @@ public class class_pascal_type extends pascal_type {
 		pascal_type other_type = value.get_type(f);
 		if (this.equals(other_type)) {
 			return value;
+		}
+		if(other_type instanceof reference_type) {
+			reference_type other=(reference_type)other_type;
+			if(this.equals(other.child_type)) {
+				return value;
+			}
 		}
 		/*
 		 * TODO: Add some conversions here.

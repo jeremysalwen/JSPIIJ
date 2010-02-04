@@ -74,6 +74,7 @@ public class pascal_program implements Runnable {
 			custom_type_generator type_generator) {
 		callable_functions = ArrayListMultimap.create();
 		custom_types = new HashMap<String, custom_type_declaration>();
+		typedefs=new HashMap<String, pascal_type>();
 		for (plugin_declaration p : plugins) {
 			add_callable_function(p);
 		}
@@ -215,9 +216,15 @@ public class pascal_program implements Runnable {
 		if (s == "character") {
 			return class_pascal_type.Character;
 		}
-		return class_pascal_type.anew(Class
-				.forName("edu.js.interpreter.custom_types."
-						+ Integer.toHexString(custom_types.get(s).hashCode())));
+		pascal_type type = typedefs.get(s);
+		if (type != null) {
+			return type;
+		} else {
+			return class_pascal_type.anew(Class
+					.forName("edu.js.interpreter.custom_types."
+							+ Integer.toHexString(custom_types.get(s)
+									.hashCode())));
+		}
 	}
 
 	public pascal_type get_next_pascal_type(grouper_token i)

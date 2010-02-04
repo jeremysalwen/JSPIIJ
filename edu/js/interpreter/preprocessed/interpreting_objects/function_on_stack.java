@@ -17,7 +17,7 @@ public class function_on_stack implements contains_variables {
 
 	public pascal_program program;
 
-	HashMap<String, pointer> passed_variables;
+	HashMap<String, pointer> reference_variables;
 
 	public function_on_stack(pascal_program program,
 			function_declaration declaration, Object[] arguments) {
@@ -28,10 +28,10 @@ public class function_on_stack implements contains_variables {
 				v.initialize(local_variables);
 			}
 		}
-		passed_variables = new HashMap<String, pointer>();
+		reference_variables = new HashMap<String, pointer>();
 		for (int i = 0; i < arguments.length; i++) {
-			if (arguments[i] instanceof pointer) {
-				passed_variables.put(prototype.argument_names[i],
+			if (prototype.is_varargs(i)) {
+				reference_variables.put(prototype.argument_names[i],
 						(pointer) arguments[i]);
 			} else {
 				local_variables.put(prototype.argument_names[i],
@@ -56,8 +56,8 @@ public class function_on_stack implements contains_variables {
 			return local_variables.get(name);
 		} else if (program.main.local_variables.contains(name)) {
 			return program.main_running.local_variables.get(name);
-		} else if (passed_variables.containsKey(name)) {
-			return passed_variables.get(name).get();
+		} else if (reference_variables.containsKey(name)) {
+			return reference_variables.get(name).get();
 		} else {
 			System.err.println("Could not find requested variable '" + name
 					+ "'");
@@ -70,8 +70,8 @@ public class function_on_stack implements contains_variables {
 			local_variables.put(name, val);
 		} else if (program.main.local_variables.contains(name)) {
 			program.main_running.local_variables.put(name, val);
-		} else if (passed_variables.containsKey(name)) {
-			passed_variables.get(name).set(val);
+		} else if (reference_variables.containsKey(name)) {
+			reference_variables.get(name).set(val);
 		} else {
 			System.err.println("Could not find requested variable '" + name
 					+ "'");

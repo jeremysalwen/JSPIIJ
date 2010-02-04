@@ -13,6 +13,7 @@ import edu.js.interpreter.preprocessed.instructions.repeat_instruction;
 import edu.js.interpreter.preprocessed.instructions.variable_set;
 import edu.js.interpreter.preprocessed.instructions.while_statement;
 import edu.js.interpreter.preprocessed.instructions.returns_value.binary_operator_evaluation;
+import edu.js.interpreter.preprocessed.instructions.returns_value.builtin_type_conversion;
 import edu.js.interpreter.preprocessed.instructions.returns_value.constant_access;
 import edu.js.interpreter.preprocessed.instructions.returns_value.returns_value;
 import edu.js.interpreter.preprocessed.instructions.returns_value.unary_operator_evaluation;
@@ -125,9 +126,12 @@ public class function_declaration extends abstract_function {
 	}
 
 	public pascal_type get_variable_type(String name) {
+		if(name.equalsIgnoreCase("result")) {
+			return return_type;
+		}
 		int index = StaticMethods.indexOf(argument_names, name);
 		if (index != -1) {
-			return argument_types[StaticMethods.indexOf(argument_names, name)];
+			return argument_types[index];
 		} else {
 			for (variable_declaration v : local_variables) {
 				if (v.name.equals(name)) {
@@ -372,6 +376,10 @@ public class function_declaration extends abstract_function {
 				next = token_iterator.take();
 				assert (next instanceof assignment_token);
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
+				pascal_type output_type=new variable_access(identifier).get_type(this);
+				if(!value_to_assign.get_type(this).equals(output_type)) {
+					value_to_assign=new builtin_type_conversion(output_type, value_to_assign);
+				}
 				return new variable_set(identifier, value_to_assign);
 			}
 		}
