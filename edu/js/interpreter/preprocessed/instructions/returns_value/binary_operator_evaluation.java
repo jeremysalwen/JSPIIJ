@@ -26,19 +26,23 @@ public class binary_operator_evaluation implements returns_value {
 		try {
 			Object value1 = operon1.get_value(f);
 			Object value2 = operon2.get_value(f);
+			pascal_type type1 = operon1.get_type(f.prototype);
+			pascal_type type2 = operon2.get_type(f.prototype);
 			if (value1 instanceof String || value2 instanceof String) {
 				String val1 = value1.toString();
 				String val2 = value2.toString();
-				operator_type.operate(val1, val2);
-			} else if (get_GCF(value1.getClass(), value2.getClass()) == Double.class) {
+				return operator_type.operate(val1, val2);
+			}
+			pascal_type gcf = get_GCF(type1, type2);
+			if (gcf == class_pascal_type.Double) {
 				double d1 = ((Number) value1).doubleValue();
 				double d2 = ((Number) value2).doubleValue();
 				return operator_type.operate(d1, d2);
-			} else if (get_GCF(value1.getClass(), value2.getClass()) == Long.class) {
+			} else if (gcf == class_pascal_type.Long) {
 				long l1 = ((Number) value1).longValue();
 				long l2 = ((Number) value2).longValue();
-				return operator_type.operate(l1, l2);
-
+				Object result= operator_type.operate(l1, l2);
+				return result;
 			} else if (value1 instanceof Boolean && value2 instanceof Boolean) {
 				boolean b1 = (Boolean) value1;
 				boolean b2 = (Boolean) value2;
@@ -49,7 +53,6 @@ public class binary_operator_evaluation implements returns_value {
 		} catch (OperationNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
 	@Override
@@ -80,25 +83,28 @@ public class binary_operator_evaluation implements returns_value {
 		case MULTIPLY:
 		case PLUS:
 		case XOR:
-			return class_pascal_type.anew(get_GCF(type1.toclass(), type2
-					.toclass()));
+			return get_GCF(type1, type2);
 		default:
 			return null;
 		}
 	}
 
-	public static Class get_GCF(Class one, Class two) {
-		if (one == String.class || two == String.class) {
-			return String.class;
+	public static pascal_type get_GCF(pascal_type one, pascal_type two) {
+		if (one == class_pascal_type.StringBuilder
+				|| two == class_pascal_type.StringBuilder) {
+			return class_pascal_type.StringBuilder;
 		}
-		if (one == Double.class || two == Double.class) {
-			return Double.class;
+		if (one == class_pascal_type.Double || two == class_pascal_type.Double) {
+			return class_pascal_type.Double;
 		}
-		if (one == Long.class || two == Long.class ||one == Integer.class || two == Integer.class) {
-			return Long.class;
+		if (one == class_pascal_type.Long || two == class_pascal_type.Long
+				|| one == class_pascal_type.Integer
+				|| two == class_pascal_type.Integer) {
+			return class_pascal_type.Long;
 		}
-		if (one == Boolean.class || two == Boolean.class) {
-			return Boolean.class;
+		if (one == class_pascal_type.Boolean
+				|| two == class_pascal_type.Boolean) {
+			return class_pascal_type.Boolean;
 		}
 		return null;
 	}

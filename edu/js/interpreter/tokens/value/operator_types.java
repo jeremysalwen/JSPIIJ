@@ -62,7 +62,7 @@ public enum operator_types {
 		@Override
 		public Object operate(long l1, long l2)
 				throws OperationNotSupportedException {
-			return l1 - l1;
+			return l1 - l2;
 		}
 
 		@Override
@@ -279,6 +279,7 @@ public enum operator_types {
 				+ " does not support operating on boolean types");
 
 	}
+	
 
 	public Object operate(boolean b) throws OperationNotSupportedException {
 		throw new OperationNotSupportedException(this

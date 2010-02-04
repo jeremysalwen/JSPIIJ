@@ -377,7 +377,7 @@ public class function_declaration extends abstract_function {
 				assert (next instanceof assignment_token);
 				returns_value value_to_assign = get_next_returns_value(token_iterator);
 				pascal_type output_type=new variable_access(identifier).get_type(this);
-				if(!value_to_assign.get_type(this).equals(output_type)) {
+				if(!output_type.equals(value_to_assign.get_type(this))) {
 					value_to_assign=new builtin_type_conversion(output_type, value_to_assign);
 				}
 				return new variable_set(identifier, value_to_assign);
