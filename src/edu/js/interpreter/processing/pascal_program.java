@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multiset.Entry;
 
 import edu.js.interpreter.pascal_types.array_type;
 import edu.js.interpreter.pascal_types.class_pascal_type;

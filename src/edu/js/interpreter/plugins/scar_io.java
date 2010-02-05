@@ -36,7 +36,7 @@ public class scar_io implements pascal_plugin {
 
 	public String readln(String message) {
 		String result = JOptionPane.showInputDialog(ide, message,
-				"pascalinterpreterinjava", JOptionPane.OK_CANCEL_OPTION);
+				"Pascal Interpreter in Java input box", JOptionPane.OK_CANCEL_OPTION);
 		return result == null ? "" : result;
 	}
 
