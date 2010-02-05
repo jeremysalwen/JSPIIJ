@@ -1,7 +1,6 @@
-I haven't decided the license yet.
-You can use it for anything, as long as you give credit.
+This project is liscened under the BSD liscense.  As in you can use it for any purpose.
 
-Includes Serp, a bytecode library under the BSD License 
+It also includes Serp, a bytecode library under the BSD License 
 
 Copyright (c) 2002, A. Abram White
 All rights reserved.

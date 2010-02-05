@@ -286,7 +286,6 @@ public class ide extends JFrame {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	void addNewPluginsDirectory(File pluginFolder) {
 		File[] pluginarray = pluginFolder.listFiles(new java.io.FileFilter() {
 			public boolean accept(File pathname) {
