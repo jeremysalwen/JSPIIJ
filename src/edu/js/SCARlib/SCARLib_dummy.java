@@ -2,6 +2,15 @@ package edu.js.SCARlib;
 
 import java.awt.Point;
 
+/**
+ * This class is a dummy so that pascalinterpreterinjava will not depend on
+ * SCARlib. Really just a quick hack so the whole thing can be packaged in one
+ * piece. However, this makes the SCAR functions not work in the interpreter.
+ * Not that anyone would notice...
+ * 
+ * @author jeremy
+ * 
+ */
 public class SCARLib_dummy implements SCARLib_interface {
 
 	@Override
