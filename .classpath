@@ -3,8 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="external_libraries/commons-httpclient.jar"/>
-	<classpathentry kind="lib" path="external_libraries/google-collect-1.0-rc5.jar"/>
 	<classpathentry kind="lib" path="external_libraries/serp-1.14.2.jar"/>
+	<classpathentry kind="lib" path="external_libraries/google-collect-1.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SCARlib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

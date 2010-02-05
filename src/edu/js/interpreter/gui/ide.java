@@ -64,7 +64,6 @@ public class ide extends JFrame {
 
 	JButton clearDebugButton;
 
-
 	JFileChooser fc;
 
 	List<plugin_declaration> plugins;
