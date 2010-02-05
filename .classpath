@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path=""/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="serp-1.14.2.jar"/>
 	<classpathentry kind="lib" path="commons-httpclient.jar"/>
 	<classpathentry kind="lib" path="google-collect-1.0-rc5.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SCARlib"/>
-	<classpathentry kind="output" path=""/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
