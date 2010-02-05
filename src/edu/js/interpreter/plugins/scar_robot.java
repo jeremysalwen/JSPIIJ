@@ -846,7 +846,7 @@ public class scar_robot implements pascal_plugin {
 		}
 		ImageIcon icon = new ImageIcon();
 		icon.setImage(new BufferedImage(scar.r.createScreenCapture(
-				new Rectangle(0, 0, 1, 1)).getColorModel(), scar.lastCapture,
+				new Rectangle(0, 0, 100, 100)).getColorModel(), scar.lastCapture,
 				false, null));
 		JOptionPane.showMessageDialog(null, icon);
 	}

@@ -31,7 +31,8 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import edu.js.SCARlib.SCARLib;
+import edu.js.SCARlib.SCARLib_dummy;
+import edu.js.SCARlib.SCARLib_interface;
 import edu.js.interpreter.preprocessed.custom_type_generator;
 import edu.js.interpreter.preprocessed.plugin_declaration;
 import edu.js.interpreter.processing.pascal_plugin;
@@ -87,7 +88,7 @@ public class ide extends JFrame {
 	 */
 	public long window;
 
-	public SCARLib connection;
+	public SCARLib_interface connection;
 
 	/**
 	 * @param args
@@ -146,9 +147,10 @@ public class ide extends JFrame {
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		plugins = new ArrayList<plugin_declaration>();
 		this.addNewPluginsDirectory(new File(System.getProperty("user.dir")
-				+ File.separatorChar + "edu" + File.separatorChar + "js"
-				+ File.separatorChar + "interpreter" + File.separatorChar
-				+ "plugins" + File.separatorChar));
+				+ File.separatorChar + "bin" + File.separatorChar + "edu"
+				+ File.separatorChar + "js" + File.separatorChar
+				+ "interpreter" + File.separatorChar + "plugins"
+				+ File.separatorChar));
 		wholeWindow = new JPanel();
 		this.setLayout(new BorderLayout());
 		this.add(wholeWindow, BorderLayout.NORTH);
@@ -234,8 +236,8 @@ public class ide extends JFrame {
 				+ "testprogram.pas"));
 		type_generator = new custom_type_generator(new File(System
 				.getProperty("user.dir")));
-		connection = new SCARLib();
-		window=connection.getRootWindow();
+		connection = new SCARLib_dummy();
+		window = connection.getRootWindow();
 		pack();
 		setVisible(true);
 	}
@@ -372,5 +374,4 @@ public class ide extends JFrame {
 		debugBox.setText("");
 	}
 
-	
 }
