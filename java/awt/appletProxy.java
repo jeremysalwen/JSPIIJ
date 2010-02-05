@@ -51,10 +51,8 @@ public class appletProxy extends Applet implements FocusListener,
 		try {
 			eventThread = EventQueue.class.getDeclaredField("dispatchThread");
 		} catch (SecurityException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (NoSuchFieldException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		if (eventThread == null) {

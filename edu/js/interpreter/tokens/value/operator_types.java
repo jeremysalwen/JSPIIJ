@@ -128,7 +128,7 @@ public enum operator_types {
 	SHIFTLEFT(false) {
 		@Override
 		public Object operate(long l1, long l2) {
-			return l1 << l2;// TODO should it be signed or unsigned shift?
+			return l1 << l2;
 		}
 	},
 	SHIFTRIGHT(false) {

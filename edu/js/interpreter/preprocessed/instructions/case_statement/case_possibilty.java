@@ -17,20 +17,18 @@ public class case_possibilty {
 	}
 
 	/**
-	 * If the condition is true for the passed value, it executes the commands.
+	 * Executes the contained commands in this branch.
 	 * 
 	 * @param value
 	 *            the value being examined in this case statement.
 	 * @return Whether or not it has broken.
 	 */
-	public boolean execute(function_on_stack f, Object value) {
-		if (condition.fits(f, value)) {
+	public boolean execute(function_on_stack f) {
 			for (executable e : commands) {
 				if (e.execute(f)) {
 					return true;
 				}
 			}
-		}
 		return false;
 	}
 }

@@ -14,7 +14,7 @@ public class parenthesized_token extends grouper_token {
 		if (next != null) {
 			builder.append(next).append(',');
 		}
-		for (token t : this.queue) { // TODO check this works
+		for (token t : this.queue) { 
 			builder.append(t).append(' ');
 		}
 		builder.append(')');

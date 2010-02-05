@@ -194,7 +194,6 @@ public class scar_files implements pascal_plugin {
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return new BigInteger(1, digest.digest()).toString(16);

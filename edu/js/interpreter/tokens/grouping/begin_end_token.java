@@ -15,7 +15,7 @@ public class begin_end_token extends grouper_token {
 		if (next != null) {
 			builder.append(next);
 		}
-		for (token t : this.queue) {// TODO check this doesn't modify
+		for (token t : this.queue) {
 			builder.append(t).append(' ');
 		}
 		builder.append("end ");
