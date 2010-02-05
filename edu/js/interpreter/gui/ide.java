@@ -32,9 +32,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import edu.js.SCARlib.SCARLib;
-import edu.js.appletloader.LardLoader;
-import edu.js.appletloader.appletStub;
-import edu.js.appletloader.javawontletmepasspointers;
 import edu.js.interpreter.preprocessed.custom_type_generator;
 import edu.js.interpreter.preprocessed.plugin_declaration;
 import edu.js.interpreter.processing.pascal_plugin;
@@ -67,7 +64,6 @@ public class ide extends JFrame {
 
 	JButton clearDebugButton;
 
-	JButton startAppletButton;
 
 	JFileChooser fc;
 
@@ -235,15 +231,6 @@ public class ide extends JFrame {
 				clearDebug();
 			}
 		});
-		startAppletButton = new JButton();
-		startAppletButton.setText("Start Applet");
-		buttonsPanel.add(startAppletButton);
-		startAppletButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				startApplet(Integer.parseInt(JOptionPane
-						.showInputDialog("Enter Runescape World Number")));
-			}
-		});
 		loadFile(new File(System.getProperty("user.dir") + File.separatorChar
 				+ "testprogram.pas"));
 		type_generator = new custom_type_generator(new File(System
@@ -387,21 +374,5 @@ public class ide extends JFrame {
 		debugBox.setText("");
 	}
 
-	appletStub appletStub = null;
-
-	public void startApplet(int worldnum) {
-		if (this.appletStub != null) {
-			appletStub.active = false;
-		}
-		if (this.client != null) {
-			this.client.stop();
-		}
-		try {
-			javawontletmepasspointers p = LardLoader.getApplet(worldnum);
-			this.appletStub = p.stub;
-			this.client = p.applet;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
 }
