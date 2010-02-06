@@ -63,10 +63,10 @@ public class custom_type_generator {
 	public void output_class(custom_type_declaration custom) {
 		List<variable_declaration> variables = custom.variable_types;
 		File location = new File(output.getAbsolutePath() + File.separatorChar
-				+ "edu" + File.separatorChar + "js" + File.separatorChar
-				+ "interpreter" + File.separatorChar + "custom_types"
-				+ File.separatorChar + Integer.toHexString(custom.hashCode())
-				+ ".class");
+				+ "bin" + File.separatorChar + "edu" + File.separatorChar
+				+ "js" + File.separatorChar + "interpreter"
+				+ File.separatorChar + "custom_types" + File.separatorChar
+				+ Integer.toHexString(custom.hashCode()) + ".class");
 		if (location.exists() && !location.isDirectory()) {
 			return;
 		}

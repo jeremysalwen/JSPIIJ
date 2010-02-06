@@ -16,7 +16,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -45,6 +48,7 @@ public class ide extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	static String pluginsPackage = "edu.js.interpreter.plugins";
 	JEditorPane programInput;
 
 	public JTextArea debugBox;
@@ -140,9 +144,8 @@ public class ide extends JFrame {
 	public ide() {
 		super();
 		settings = new security_settings(this);
-		this.setTitle("pascalinterpreterinjava ide");
+		this.setTitle("pascalinterpreterinjava IDE");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setSize(1200, 800);
 		fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		plugins = new ArrayList<plugin_declaration>();
@@ -288,53 +291,86 @@ public class ide extends JFrame {
 		}
 	}
 
-	void addNewPluginsDirectory(File pluginFolder) {
-		File[] pluginarray = pluginFolder.listFiles(new java.io.FileFilter() {
-			public boolean accept(File pathname) {
-				return pathname.getName().endsWith(".class");
+	void addPluginClassCheck(Class c) {
+		if (pascal_plugin.class.isAssignableFrom(c)) {
+			Object o;
+			try {
+				Constructor constructor = c.getConstructor(ide.class);
+				o = constructor.newInstance(this);
+			} catch (NoSuchMethodException e) {
+				o = null;
+			} catch (IllegalArgumentException e) {
+				o = null;
+			} catch (InstantiationException e) {
+				o = null;
+			} catch (IllegalAccessException e) {
+				o = null;
+			} catch (InvocationTargetException e) {
+				o = null;
 			}
-		});
-		ClassLoader classloader;
-		try {
-			classloader = new URLClassLoader(new URL[] { pluginFolder
-					.getParentFile().toURI().toURL() });
-			for (File f : pluginarray) {
-				try {
-					String filename = f.getName();
-					filename = filename
-							.substring(0, filename.indexOf(".class"));
-					Class c = classloader
-							.loadClass("edu.js.interpreter.plugins." + filename);
-					if (pascal_plugin.class.isAssignableFrom(c)) {
-						Object o;
+			for (Method m : c.getDeclaredMethods()) {
+				if (Modifier.isPublic(m.getModifiers())) {
+					plugin_declaration tmp = new plugin_declaration(o, m);
+					this.plugins.add(tmp);
+				}
+			}
+		}
+	}
+
+	void addNewPluginsDirectory(File pluginFolder) {
+		if (pluginFolder.isFile()) {
+			JarFile jar;
+			try {
+				jar = new JarFile(pluginFolder);
+
+				for (Enumeration<JarEntry> e = jar.entries(); e
+						.hasMoreElements();) {
+					JarEntry current = e.nextElement();
+					if (current.getName().length() > pluginsPackage.length()
+							&& current.getName().startsWith(pluginsPackage)
+							&& current.getName().endsWith(".class")) {
 						try {
-							Constructor constructor = c
-									.getConstructor(ide.class);
-							o = constructor.newInstance(this);
-						} catch (NoSuchMethodException e) {
-							o = null;
-						}
-						for (Method m : c.getDeclaredMethods()) {
-							if (Modifier.isPublic(m.getModifiers())) {
-								plugin_declaration tmp = new plugin_declaration(
-										o, m);
-								this.plugins.add(tmp);
-							}
+							Class plugin_class = Class.forName(current
+									.getName().replaceAll("/", ".").replace(
+											".class", ""));
+							addPluginClassCheck(plugin_class);
+						} catch (ClassNotFoundException e1) {
+							e1.printStackTrace();
 						}
 					}
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					return;
 				}
-
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		} else if (pluginFolder.isDirectory()) {
+			File[] pluginarray = pluginFolder
+					.listFiles(new java.io.FileFilter() {
+						public boolean accept(File pathname) {
+							return pathname.getName().endsWith(".class");
+						}
+					});
+			ClassLoader classloader;
+			try {
+				classloader = new URLClassLoader(new URL[] { pluginFolder
+						.toURI().toURL() });
+
+				for (File f : pluginarray) {
+					try {
+						String filename = f.getName();
+						filename = filename.substring(0, filename
+								.indexOf(".class"));
+						Class c = classloader.loadClass(pluginsPackage + '.'
+								+ filename);
+						addPluginClassCheck(c);
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+
+				}
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
