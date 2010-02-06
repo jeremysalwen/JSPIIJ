@@ -1,8 +1,8 @@
 package edu.js.interpreter.packagedtypes;
 
-import edu.js.interpreter.preprocessed.interpreting_objects.variables.contains_variables;
+import edu.js.interpreter.preprocessed.interpretingobjects.variables.ContainsVariables;
 
-public class TPoint implements contains_variables {
+public class TPoint implements ContainsVariables {
 	public int x;
 
 	public int y;
@@ -33,7 +33,7 @@ public class TPoint implements contains_variables {
 	}
 
 	@Override
-	public contains_variables clone() {
+	public ContainsVariables clone() {
 		TPoint result = new TPoint();
 		result.x = this.x;
 		result.y = this.y;
