@@ -2,13 +2,13 @@ package edu.js.interpreter.plugins;
 
 import javax.swing.JOptionPane;
 
-import edu.js.interpreter.gui.Ide;
+import edu.js.interpreter.gui.IDE;
 import edu.js.interpreter.processing.PascalPlugin;
 
 public class SCAR_IO implements PascalPlugin {
-	Ide ide;
+	IDE ide;
 
-	public SCAR_IO(Ide ide) {
+	public SCAR_IO(IDE ide) {
 		this.ide = ide;
 	}
 

@@ -1,12 +1,12 @@
 package edu.js.interpreter.plugins;
 
-import edu.js.interpreter.gui.Ide;
+import edu.js.interpreter.gui.IDE;
 import edu.js.interpreter.processing.PascalPlugin;
 
 public class SCAR_ScriptControl implements PascalPlugin {
-	Ide ide;
+	IDE ide;
 
-	public SCAR_ScriptControl(Ide i) {
+	public SCAR_ScriptControl(IDE i) {
 		this.ide = i;
 	}
 

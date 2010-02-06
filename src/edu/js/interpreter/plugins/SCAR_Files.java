@@ -11,18 +11,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
-import edu.js.interpreter.gui.Ide;
+import edu.js.interpreter.gui.IDE;
 import edu.js.interpreter.preprocessed.interpretingobjects.Pointer;
 import edu.js.interpreter.processing.PascalPlugin;
 
 public class SCAR_Files implements PascalPlugin {
-	Ide ide;
+	IDE ide;
 
 	HashMap<Integer, RandomAccessFile> open_files;
 
 	int filecounter = 0;
 
-	public SCAR_Files(Ide i) {
+	public SCAR_Files(IDE i) {
 		ide = i;
 		open_files = new HashMap<Integer, RandomAccessFile>();
 	}

@@ -42,7 +42,7 @@ import edu.js.interpreter.processing.PascalPlugin;
 import edu.js.interpreter.processing.PascalProgram;
 import edu.js.interpreter.processing.RunMode;
 
-public class Ide extends JFrame {
+public class IDE extends JFrame {
 	/**
 	 * 
 	 */
@@ -109,7 +109,7 @@ public class Ide extends JFrame {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		new Ide();
+		new IDE();
 	}
 
 	void errorReadingFile() {
@@ -141,7 +141,7 @@ public class Ide extends JFrame {
 		}
 	}
 
-	public Ide() {
+	public IDE() {
 		super();
 		settings = new SecuritySettings(this);
 		this.setTitle("pascalinterpreterinjava IDE");
@@ -295,7 +295,7 @@ public class Ide extends JFrame {
 		if (PascalPlugin.class.isAssignableFrom(c)) {
 			Object o;
 			try {
-				Constructor constructor = c.getConstructor(Ide.class);
+				Constructor constructor = c.getConstructor(IDE.class);
 				o = constructor.newInstance(this);
 			} catch (NoSuchMethodException e) {
 				o = null;

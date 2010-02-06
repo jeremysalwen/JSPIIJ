@@ -20,12 +20,12 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 
-import edu.js.interpreter.gui.Ide;
+import edu.js.interpreter.gui.IDE;
 import edu.js.interpreter.preprocessed.interpretingobjects.Pointer;
 import edu.js.interpreter.processing.PascalPlugin;
 
 public class SCAR_Networking implements PascalPlugin {
-	Ide ide;
+	IDE ide;
 
 	Map<Integer, spedClient> clients = new HashMap<Integer, spedClient>();
 
@@ -35,7 +35,7 @@ public class SCAR_Networking implements PascalPlugin {
 
 	int connectionnumber = 0;
 
-	public SCAR_Networking(Ide i) {
+	public SCAR_Networking(IDE i) {
 		this.ide = i;
 	}
 

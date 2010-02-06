@@ -2,15 +2,15 @@ package edu.js.interpreter.plugins;
 
 import java.util.Random;
 
-import edu.js.interpreter.gui.Ide;
+import edu.js.interpreter.gui.IDE;
 import edu.js.interpreter.processing.PascalPlugin;
 
 public class SCAR_Math implements PascalPlugin {
-	Ide ide;
+	IDE ide;
 
 	Random r;
 
-	public SCAR_Math(Ide i) {
+	public SCAR_Math(IDE i) {
 		this.ide = i;
 		r = new Random();
 	}

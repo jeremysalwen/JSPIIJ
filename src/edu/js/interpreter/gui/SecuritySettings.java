@@ -10,13 +10,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 public class SecuritySettings {
-	Ide ide;
+	IDE ide;
 
 	JDialog askPermissionDialog;
 
 	JLabel filenamelabel;
 
-	public SecuritySettings(Ide i) {
+	public SecuritySettings(IDE i) {
 		this.ide = i;
 	}
 

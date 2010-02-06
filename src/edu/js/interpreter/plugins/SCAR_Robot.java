@@ -17,13 +17,13 @@ import java.util.Stack;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import edu.js.interpreter.gui.Ide;
+import edu.js.interpreter.gui.IDE;
 import edu.js.interpreter.preprocessed.interpretingobjects.ObjectBasedPointer;
 import edu.js.interpreter.preprocessed.interpretingobjects.Pointer;
 import edu.js.interpreter.processing.PascalPlugin;
 
 public class SCAR_Robot implements PascalPlugin {
-	Ide ide;
+	IDE ide;
 
 	Robot r;
 
@@ -53,7 +53,7 @@ public class SCAR_Robot implements PascalPlugin {
 		lastCaptureOffset.y = rect.y;
 	}
 
-	public SCAR_Robot(Ide i) {
+	public SCAR_Robot(IDE i) {
 		this.ide = i;
 		try {
 			this.r = new Robot();
@@ -837,7 +837,7 @@ public class SCAR_Robot implements PascalPlugin {
 
 	public static void main(String[] arg) {
 		SCAR_Robot scar = new SCAR_Robot(null);
-		scar.ide = new Ide();
+		scar.ide = new IDE();
 		Pointer<Integer> x = new ObjectBasedPointer<Integer>();
 		Pointer<Integer> y = new ObjectBasedPointer<Integer>();
 		if (scar.FindColorTolerance(x, y, new Color(236, 238, 238).getRGB(), 500, 500,
