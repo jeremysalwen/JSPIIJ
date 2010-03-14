@@ -19,7 +19,7 @@ public class AbstractFunctionCall implements ReturnsValue, Executable {
 	public AbstractFunctionCall(AbstractFunction function,
 			ReturnsValue[] arguments) {
 		this.function = function;
-		if(function==null) {
+		if (function == null) {
 			System.err.println("Warning: Null function call");
 		}
 		this.arguments = arguments;
@@ -36,29 +36,9 @@ public class AbstractFunctionCall implements ReturnsValue, Executable {
 			}
 		}
 		for (int i = 0; i < values.length; i++) {
-			if (function.is_varargs(i)) {
-				if (!(arguments[i] instanceof VariableAccess)) {
-					System.err
-							.println("Attempted to pass non-variable as variable argument");
-					System.exit(0);
-				}
-				VariableIdentifier a = (VariableIdentifier) arguments[i];
-				Object var_holder = f.get_variable_holder(a);
-				SubvarIdentifier identifier = a.get(a.size() - 1);
-				if (identifier.isstring()) {
-					values[i] = new ContainsVariablesPointer(
-							(ContainsVariables) var_holder, identifier
-									.string());
-				} else {
-					values[i] = new ArrayPointer(var_holder,
-							((Number) identifier.returnsvalue().get_value(f))
-									.intValue());
-				}
-			} else {
-				values[i] = arguments[i].get_value(f);
-				if (values[i] instanceof ContainsVariables) {
-					values[i] = ((ContainsVariables) values[i]).clone();
-				}
+			values[i] = arguments[i].get_value(f);
+			if (values[i] instanceof ContainsVariables) {
+				values[i] = ((ContainsVariables) values[i]).clone();
 			}
 		}
 		Object result = function.call(f.program, values);

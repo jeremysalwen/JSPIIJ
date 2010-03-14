@@ -73,8 +73,7 @@ public class CustomType extends PascalType {
 		if (!(obj instanceof CustomType)) {
 			return false;
 		}
-		return variable_types.equals(obj)
-				&& name.equals(obj);
+		return variable_types.equals(obj) && name.equals(obj);
 	}
 
 	@Override
@@ -101,4 +100,13 @@ public class CustomType extends PascalType {
 		return null;
 	}
 
+	public PascalType getMemberType(String name) {
+		for (VariableDeclaration v : variable_types) {
+			if (v.name.equals(name)) {
+				return v.type;
+			}
+		}
+		System.err.println("Could not find member "+name);
+		return null;
+	}
 }

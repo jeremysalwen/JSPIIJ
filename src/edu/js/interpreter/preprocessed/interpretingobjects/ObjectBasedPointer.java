@@ -1,6 +1,6 @@
 package edu.js.interpreter.preprocessed.interpretingobjects;
 
-public class ObjectBasedPointer<T> extends Pointer<T> {
+public class ObjectBasedPointer<T> implements Pointer<T> {
 	public T obj;
 
 	@Override

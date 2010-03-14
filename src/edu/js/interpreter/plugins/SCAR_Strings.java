@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.js.interpreter.preprocessed.interpretingobjects.Pointer;
+import edu.js.interpreter.preprocessed.interpretingobjects.Pointer;
 import edu.js.interpreter.processing.PascalPlugin;
 
 public class SCAR_Strings implements PascalPlugin {

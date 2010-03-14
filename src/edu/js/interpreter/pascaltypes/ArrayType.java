@@ -9,11 +9,11 @@ import serp.bytecode.Code;
 
 //This class gets the version 1.0 stamp of approval.  Hopefully I won't have to change it any more.
 public class ArrayType extends PascalType {
-	public PascalType element_type;
+	public final PascalType element_type;
 
-	public int[] lower_bounds;
+	public final int[] lower_bounds;
 
-	public int[] array_sizes;
+	public final int[] array_sizes;
 
 	public ArrayType(PascalType element_class, int[] lower, int[] sizes) {
 		this.element_type = element_class;

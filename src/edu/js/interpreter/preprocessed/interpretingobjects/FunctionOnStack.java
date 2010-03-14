@@ -34,8 +34,7 @@ public class FunctionOnStack implements ContainsVariables {
 				reference_variables.put(prototype.argument_names[i],
 						(Pointer) arguments[i]);
 			} else {
-				local_variables.put(prototype.argument_names[i],
-						arguments[i]);
+				local_variables.put(prototype.argument_names[i], arguments[i]);
 			}
 		}
 		if (declaration.return_type != null) {
@@ -82,57 +81,20 @@ public class FunctionOnStack implements ContainsVariables {
 	public Object get_var(VariableIdentifier name) {
 		zero_length_check(name);
 		Object var_holder = get_variable_holder(name);
-
-		if (var_holder instanceof ContainsVariables) {
-			return ((ContainsVariables) var_holder).get_var(name.get(
-					name.size() - 1).string());
-		} else {
-			int index = ((Number) name.get(name.size() - 1).returnsvalue()
-					.get_value(this)).intValue();
-			if (var_holder instanceof StringBuilder) {
-				return ((StringBuilder) var_holder).charAt(index);
-			} else {
-				return Array.get(var_holder, index);
-			}
-		}
+		return name.get(name.size() - 1).get(var_holder, this);
 	}
 
 	public void set_var(VariableIdentifier name, Object val) {
 		zero_length_check(name);
-		if (name.size() == 1) {
-			set_var(name.get(0).string(), val);
-		}
 		Object variable_holder = get_variable_holder(name);
-		if (name.get(name.size() - 1).isstring()) {
-			((ContainsVariables) variable_holder).set_var(name.get(
-					name.size() - 1).string(), val);
-		} else {
-			int index = ((Number) name.get(name.size() - 1).returnsvalue()
-					.get_value(this)).intValue();
-			if (variable_holder instanceof StringBuilder) {
-				((StringBuilder) variable_holder).setCharAt(index,
-						(Character) val);
-			} else {
-				Array.set(variable_holder, index, val);
-			}
-		}
+		name.get(name.size() - 1).set(variable_holder, this, val);
 	}
 
 	public Object get_variable_holder(VariableIdentifier name) {
 		Object v = this;
 		for (int i = 0; i < name.size() - 1; i++) {
 			SubvarIdentifier index = name.get(i);
-			if (index.isreturnsvalue()) {
-				int arrayindex = ((Number) index.returnsvalue().get_value(this))
-						.intValue();
-				if (v instanceof StringBuilder) {
-					v = ((StringBuilder) v).charAt(arrayindex);
-				} else {
-					v = Array.get(v, arrayindex);
-				}
-			} else {
-				v = ((ContainsVariables) v).get_var(name.get(i).string());
-			}
+			v = index.get(v, this);
 		}
 		return v;
 	}

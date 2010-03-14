@@ -2,25 +2,34 @@ package edu.js.interpreter.preprocessed.interpretingobjects;
 
 import java.lang.reflect.Array;
 
-public class ArrayPointer<T> extends Pointer<T> {
-	Object array;
+public class ArrayPointer implements Pointer {
+	private int index;
+	private Object container;
 
-	int index;
+	boolean isString;
 
-	public ArrayPointer(Object var_holder, int i) {
-		array = var_holder;
-		index = i;
+	public ArrayPointer(Object container, int index) {
+		this.container = container;
+		this.index = index;
+		isString = container instanceof StringBuilder;
 	}
 
 	@Override
-	public T get() {
-		return (T) Array.get(array, index);
+	public Object get() {
+		if (isString) {
+			return ((StringBuilder) container).charAt(index);
+		} else {
+			return Array.get(container, index);
+		}
 	}
 
 	@Override
-	public void set(T value) {
-		Array.set(array, index, value);
-
+	public void set(Object value) {
+		if (isString) {
+			((StringBuilder) container).setCharAt(index, (Character) value);
+		} else {
+			Array.set(container, index, value);
+		}
 	}
 
 }

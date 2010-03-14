@@ -18,13 +18,13 @@ public class ReferenceType extends PascalType {
 	@Override
 	public void get_default_value_on_stack(Code code) {
 		System.err
-				.println("Tried to generate bytecode to initialize variable of pointer type");
+				.println("Tried to generate bytecode to initialize variable of reference type");
 		System.exit(1);
 	}
 
 	@Override
 	public Object initialize() {
-		System.err.println("Tried to initialize variable of pointer type");
+		System.err.println("Tried to initialize variable of reference type");
 		System.exit(1);
 		return null;
 	}

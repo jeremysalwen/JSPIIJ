@@ -1,19 +1,16 @@
 package edu.js.interpreter.preprocessed.interpretingobjects.variables;
 
-import edu.js.interpreter.preprocessed.instructions.returnsvalue.ReturnsValue;
+import edu.js.interpreter.pascaltypes.PascalType;
+import edu.js.interpreter.preprocessed.interpretingobjects.FunctionOnStack;
+import edu.js.interpreter.preprocessed.interpretingobjects.Pointer;
 
-public abstract class SubvarIdentifier {
-	public abstract boolean isreturnsvalue();
+public interface SubvarIdentifier {
+	public Object get(Object container, FunctionOnStack context);
 
-	public boolean isstring() {
-		return !isreturnsvalue();
-	}
+	public void set(Object container, FunctionOnStack context, Object value);
 
-	public String string() {
-		return ((String_SubvarIdentifier) this).s;
-	}
+	public Pointer create_pointer(Object container, FunctionOnStack context);
 
-	public ReturnsValue returnsvalue() {
-		return ((ReturnsValue_SubvarIdentifier) this).value;
-	}
+	public PascalType getType(PascalType containerType);
+
 }

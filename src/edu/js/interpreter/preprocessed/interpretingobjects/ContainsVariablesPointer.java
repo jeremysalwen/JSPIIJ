@@ -2,24 +2,23 @@ package edu.js.interpreter.preprocessed.interpretingobjects;
 
 import edu.js.interpreter.preprocessed.interpretingobjects.variables.ContainsVariables;
 
-public class ContainsVariablesPointer<T> extends Pointer<T> {
-	ContainsVariables v;
+public class ContainsVariablesPointer implements Pointer {
+	private ContainsVariables container;
+	private String index;
 
-	String variable_name;
-
-	public ContainsVariablesPointer(ContainsVariables v, String name) {
-		this.v = v;
-		this.variable_name = name;
+	public ContainsVariablesPointer(ContainsVariables container, String index) {
+		this.container = container;
+		this.index = index;
 	}
 
 	@Override
-	public T get() {
-		return (T) v.get_var(variable_name);
+	public Object get() {
+		return container.get_var(index);
 	}
 
 	@Override
-	public void set(T value) {
-		v.set_var(variable_name, value);
+	public void set(Object value) {
+		container.set_var(index, value);
 	}
 
 }
