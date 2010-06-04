@@ -2,6 +2,7 @@ package edu.js.interpreter.gui;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -80,7 +81,7 @@ public class IDE extends JFrame {
 	public JLabel status_bar;
 
 	PascalProgram program;
-
+	Thread ProgramThread;
 	CustomTypeGenerator type_generator;
 
 	public SecuritySettings settings;
@@ -156,7 +157,7 @@ public class IDE extends JFrame {
 				+ File.separatorChar));
 		wholeWindow = new JPanel();
 		this.setLayout(new BorderLayout());
-		this.add(wholeWindow, BorderLayout.NORTH);
+		this.add(wholeWindow, BorderLayout.CENTER);
 		this.status_bar = new JLabel("Status bar");
 		this.add(status_bar, BorderLayout.SOUTH);
 		programInput = new JEditorPane();
@@ -164,6 +165,7 @@ public class IDE extends JFrame {
 		wholeWindow.setLayout(new BoxLayout(wholeWindow, BoxLayout.Y_AXIS));
 		wholeWindow.add(new JScrollPane(programInput));
 		buttonsPanel = new JPanel();
+		buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
 		wholeWindow.add(buttonsPanel);
 		wholeWindow.add(new JScrollPane(debugBox));
 		runButton = new JButton();
@@ -375,12 +377,13 @@ public class IDE extends JFrame {
 	}
 
 	public void runProgram() {
-		if (program != null) {
+		if (ProgramThread!=null && ProgramThread.isAlive()) {
 			resumeProgram();
 		} else {
 			program = new PascalProgram(programInput.getText(), plugins,
 					type_generator);
-			program.run();
+			ProgramThread=new Thread(program);
+			ProgramThread.start();
 		}
 	}
 
@@ -393,7 +396,7 @@ public class IDE extends JFrame {
 
 	public void pauseProgram() {
 		if (program != null) {
-			program.mode = RunMode.paused;
+				program.mode = RunMode.paused;
 		}
 	}
 

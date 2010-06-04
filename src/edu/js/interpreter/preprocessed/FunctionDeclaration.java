@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.js.interpreter.pascaltypes.PascalType;
+import edu.js.interpreter.pascaltypes.ReferenceType;
 import edu.js.interpreter.preprocessed.instructions.DowntoForStatement;
 import edu.js.interpreter.preprocessed.instructions.Executable;
 import edu.js.interpreter.preprocessed.instructions.ForStatement;
@@ -126,7 +127,7 @@ public class FunctionDeclaration extends AbstractFunction {
 	}
 
 	public PascalType get_variable_type(String name) {
-		if(name.equalsIgnoreCase("result")) {
+		if (name.equalsIgnoreCase("result")) {
 			return return_type;
 		}
 		int index = StaticMethods.indexOf(argument_names, name);
@@ -178,6 +179,9 @@ public class FunctionDeclaration extends AbstractFunction {
 				PascalType type;
 				try {
 					type = program.get_next_pascal_type(arguments_token);
+					if (is_varargs) {
+						type = new ReferenceType(type);
+					}
 					while (j > 0) {
 						types_list.add(type);
 						j--;
@@ -367,8 +371,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			if (next instanceof ParenthesizedToken) {
 				token_iterator.take();
 				ReturnsValue[] arguments = get_arguments_for_call((ParenthesizedToken) next);
-				return program.generate_function_call(
-						name, arguments, this);
+				return program.generate_function_call(name, arguments, this);
 			} else {
 				// at this point assuming it is a variable identifier.
 				VariableIdentifier identifier = get_next_var_identifier(name,
@@ -376,9 +379,14 @@ public class FunctionDeclaration extends AbstractFunction {
 				next = token_iterator.take();
 				assert (next instanceof AssignmentToken);
 				ReturnsValue value_to_assign = get_next_returns_value(token_iterator);
-				PascalType output_type=new VariableAccess(identifier).get_type(this);
-				if(!output_type.equals(value_to_assign.get_type(this))) {
-					value_to_assign=new BuiltinTypeConversion(output_type, value_to_assign);
+				PascalType output_type = new VariableAccess(identifier)
+						.get_type(this);
+				if(output_type instanceof ReferenceType) {
+					output_type=((ReferenceType)output_type).child_type;
+				}
+				if (!output_type.equals(value_to_assign.get_type(this))) {
+					value_to_assign = new BuiltinTypeConversion(output_type,
+							value_to_assign);
 				}
 				return new VariableSet(identifier, value_to_assign);
 			}

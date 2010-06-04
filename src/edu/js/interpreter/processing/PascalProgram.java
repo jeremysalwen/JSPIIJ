@@ -43,7 +43,7 @@ import edu.js.interpreter.tokens.value.OperatorTypes;
 import edu.js.interpreter.tokens.value.WordToken;
 
 public class PascalProgram implements Runnable {
-	public RunMode mode;
+	public volatile RunMode mode;
 
 	public FunctionDeclaration main;
 

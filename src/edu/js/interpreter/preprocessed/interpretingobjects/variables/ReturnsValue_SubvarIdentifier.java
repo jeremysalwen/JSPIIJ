@@ -44,6 +44,7 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Pointer create_pointer(Object container, FunctionOnStack context) {
 		return new ArrayPointer(container, ((Number) value.get_value(context))

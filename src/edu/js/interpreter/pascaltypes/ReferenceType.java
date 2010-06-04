@@ -9,7 +9,7 @@ import edu.js.interpreter.preprocessed.interpretingobjects.Pointer;
 import edu.js.interpreter.preprocessed.interpretingobjects.variables.VariableIdentifier;
 
 public class ReferenceType extends PascalType {
-	PascalType child_type;
+	public PascalType child_type;
 
 	public ReferenceType(PascalType child) {
 		this.child_type = child;

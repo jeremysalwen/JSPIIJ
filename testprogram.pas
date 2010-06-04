@@ -5,12 +5,17 @@ end
 
 function appendhello(i:integer):string;
 begin
-Result:=inttostr(i)+'hello';
+Result:=inttostr(i)+' hello';
 end;
 
 procedure printhello(x:integer);
 begin
 writeln(appendhello(x));
+end;
+
+procedure subtractone(var i:integer);
+begin
+i:=i-1;
 end;
 
 var
@@ -20,7 +25,7 @@ point:coords;
 cow:array[0 .. 10] of integer;
 
 begin
-writeln('haha fools');
+writeln('test text');
 target:=10;
 r:=10;
 cow[0]:=1;

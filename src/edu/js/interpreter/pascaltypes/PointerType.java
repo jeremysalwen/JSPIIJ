@@ -15,7 +15,10 @@ public class PointerType extends PascalType {
 
 	@Override
 	public ReturnsValue convert(ReturnsValue returnsValue, FunctionDeclaration f) {
-		// TODO Auto-generated method stub
+		PascalType other = returnsValue.get_type(f);
+		if (this.equals(other)) {
+			return returnsValue;
+		}
 		return null;
 	}
 
@@ -47,6 +50,11 @@ public class PointerType extends PascalType {
 	public Class toclass() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		return super.equals(obj);
 	}
 
 }

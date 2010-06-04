@@ -64,6 +64,7 @@ public class FunctionOnStack implements ContainsVariables {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void set_var(String name, Object val) {
 		if (local_variables.containsKey(name)) {
 			local_variables.put(name, val);

@@ -76,7 +76,7 @@ public class CustomTypeGenerator {
 		BCClass c = p.loadClass(name);
 		c.setDeclaredInterfaces(new Class[] { ContainsVariables.class });
 		for (VariableDeclaration v : variables) {
-			System.out.println(v.name + v.type.toclass());
+			System.out.println(v.name + " " + v.type.toclass());
 			c.declareField(v.name, TypeUtils.getTypeForClass(v.type.toclass()));
 		}
 		add_constructor(c, custom);
