@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/130/trunk/src/ncsa/tools/common/exceptions
+END
+BaseCommonException.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/130/trunk/src/ncsa/tools/common/exceptions/BaseCommonException.java
+END
+TypeConversionException.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/130/trunk/src/ncsa/tools/common/exceptions/TypeConversionException.java
+END

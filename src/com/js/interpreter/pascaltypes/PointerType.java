@@ -1,0 +1,55 @@
+package com.js.interpreter.pascaltypes;
+
+import serp.bytecode.Code;
+
+import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.runtime.ObjectBasedPointer;
+
+public class PointerType extends DeclaredType {
+	DeclaredType pointedToType;
+
+	public PointerType(DeclaredType pointedToType) {
+		this.pointedToType = pointedToType;
+	}
+
+	@Override
+	public ReturnsValue convert(ReturnsValue returnsValue, FunctionDeclaration f) throws ParsingException {
+		RuntimeType other = returnsValue.get_type(f);
+		if (this.equals(other)) {
+			return returnsValue;
+		}
+		return null;
+	}
+
+	@Override
+	public Object initialize() {
+		return new ObjectBasedPointer();
+	}
+
+	@Override
+	public boolean isarray() {
+		return false;
+	}
+
+	@Override
+	public Class<?> toclass() {
+		return null;
+	}
+
+	@Override
+	public boolean equals(DeclaredType obj) {
+		if (obj instanceof PointerType) {
+			return this.pointedToType.equals(((PointerType) obj).pointedToType);
+		}
+		return false;
+	}
+
+	@Override
+	public void pushDefaultValue(Code constructor_code) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

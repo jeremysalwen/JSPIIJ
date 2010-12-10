@@ -1,0 +1,54 @@
+NOTE: This is the same program as pascalinterpreterinjava.googlecode.com.  Right now this version is more up to date.
+
+This program is exactly as it is described.  It is a pascal interpreter written in java.  However, the project has grown to incorporate other aspects besides the core interpreter.  It now also has a simple IDE included which allows you to edit, run, and debug programs.  
+
+Because this project was started with the intent of running [http://freddy1990.com/index.php?page=product&name=scar SCAR] scripts from a Java program, it also includes some plugins which emulate the API of SCAR.  Some of the SCAR API, however, is not possible to emulate with pure Java.  The project [http://code.google.com/p/scarlib SCARLib] (also by me), is an attempt to create a cross-platform JNI library for these parts of the API.  However, to make things simpler, this project includes a dummy version of SCARlib, thus retaining the plugin code which allows it to use SCARlib, but allowing you to compile this project independently.  
+
+The program has gone through several complete overhauls of the code,  and currently it is in a working state, but it's still being actively developed.  Thus some things aren't complete, or are in slightly broken states in preparation for new features.
+
+
+The basics of the interpreter have worked in the past, and should continue to work: Basic language features (if, for, while, etc constructs, functions/procedures, basic variable types), A plugin interface, so you can call java code from pascal programs (more on this later), arrays, variable argument passing (passing by reference), and custom types(record statements).
+
+All of these are incorporated into the program to some degree, and will eventually work 100%, but some of these only work with basic usage, and do not provide full pascal functionality.  
+
+===Arrays===
+Work perfectly as local variables.  There is code to handle passing them to plugins and other functions, multidimensional arrays, and including them in custom types, but some of it is simply on my TODO list, and some of it I haven't tested yet.  Again, this is one of the last fronts of my development, so once I finish it, I will have a chance to test and see what needs to be fixed.
+
+===Variable Arguments/Passing by Value=== 
+This should work 100%.  The interpreter will handle any changes made to a variable passed by reference.
+
+===Custom types===
+Actually one of the cooler things about this interpreter.  It generates Java bytecode using [http://serp.sourceforge.net/ SERP] for the custom types in your pascal program.  It then dynamically loads them, and uses them to store the value of any custom type in your pascal program.  It's relatively well tested, and only doesn't work with arrays as a field (on my TODO list, of course)
+
+==General Overview of What's Going On==
+When you run the program, you start up the IDE class.  This class shows you the window that pops up.  It then loads the plugins, basically converting Java methods into pascal functions you can call in your script.  Some of these plugins will interface back with the IDE when called, such as outputting text into the debug box, or they can run whatever code they want.  When you click the run button, the IDE starts up a new PascalProgram.  The program starts up a thread of the Grouper, which lexes (I think that's the right word) the text into a series of tokens, feeding them back into the PascalProgram, which recursively constructs a "program tree", a representation of the program using a bunch of other objects (most of the other classes in the program are used for this purpose).  If during this process, it encounters a custom pascal type, the creation of a new class is delegated to CustomTypeGenerator, and then loaded.  Then, when the creation of the program is done, the IDE calls the run method of the PascalProgram.  This starts off executing the tree that has just been created.  The tree can execute itself recursively in an object-oriented manner (that's not just lingo, I'm trying to get across what it's doing without going into too much detail).  When the program encounters a call to a "plugin" function, it will delegate it to the Java code that was written for the  plugin, thus allowing your pascal program to interface with Java.
+
+==Plugin System==
+I originally designed the plugin system to be as simple as possible, but as I worked on this project, I realized it had to be at least slightly complex.  The basic idea is this:  You write a class that extends PascalPlugin, and place it in the edu.js.interpreter.plugins package.  Then, the interpreter uses reflection to find available methods and converts them into pascal headers.  Thus, whenever it detects that your function has been called, it uses reflection to actually call your method with the parameters passed to it by the pascal script.  It can become more complicated if you want to deal with interfacing with the GUI or arrays (the latter of which requires annotations in order to give the interpreter enough type information to generate a proper header).
+
+Included in the release are a bunch of plugins which provide many of the same functions SCAR does (see above).  Some of them require SCARlib, but are disabled in this release.  Enabling them requires a little messiness, so contact me if you want help.
+
+
+==Running the code==
+You can download either from svn, or from the release in the downloads section.  You can either open it up as an Eclipse project, or run the scripts I have included for windows and linux (windows one untested, so please report any problems).  The GUI should pop up, and you can run the test program, or modify it, and see how my interpreter fairs.
+
+==Snooping Around the Code==
+The whole thing is pretty complex, so here's some tips for where to start if you're trying to understand it:
+
+Key Classes:
+IDE is the entry point, handles the GUI, as well as connecting everything.
+
+Grouper handles the initial pass of the text, converting it to tokens.
+
+PascalProgram contains the entire program tree, and contains the code for parsing the tree.
+
+CustomTypeGenerator is used for generating bytecode for custom types.
+
+FunctionOnStack is where the actual "execution" of the code takes place.  It handles the local stack frame+variables, and delegates out the instructions to execute to the instruction objects themselves.
+
+ReturnsValue and Executable are the two key classes in terms of understanding the tree structure of the program.'
+
+To understand plugins, look in the plugins package.  There are plenty of great examples.  Still, it's pretty confusing, so contact me if you need help.
+
+==General Comments==
+The source isn't very nicely commented, and isn't always so clean.  I'm still in the middle of developing it, so it should improve once I get near the end.
