@@ -1,5 +1,7 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
+import javax.naming.OperationNotSupportedException;
+
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -18,8 +20,12 @@ public class UnaryOperatorEvaluation implements ReturnsValue {
 	}
 
 	public Object get_value(VariableContext f, RuntimeExecutable<?> main) {
-		Object value = operon.get_value(f, main);
-		return type.operate(value);
+		try {
+			Object value = operon.get_value(f, main);
+			return type.operate(value);
+		} catch (OperationNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -27,7 +33,7 @@ public class UnaryOperatorEvaluation implements ReturnsValue {
 		return "operator [" + type + "] on [" + operon + ']';
 	}
 
-	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException{
+	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
 		return operon.get_type(f);
 	}
 

@@ -547,15 +547,18 @@ public enum OperatorTypes {
 		return;
 	}
 
-	public Object operate(Object o) {
+	public Object operate(Object o) throws OperationNotSupportedException {
 		if (o instanceof Boolean) {
-			return operate((Boolean) o);
+			return operate(((Boolean) o).booleanValue());
+		}
+		if (o instanceof Integer) {
+			return ((Long) operate(((Integer) o).longValue())).intValue();
 		}
 		if (o instanceof Long) {
-			return operate((Long) o);
+			return operate(((Long) o).longValue());
 		}
 		if (o instanceof Double) {
-			return operate((Double) o);
+			return operate(((Double) o).doubleValue());
 		}
 		throw new RuntimeException("unrecognized type " + o.getClass()
 				+ " for operation " + this);
