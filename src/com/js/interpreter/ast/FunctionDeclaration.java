@@ -26,6 +26,7 @@ import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -90,7 +91,7 @@ public class FunctionDeclaration extends AbstractFunction {
 	public FunctionDeclaration(CodeUnit p, GrouperToken i, boolean is_procedure)
 			throws ParsingException {
 		this.program = p;
-		instructions = new InstructionGrouper();
+		instructions = new InstructionGrouper(i.peek_no_EOF().lineInfo);
 		name = program.get_word_value(i);
 		get_arguments_for_declaration(i, is_procedure);
 		Token next = i.peek();
@@ -152,7 +153,8 @@ public class FunctionDeclaration extends AbstractFunction {
 
 	@Override
 	public Object call(VariableContext parentcontext,
-			RuntimeExecutable<?> main, Object[] arguments) throws RuntimePascalException{
+			RuntimeExecutable<?> main, Object[] arguments)
+			throws RuntimePascalException {
 		if (this.program instanceof Library) {
 			parentcontext = main.getLibrary((Library) this.program);
 		}
@@ -203,13 +205,13 @@ public class FunctionDeclaration extends AbstractFunction {
 					is_varargs = true;
 					next = arguments_token.take();
 				}
-				while(true) {
+				while (true) {
 					are_varargs_list.add(is_varargs);
 					names_list.add(((WordToken) next).name);
 					j++;
 					next = arguments_token.take();
-					if(next instanceof CommaToken) {
-						next=arguments_token.take();
+					if (next instanceof CommaToken) {
+						next = arguments_token.take();
 					} else {
 						break;
 					}
@@ -238,7 +240,8 @@ public class FunctionDeclaration extends AbstractFunction {
 		if (next instanceof ParenthesizedToken) {
 			return get_single_value((ParenthesizedToken) next);
 		} else if (next instanceof ValueToken) {
-			return new ConstantAccess(((ValueToken) next).getValue());
+			return new ConstantAccess(((ValueToken) next).getValue(),
+					next.lineInfo);
 		} else if (next instanceof WordToken) {
 			WordToken name = ((WordToken) next);
 			next = iterator.peek();
@@ -252,7 +255,7 @@ public class FunctionDeclaration extends AbstractFunction {
 						new ArrayList<ReturnsValue>(0), this);
 			}
 			VariableAccess result = new VariableAccess(get_next_var_identifier(
-					name, iterator));
+					name, iterator), name.lineInfo);
 			if (result.get_type(this) == null) {
 				throw new NoSuchFunctionOrVariableException(name.lineInfo,
 						name.name);
@@ -276,7 +279,8 @@ public class FunctionDeclaration extends AbstractFunction {
 						nextOperator.type);
 			}
 			nextTerm = new UnaryOperatorEvaluation(getNextExpression(iterator,
-					nextOperator.type.getPrecedence()), nextOperator.type);
+					nextOperator.type.getPrecedence()), nextOperator.type,
+					nextOperator.lineInfo);
 		} else {
 			nextTerm = getNextTerm(iterator);
 		}
@@ -299,7 +303,7 @@ public class FunctionDeclaration extends AbstractFunction {
 						type2, nextTerm, nextvalue, operationtype);
 			}
 			nextTerm = new BinaryOperatorEvaluation(nextTerm, nextvalue,
-					operationtype);
+					operationtype, nextOperator.lineInfo);
 
 		}
 		return nextTerm;
@@ -314,8 +318,9 @@ public class FunctionDeclaration extends AbstractFunction {
 			throws ParsingException {
 		Token next;
 		WordToken nametoken = (WordToken) i.take();
-		
-		VariableIdentifier identifier = new VariableIdentifier(nametoken.lineInfo);
+
+		VariableIdentifier identifier = new VariableIdentifier(
+				nametoken.lineInfo);
 		identifier.add(new String_SubvarIdentifier(nametoken.name));
 		while (true) {
 			if (i.peek() instanceof PeriodToken) {
@@ -366,6 +371,7 @@ public class FunctionDeclaration extends AbstractFunction {
 	public Executable get_next_command(GrouperToken token_iterator)
 			throws ParsingException {
 		Token next = token_iterator.take();
+		LineInfo initialline = next.lineInfo;
 		if (next instanceof IfToken) {
 			ReturnsValue condition = getNextExpression(token_iterator);
 			next = token_iterator.take();
@@ -377,15 +383,17 @@ public class FunctionDeclaration extends AbstractFunction {
 				token_iterator.take();
 				else_command = get_next_command(token_iterator);
 			}
-			return new IfStatement(condition, command, else_command);
+			return new IfStatement(condition, command, else_command,
+					initialline);
 		} else if (next instanceof WhileToken) {
 			ReturnsValue condition = getNextExpression(token_iterator);
 			next = token_iterator.take();
 			assert (next instanceof DoToken);
 			Executable command = get_next_command(token_iterator);
-			return new WhileStatement(condition, command);
+			return new WhileStatement(condition, command, initialline);
 		} else if (next instanceof BeginEndToken) {
-			InstructionGrouper begin_end_preprocessed = new InstructionGrouper();
+			InstructionGrouper begin_end_preprocessed = new InstructionGrouper(
+					initialline);
 			BeginEndToken cast_token = (BeginEndToken) next;
 			if (cast_token.hasNext()) {
 
@@ -417,14 +425,15 @@ public class FunctionDeclaration extends AbstractFunction {
 			Executable result;
 			if (downto) { // TODO probably should merge these two types
 				result = new DowntoForStatement(tmp_var, first_value,
-						last_value, get_next_command(token_iterator));
+						last_value, get_next_command(token_iterator),
+						initialline);
 			} else {
 				result = new ForStatement(tmp_var, first_value, last_value,
-						get_next_command(token_iterator));
+						get_next_command(token_iterator), initialline);
 			}
 			return result;
 		} else if (next instanceof RepeatToken) {
-			InstructionGrouper command = new InstructionGrouper();
+			InstructionGrouper command = new InstructionGrouper(initialline);
 
 			while (!(token_iterator.peek_no_EOF() instanceof UntilToken)) {
 				command.add_command(get_next_command(token_iterator));
@@ -437,7 +446,7 @@ public class FunctionDeclaration extends AbstractFunction {
 				throw new ExpectedTokenException(next.lineInfo, "until");
 			}
 			ReturnsValue condition = getNextExpression(token_iterator);
-			return new RepeatInstruction(command, condition);
+			return new RepeatInstruction(command, condition, initialline);
 		} else if (next instanceof WordToken) {
 
 			WordToken nametoken = (WordToken) next;
@@ -454,8 +463,8 @@ public class FunctionDeclaration extends AbstractFunction {
 						this);
 			} else {
 				// at this point assuming it is a variable identifier.
-				VariableIdentifier identifier = get_next_var_identifier(nametoken,
-						token_iterator);
+				VariableIdentifier identifier = get_next_var_identifier(
+						nametoken, token_iterator);
 				next = token_iterator.take();
 				if (!(next instanceof AssignmentToken)) {
 					throw new ExpectedTokenException(next.lineInfo, ":=");
@@ -471,7 +480,7 @@ public class FunctionDeclaration extends AbstractFunction {
 					throw new UnconvertableTypeException(next.lineInfo,
 							input_type, output_type);
 				}
-				return new VariableSet(identifier, value_to_assign);
+				return new VariableSet(identifier, value_to_assign, initialline);
 			}
 		} else if (next instanceof CaseToken) {
 			CaseToken grouper = (CaseToken) next;
@@ -480,7 +489,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			if (!(next instanceof OfToken)) {
 				throw new ExpectedTokenException(next.lineInfo, "of");
 			}
-			CaseInstruction inst = new CaseInstruction();
+			CaseInstruction inst = new CaseInstruction(initialline);
 			next = grouper.take();
 			while (!(next instanceof ElseToken || next instanceof EOF_Token)) {
 				ReturnsValue possibility = getNextExpression(grouper);

@@ -6,6 +6,7 @@ import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -16,16 +17,25 @@ public class FunctionCall implements ReturnsValue, Executable {
 	AbstractFunction function;
 
 	ReturnsValue[] arguments;
+	LineInfo line;
 
-	public FunctionCall(AbstractFunction function, ReturnsValue[] arguments) {
+	public FunctionCall(AbstractFunction function, ReturnsValue[] arguments,
+			LineInfo line) {
 		this.function = function;
 		if (function == null) {
 			System.err.println("Warning: Null function call");
 		}
 		this.arguments = arguments;
+		this.line = line;
 	}
 
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
+	}
+
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		Object[] values = new Object[arguments.length];
 		for (int i = 0; i < values.length; i++) {
 			values[i] = arguments[i].get_value(f, main);
@@ -48,7 +58,8 @@ public class FunctionCall implements ReturnsValue, Executable {
 		return function.name() + "(" + Arrays.toString(arguments) + ')';
 	}
 
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		get_value(f, main);
 		return ExecutionResult.NONE;
 	}

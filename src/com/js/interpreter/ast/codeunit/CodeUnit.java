@@ -315,7 +315,7 @@ public abstract class CodeUnit {
 		for (AbstractFunction a : possibilities) {
 			converted = a.format_args(arguments, f);
 			if (converted != null) {
-				return new FunctionCall(a, converted);
+				return new FunctionCall(a, converted,name.lineInfo);
 			}
 			if (a.argumentTypes().length == arguments.size()) {
 				matching = true;

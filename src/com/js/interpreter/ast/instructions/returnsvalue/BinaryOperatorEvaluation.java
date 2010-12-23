@@ -4,6 +4,7 @@ import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -18,15 +19,23 @@ public class BinaryOperatorEvaluation implements ReturnsValue {
 	ReturnsValue operon1;
 
 	ReturnsValue operon2;
+	LineInfo line;
 
 	public BinaryOperatorEvaluation(ReturnsValue operon1, ReturnsValue operon2,
-			OperatorTypes operator) {
+			OperatorTypes operator, LineInfo line) {
 		this.operator_type = operator;
 		this.operon1 = operon1;
 		this.operon2 = operon2;
+		this.line = line;
 	}
 
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
+	}
+
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		try {
 			Object value1 = operon1.get_value(f, main);
 			Object value2 = operon2.get_value(f, main);

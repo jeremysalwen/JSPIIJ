@@ -4,6 +4,7 @@ import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -14,6 +15,7 @@ public class CreatePointer implements ReturnsValue {
 	VariableAccess container;
 
 	SubvarIdentifier index;
+	LineInfo line;
 
 	/**
 	 * Destructively generates a CreatePointer object from a variableAccess.
@@ -26,9 +28,15 @@ public class CreatePointer implements ReturnsValue {
 		if (a.variable_name.size() > 0) {
 			container = a;
 		}
+		this.line = a.getLineNumber();
 	}
 
-	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException{
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
+	}
+
+	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
 		if (container == null) {
 			return new RuntimeType(f.get_variable_type(index.toString()), true);
 		} else {
@@ -39,13 +47,14 @@ public class CreatePointer implements ReturnsValue {
 
 	}
 
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		Object value;
 		if (container == null) {
 			value = f;
 		} else {
 			value = container.get_value(f, main);
 		}
-		return index.create_pointer(value, f,main);
+		return index.create_pointer(value, f, main);
 	}
 }

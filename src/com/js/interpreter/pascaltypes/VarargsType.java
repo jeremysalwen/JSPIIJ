@@ -8,6 +8,7 @@ import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.ArrayBoxer;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.linenumber.LineInfo;
 
 public class VarargsType implements ArgumentType {
 	RuntimeType elementType;
@@ -17,11 +18,13 @@ public class VarargsType implements ArgumentType {
 	}
 
 	@Override
-	public ReturnsValue convert(Iterator<ReturnsValue> args,
+	public ReturnsValue convertArgType(Iterator<ReturnsValue> args,
 			FunctionDeclaration f) throws ParsingException {
 		List<ReturnsValue> convertedargs = new ArrayList<ReturnsValue>();
+		LineInfo line = null;
 		while (args.hasNext()) {
-			ReturnsValue tmp = elementType.convert(args, f);
+			ReturnsValue tmp = elementType.convert(args.next(), f);
+			line = tmp.getLineNumber();
 			if (tmp == null) {
 				return null;
 			}
@@ -29,7 +32,7 @@ public class VarargsType implements ArgumentType {
 		}
 		return new ArrayBoxer(
 				convertedargs.toArray(new ReturnsValue[convertedargs.size()]),
-				elementType);
+				elementType, line);
 	}
 
 	@Override
@@ -37,12 +40,4 @@ public class VarargsType implements ArgumentType {
 		return elementType.getClass();
 	}
 
-	@Override
-	public boolean equals(ArgumentType other) {
-		if (other instanceof VarargsType) {
-			VarargsType varargs = (VarargsType) other;
-			return varargs.elementType.equals(elementType);
-		}
-		return false;
-	}
 }

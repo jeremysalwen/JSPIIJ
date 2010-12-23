@@ -3,6 +3,7 @@ package com.js.interpreter.ast.instructions.conditional;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
@@ -13,19 +14,23 @@ public class IfStatement implements Executable {
 	Executable instruction;
 
 	Executable else_instruction;
+	LineInfo line;
 
 	public IfStatement(ReturnsValue condition, Executable instruction,
-			Executable else_instruction) {
-		this(condition, instruction);
-		this.else_instruction = else_instruction;
-	}
-
-	public IfStatement(ReturnsValue condition, Executable instruction) {
+			Executable else_instruction, LineInfo line) {
 		this.condition = condition;
 		this.instruction = instruction;
+		this.else_instruction = else_instruction;
+		this.line = line;
 	}
 
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
+	}
+
+	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		if (((Boolean) (condition.get_value(f, null))).booleanValue()) {
 			return instruction.execute(f, main);
 		} else {

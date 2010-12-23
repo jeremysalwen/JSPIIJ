@@ -7,6 +7,7 @@ import com.js.interpreter.ast.instructions.returnsvalue.BinaryOperatorEvaluation
 import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
@@ -21,24 +22,27 @@ public class DowntoForStatement implements Executable {
 	ReturnsValue last;
 
 	Executable command;
+	LineInfo line;
 
 	public DowntoForStatement(VariableIdentifier temp_var, ReturnsValue first,
-			ReturnsValue last, Executable command) {
+			ReturnsValue last, Executable command, LineInfo line) {
 		this.temp_var = temp_var;
 		this.first = first;
 		this.last = last;
 		this.command = command;
+		this.line = line;
 	}
 
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
-		ConstantAccess last_value = new ConstantAccess(last.get_value(f, null));
-		VariableAccess get_temp_var = new VariableAccess(temp_var);
-		new VariableSet(temp_var, first).execute(f, main);
+	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
+		VariableAccess get_temp_var = new VariableAccess(temp_var, line);
+		new VariableSet(temp_var, first, this.line).execute(f, main);
 		BinaryOperatorEvaluation less_than_last = new BinaryOperatorEvaluation(
-				get_temp_var, last_value, OperatorTypes.GREATEREQ);
+				get_temp_var, last, OperatorTypes.GREATEREQ, this.line);
 		VariableSet increment_temp = new VariableSet(temp_var,
-				new BinaryOperatorEvaluation(get_temp_var,
-						new ConstantAccess(1), OperatorTypes.MINUS));
+				new BinaryOperatorEvaluation(get_temp_var, new ConstantAccess(
+						1, this.line), OperatorTypes.MINUS, this.line),
+				this.line);
 
 		while_loop: while (((Boolean) less_than_last.get_value(f, null))
 				.booleanValue()) {
@@ -48,8 +52,13 @@ public class DowntoForStatement implements Executable {
 			case BREAK:
 				break while_loop;
 			}
-			increment_temp.execute(f,main);
+			increment_temp.execute(f, main);
 		}
 		return ExecutionResult.NONE;
+	}
+
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
 	}
 }

@@ -18,25 +18,21 @@ public class RuntimeType implements ArgumentType {
 		this.writable = writable;
 	}
 
-	public ReturnsValue convert(Iterator<ReturnsValue> returns_value,
-			FunctionDeclaration f) throws ParsingException {
-		if (!returns_value.hasNext()) {
-			return null;
-		}
-		ReturnsValue result = returns_value.next();
-		RuntimeType other = result.get_type(f);
+	public ReturnsValue convert(ReturnsValue value, FunctionDeclaration f)
+			throws ParsingException {
+
+		RuntimeType other = value.get_type(f);
 		if (writable) {
 			if (this.equals(other)) {
-				return new CreatePointer((VariableAccess) result);
+				return new CreatePointer((VariableAccess) value);
 			} else {
 				return null;
 			}
 		}
-		return declType.convert(result, f);
+		return declType.convert(value, f);
 	}
 
-	@Override
-	public boolean equals(ArgumentType obj) {
+	public boolean equals(RuntimeType obj) {
 		if (obj instanceof RuntimeType) {
 			RuntimeType other = (RuntimeType) obj;
 			return other.writable == this.writable
@@ -51,7 +47,6 @@ public class RuntimeType implements ArgumentType {
 		return (writable ? "" : "non-") + "writable " + declType.toString();
 	}
 
-	@Override
 	public Class<?> getRuntimeClass() {
 		if (writable) {
 			return VariableBoxer.class;
@@ -59,4 +54,11 @@ public class RuntimeType implements ArgumentType {
 			return declType.toclass();
 		}
 	}
+
+	@Override
+	public ReturnsValue convertArgType(Iterator<ReturnsValue> args,
+			FunctionDeclaration f) throws ParsingException {
+		return convert(args.next(), f);
+	}
+
 }

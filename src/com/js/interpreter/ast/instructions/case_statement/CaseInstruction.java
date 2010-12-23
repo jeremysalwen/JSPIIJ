@@ -3,6 +3,7 @@ package com.js.interpreter.ast.instructions.case_statement;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
@@ -10,8 +11,14 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 public class CaseInstruction implements Executable {
 	ReturnsValue switch_value;
 	CasePossibility[] possibilies;
+	LineInfo line;
 
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+	public CaseInstruction(LineInfo line) {
+		this.line = line;
+	}
+
+	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		Object value = switch_value.get_value(f, main);
 		int index = -1;
 		for (int i = 0; i < possibilies.length; i++) {
@@ -29,5 +36,10 @@ public class CaseInstruction implements Executable {
 			}
 		}
 		return ExecutionResult.NONE;
+	}
+
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
 	}
 }

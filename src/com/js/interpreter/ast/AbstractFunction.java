@@ -57,7 +57,7 @@ public abstract class AbstractFunction {
 		ReturnsValue[] result = new ReturnsValue[accepted_types.length];
 		Iterator<ReturnsValue> iterator = values.iterator();
 		for (int i = 0; i < accepted_types.length; i++) {
-			result[i] = accepted_types[i].convert(iterator, f);
+			result[i] = accepted_types[i].convertArgType(iterator, f);
 			if (result[i] == null) {/*
 									 * This indicates that it cannot fit.
 									 */

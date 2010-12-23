@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
@@ -13,10 +14,18 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 public class ArrayBoxer implements ReturnsValue {
 	ReturnsValue[] values;
 	ArgumentType type;
+	LineInfo line;
 
-	public ArrayBoxer(ReturnsValue[] value, ArgumentType elementType) {
+	public ArrayBoxer(ReturnsValue[] value, ArgumentType elementType,
+			LineInfo line) {
 		this.values = value;
 		this.type = elementType;
+		this.line = line;
+	}
+
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
 	}
 
 	@Override
@@ -26,7 +35,8 @@ public class ArrayBoxer implements ReturnsValue {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		Object[] result = (Object[]) Array.newInstance(type.getRuntimeClass(),
 				values.length);
 		for (int i = 0; i < values.length; i++) {

@@ -4,6 +4,7 @@ import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -14,13 +15,22 @@ public class UnaryOperatorEvaluation implements ReturnsValue {
 	public OperatorTypes type;
 
 	public ReturnsValue operon;
+	LineInfo line;
 
-	public UnaryOperatorEvaluation(ReturnsValue operon, OperatorTypes operator) {
+	public UnaryOperatorEvaluation(ReturnsValue operon, OperatorTypes operator,
+			LineInfo line) {
 		this.type = operator;
+		this.line = line;
 		this.operon = operon;
 	}
 
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
+	}
+
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		try {
 			Object value = operon.get_value(f, main);
 			return type.operate(value);

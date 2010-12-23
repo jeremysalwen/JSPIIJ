@@ -3,22 +3,31 @@ package com.js.interpreter.ast.instructions;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class InstructionGrouper implements Executable {
 	List<Executable> instructions;
+	LineInfo line;
 
-	public InstructionGrouper() {
+	public InstructionGrouper(LineInfo line) {
+		this.line = line;
 		instructions = new LinkedList<Executable>();
+	}
+
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
 	}
 
 	public void add_command(Executable e) {
 		instructions.add(e);
 	}
 
-	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) throws RuntimePascalException {
+	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		forloop: for (Executable e : instructions) {
 			/*
 			 * switch (f.parentContext.mode) { case stopped: return
@@ -26,7 +35,7 @@ public class InstructionGrouper implements Executable {
 			 * == RunMode.paused) { try { f.parentContext.wait(); } catch
 			 * (InterruptedException e1) { } } }
 			 */
-			switch (e.execute(f,main)) {
+			switch (e.execute(f, main)) {
 			case BREAK:
 				break forloop;
 			case RETURN:

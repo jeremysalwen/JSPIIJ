@@ -13,10 +13,12 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 public class BuiltinTypeConversion implements ReturnsValue {
 	DeclaredType output;
 	ReturnsValue input;
+	LineInfo line;
 
 	public BuiltinTypeConversion(LineInfo line, DeclaredType output,
 			ReturnsValue input, DeclaredType inputType)
 			throws UnconvertableTypeException {
+		this.line = line;
 		if (output instanceof JavaClassBasedType
 				&& inputType instanceof JavaClassBasedType) {
 			if (Number.class.isAssignableFrom(output.toclass())
@@ -30,12 +32,18 @@ public class BuiltinTypeConversion implements ReturnsValue {
 	}
 
 	@Override
+	public LineInfo getLineNumber() {
+		return line;
+	}
+
+	@Override
 	public RuntimeType get_type(FunctionDeclaration f) {
 		return new RuntimeType(output, false);
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		Object value = input.get_value(f, main);
 		if (output == JavaClassBasedType.Integer) {
 			return ((Number) value).intValue();
