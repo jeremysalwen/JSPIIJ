@@ -34,6 +34,7 @@ public class BinaryOperatorEvaluation implements ReturnsValue {
 		return line;
 	}
 
+	@Override
 	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		try {
@@ -90,6 +91,7 @@ public class BinaryOperatorEvaluation implements ReturnsValue {
 		return "(" + operon1 + ") " + operator_type + " (" + operon2 + ')';
 	}
 
+	@Override
 	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
 		DeclaredType type1 = operon1.get_type(f).declType;
 		DeclaredType type2 = operon2.get_type(f).declType;

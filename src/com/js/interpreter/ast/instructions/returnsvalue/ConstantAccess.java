@@ -21,6 +21,7 @@ public class ConstantAccess implements ReturnsValue {
 		return line;
 	}
 
+	@Override
 	public Object get_value(VariableContext f, RuntimeExecutable<?> main) {
 		return constant_value;
 	}
@@ -30,6 +31,7 @@ public class ConstantAccess implements ReturnsValue {
 		return constant_value.toString();
 	}
 
+	@Override
 	public RuntimeType get_type(FunctionDeclaration f) {
 		return new RuntimeType(JavaClassBasedType.anew(constant_value
 				.getClass()), false);

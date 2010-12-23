@@ -12,6 +12,7 @@ public class TPoint implements ContainsVariables {
 		this.y = 0;
 	}
 
+	@Override
 	public Object get_var(String name) {
 		if (name.equals("x")) {
 			return x;
@@ -22,6 +23,7 @@ public class TPoint implements ContainsVariables {
 		return null;
 	}
 
+	@Override
 	public void set_var(String name, Object val) {
 		if (name.equals("x")) {
 			x = (Integer) val;

@@ -8,6 +8,7 @@ public abstract class VariableContext implements ContainsVariables {
 
 	protected abstract boolean setLocalVar(String name, Object val);
 
+	@Override
 	public Object get_var(String name) throws RuntimePascalException {
 		Object result = this.getLocalVar(name);
 		VariableContext parentcontext = getParentContext();
@@ -20,6 +21,7 @@ public abstract class VariableContext implements ContainsVariables {
 		return result;
 	}
 
+	@Override
 	public void set_var(String name, Object val) {
 		if (val == null) {
 			System.err.println("Warning!  Setting null variable!");
@@ -35,6 +37,7 @@ public abstract class VariableContext implements ContainsVariables {
 
 	public abstract VariableContext getParentContext();
 
+	@Override
 	public VariableContext clone() {
 		return null;
 	}

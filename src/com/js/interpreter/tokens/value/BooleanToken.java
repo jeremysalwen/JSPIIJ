@@ -10,6 +10,7 @@ public class BooleanToken extends ValueToken {
 		this.b = b;
 	}
 
+	@Override
 	public Object getValue() {
 		return b;
 	}

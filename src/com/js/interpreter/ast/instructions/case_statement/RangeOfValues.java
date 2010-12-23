@@ -21,6 +21,7 @@ public class RangeOfValues implements CaseCondition {
 		this.line = line;
 	}
 
+	@Override
 	public boolean fits(RuntimeExecutable<?> main, VariableContext f,
 			Object value) throws RuntimePascalException {
 		ConstantAccess access = new ConstantAccess(value, line);

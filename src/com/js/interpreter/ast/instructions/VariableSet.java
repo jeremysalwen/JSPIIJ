@@ -1,7 +1,5 @@
 package com.js.interpreter.ast.instructions;
 
-import javax.sound.sampled.Line;
-
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
@@ -20,6 +18,7 @@ public class VariableSet implements Executable {
 		this.line=line;
 	}
 
+	@Override
 	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		name.set_value(f,main,value.get_value(f, main));
 		return ExecutionResult.NONE;

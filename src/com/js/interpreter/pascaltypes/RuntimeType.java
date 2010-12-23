@@ -34,7 +34,7 @@ public class RuntimeType implements ArgumentType {
 
 	public boolean equals(RuntimeType obj) {
 		if (obj instanceof RuntimeType) {
-			RuntimeType other = (RuntimeType) obj;
+			RuntimeType other = obj;
 			return other.writable == this.writable
 					&& this.declType.equals(other.declType);
 		} else {
@@ -47,6 +47,7 @@ public class RuntimeType implements ArgumentType {
 		return (writable ? "" : "non-") + "writable " + declType.toString();
 	}
 
+	@Override
 	public Class<?> getRuntimeClass() {
 		if (writable) {
 			return VariableBoxer.class;

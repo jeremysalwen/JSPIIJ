@@ -37,6 +37,7 @@ public class PascalProgram extends ExecutableCodeUnit {
 				type_generator);
 	}
 
+	@Override
 	protected void prepareForParsing() {
 		main = new FunctionDeclaration(this);
 		main.are_varargs = new boolean[0];

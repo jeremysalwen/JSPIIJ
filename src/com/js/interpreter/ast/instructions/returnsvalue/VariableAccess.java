@@ -23,6 +23,7 @@ public class VariableAccess implements ReturnsValue {
 		return line;
 	}
 
+	@Override
 	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		return variable_name.get_value(f, main);
@@ -33,6 +34,7 @@ public class VariableAccess implements ReturnsValue {
 		return variable_name.toString();
 	}
 
+	@Override
 	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
 		return variable_name.get_type(f);
 	}

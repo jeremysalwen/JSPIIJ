@@ -36,6 +36,7 @@ public class CreatePointer implements ReturnsValue {
 		return line;
 	}
 
+	@Override
 	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
 		if (container == null) {
 			return new RuntimeType(f.get_variable_type(index.toString()), true);
@@ -47,6 +48,7 @@ public class CreatePointer implements ReturnsValue {
 
 	}
 
+	@Override
 	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		Object value;

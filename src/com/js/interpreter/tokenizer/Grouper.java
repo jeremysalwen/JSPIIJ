@@ -393,6 +393,7 @@ public class Grouper implements Runnable {
 		throw new FileNotFoundException("Cannot find the $INCLUDE file " + name);
 	}
 
+	@Override
 	public void run() {
 		parse();
 	}

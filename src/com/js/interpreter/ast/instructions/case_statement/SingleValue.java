@@ -18,6 +18,7 @@ public class SingleValue implements CaseCondition {
 		this.line = line;
 	}
 
+	@Override
 	public boolean fits(RuntimeExecutable<?> main, VariableContext f,
 			Object value) throws RuntimePascalException {
 		return (Boolean) new BinaryOperatorEvaluation(new ConstantAccess(value,

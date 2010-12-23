@@ -37,6 +37,7 @@ public class FunctionCall implements ReturnsValue, Executable {
 		return line;
 	}
 
+	@Override
 	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		Object[] values = new Object[arguments.length];
@@ -70,12 +71,14 @@ public class FunctionCall implements ReturnsValue, Executable {
 		return function.name() + "(" + Arrays.toString(arguments) + ')';
 	}
 
+	@Override
 	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		get_value(f, main);
 		return ExecutionResult.NONE;
 	}
 
+	@Override
 	public RuntimeType get_type(FunctionDeclaration f) {
 		return new RuntimeType(function.return_type(), false);
 	}

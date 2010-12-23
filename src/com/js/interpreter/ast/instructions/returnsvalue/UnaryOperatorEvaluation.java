@@ -29,6 +29,7 @@ public class UnaryOperatorEvaluation implements ReturnsValue {
 		return line;
 	}
 
+	@Override
 	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		try {
@@ -44,6 +45,7 @@ public class UnaryOperatorEvaluation implements ReturnsValue {
 		return "operator [" + type + "] on [" + operon + ']';
 	}
 
+	@Override
 	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
 		return operon.get_type(f);
 	}

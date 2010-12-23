@@ -35,6 +35,7 @@ public class RuntimePascalProgram extends RuntimeExecutable<PascalProgram> {
 		return main.setLocalVar(name, value);
 	}
 
+	@Override
 	public void run() throws RuntimePascalException{
 		this.mode = RunMode.running;
 		main = new FunctionOnStack(this, this, program.main, new Object[0]);
