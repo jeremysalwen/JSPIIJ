@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import com.js.interpreter.ast.AbstractFunction;
@@ -10,6 +11,8 @@ import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.PluginCallException;
+import com.js.interpreter.runtime.exception.PluginReflectionException;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
@@ -49,7 +52,16 @@ public class FunctionCall implements ReturnsValue, Executable {
 				values[i] = ((ContainsVariables) values[i]).clone();
 			}
 		}
-		Object result = function.call(f, main, values);
+		Object result;
+		try {
+			result = function.call(f, main, values);
+		} catch (IllegalArgumentException e) {
+			throw new PluginReflectionException(line, e);
+		} catch (IllegalAccessException e) {
+			throw new PluginReflectionException(line, e);
+		} catch (InvocationTargetException e) {
+			throw new PluginCallException(line, e.getCause(), function);
+		}
 		return result;
 	}
 

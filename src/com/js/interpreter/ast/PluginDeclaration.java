@@ -36,17 +36,8 @@ public class PluginDeclaration extends AbstractFunction {
 
 	@Override
 	public Object call(VariableContext parentcontext,
-			RuntimeExecutable<?> main, Object[] arguments) {
-		try {
+			RuntimeExecutable<?> main, Object[] arguments) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 			return method.invoke(owner, arguments);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	Type getFirstGenericType(Type t) {

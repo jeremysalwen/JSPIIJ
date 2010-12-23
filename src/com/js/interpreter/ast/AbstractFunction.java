@@ -1,5 +1,6 @@
 package com.js.interpreter.ast;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,9 +42,12 @@ public abstract class AbstractFunction {
 	 * @param arguments
 	 * @return The return value of the called function.
 	 * @throws RuntimePascalException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
 	public abstract Object call(VariableContext parentcontext,
-			RuntimeExecutable<?> main, Object[] arguments) throws RuntimePascalException;
+			RuntimeExecutable<?> main, Object[] arguments) throws RuntimePascalException, IllegalArgumentException, IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
