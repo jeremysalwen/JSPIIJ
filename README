@@ -1,4 +1,4 @@
-NOTE: This is the same program as pascalinterpreterinjava.googlecode.com.  Right now this version is more up to date.
+NOTE: This is the same program as pascalinterpreterinjava.googlecode.com.
 
 This program is exactly as it is described.  It is a pascal interpreter written in java.  However, the project has grown to incorporate other aspects besides the core interpreter.  It now also has a simple IDE included which allows you to edit, run, and debug programs.  
 
