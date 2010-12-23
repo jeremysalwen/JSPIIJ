@@ -202,11 +202,17 @@ public class FunctionDeclaration extends AbstractFunction {
 					is_varargs = true;
 					next = arguments_token.take();
 				}
-				do {
+				while(true) {
 					are_varargs_list.add(is_varargs);
 					names_list.add(((WordToken) next).name);
 					j++;
-				} while ((next = arguments_token.take()) instanceof CommaToken);
+					next = arguments_token.take();
+					if(next instanceof CommaToken) {
+						next=arguments_token.take();
+					} else {
+						break;
+					}
+				}
 
 				assert (next instanceof ColonToken);
 				DeclaredType type;
