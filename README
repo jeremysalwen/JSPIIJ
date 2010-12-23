@@ -1,4 +1,4 @@
-NOTE: This interpreter is hosted on both pascalinterpreterinjava.googlecode.com and https://github.com/jeremysalwen/JSPIIJ
+NOTE: This interpreter is hosted on both http://pascalinterpreterinjava.googlecode.com and https://github.com/jeremysalwen/JSPIIJ
 
 This program is exactly as it is described.  It is a pascal interpreter written in java.  However, the project has grown to incorporate other aspects besides the core interpreter.  It now also has a simple IDE included which allows you to edit, run, and debug programs.  
 
