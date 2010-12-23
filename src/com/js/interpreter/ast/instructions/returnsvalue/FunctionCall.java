@@ -12,8 +12,8 @@ import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.PluginCallException;
-import com.js.interpreter.runtime.exception.PluginReflectionException;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
+import com.js.interpreter.runtime.exception.internal.PluginReflectionException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
 public class FunctionCall implements ReturnsValue, Executable {

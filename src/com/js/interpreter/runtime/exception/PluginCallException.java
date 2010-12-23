@@ -9,7 +9,7 @@ public class PluginCallException extends RuntimePascalException {
 
 	public PluginCallException(LineInfo line, Throwable cause,
 			AbstractFunction function) {
-		this.line = line;
+		super(line);
 		this.cause = cause;
 		this.function = function;
 	}

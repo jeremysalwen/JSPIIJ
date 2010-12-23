@@ -26,14 +26,12 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	public Object get(Object container, VariableContext f,
 			RuntimeExecutable<?> main) throws RuntimePascalException {
 		int index = -1;
-		try {
-			index = ((Number) value.get_value(f, main)).intValue();
-		} catch (NullPointerException e) {
-			System.err
-					.println("Nullpointer exception in returnsvalue_subvaridentifier.get()  most likely, this is caused because a pointer was accidentally created to be context sensitive, i.e. it's pointed to location can change every time it is acessed.");
-			System.exit(0);
-			return null;
+		Object indexvalue = value.get_value(f, main);
+		if(!(indexvalue instanceof Number)) {
+			throw new 
 		}
+		index = ((Number) indexvalue).intValue();
+
 		if (container instanceof StringBuilder) {
 			return ((StringBuilder) container).charAt(index);
 		} else {
@@ -44,7 +42,8 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 
 	@Override
 	public VariableBoxer create_pointer(Object container,
-			VariableContext context, RuntimeExecutable<?> main) throws RuntimePascalException {
+			VariableContext context, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		return new ArrayPointer(container, ((Number) value.get_value(context,
 				main)).intValue());
 	}
@@ -56,7 +55,8 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 
 	@Override
 	public void set(Object container, VariableContext context,
-			RuntimeExecutable<?> main, Object input) throws RuntimePascalException {
+			RuntimeExecutable<?> main, Object input)
+			throws RuntimePascalException {
 		int index = ((Number) value.get_value(context, main)).intValue();
 		if (container instanceof StringBuilder) {
 			((StringBuilder) container).setCharAt(index, (Character) input);

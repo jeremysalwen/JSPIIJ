@@ -23,12 +23,14 @@ import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
+import com.js.interpreter.exceptions.NonIntegerIndexException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.FunctionOnStack;
 import com.js.interpreter.runtime.VariableContext;
@@ -359,8 +361,14 @@ public class FunctionDeclaration extends AbstractFunction {
 					throw new UnrecognizedTokenException(next);
 				}
 			} else if (i.peek() instanceof BracketedToken) {
-				identifier.add(new ReturnsValue_SubvarIdentifier(
-						getNextExpression((BracketedToken) i.take())));
+				ReturnsValue index = getNextExpression((BracketedToken) i
+						.take());
+				RuntimeType indextype = index.get_type(this);
+				if (!(indextype.declType.equals(JavaClassBasedType.Integer) || indextype.declType
+						.equals(JavaClassBasedType.Long))) {
+					throw new NonIntegerIndexException(index);
+				}
+				identifier.add(new ReturnsValue_SubvarIdentifier(index));
 			} else {
 				break;
 			}

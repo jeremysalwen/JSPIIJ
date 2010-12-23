@@ -48,10 +48,9 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 		return new RuntimeType(type, true);
 	}
 
-	protected void zero_length_check() {
+	protected void zero_length_check() throws RuntimePascalException {
 		if (isEmpty()) {
-			System.err.println("Error 0 length variable!");
-			System.exit(0);
+			throw new RuntimePascalException(this.lineinfo);
 		}
 	}
 
@@ -72,7 +71,8 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 		get(size() - 1).set(variable_holder, context, main, val);
 	}
 
-	public Object get_value(VariableContext context, RuntimeExecutable<?> main) throws RuntimePascalException {
+	public Object get_value(VariableContext context, RuntimeExecutable<?> main)
+			throws RuntimePascalException {
 		zero_length_check();
 		Object var_holder = get_variable_holder(context, main);
 		return get(size() - 1).get(var_holder, context, main);
