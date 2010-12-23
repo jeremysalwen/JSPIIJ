@@ -18,6 +18,6 @@ public class PluginCallException extends RuntimePascalException {
 	public String getMessage() {
 		return "When calling plugin " + function.name()
 				+ ", The following java exception occured: "
-				+ cause.getMessage();
+				+ cause;
 	}
 }
