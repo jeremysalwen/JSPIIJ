@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class InstructionGrouper implements Executable {
 	List<Executable> instructions;
@@ -17,7 +18,7 @@ public class InstructionGrouper implements Executable {
 		instructions.add(e);
 	}
 
-	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) {
+	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) throws RuntimePascalException {
 		forloop: for (Executable e : instructions) {
 			/*
 			 * switch (f.parentContext.mode) { case stopped: return

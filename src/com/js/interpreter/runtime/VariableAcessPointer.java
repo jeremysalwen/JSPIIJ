@@ -1,5 +1,6 @@
 package com.js.interpreter.runtime;
 
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.SubvarIdentifier;
 
 public class VariableAcessPointer implements VariableBoxer {
@@ -12,7 +13,7 @@ public class VariableAcessPointer implements VariableBoxer {
 	}
 
 	@Override
-	public Object get() {
+	public Object get() throws RuntimePascalException {
 		return index.get(container, null, null);
 	}
 

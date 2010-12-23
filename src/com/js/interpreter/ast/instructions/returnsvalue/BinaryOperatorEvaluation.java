@@ -9,6 +9,7 @@ import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.tokens.OperatorTypes;
 
 public class BinaryOperatorEvaluation implements ReturnsValue {
@@ -25,7 +26,7 @@ public class BinaryOperatorEvaluation implements ReturnsValue {
 		this.operon2 = operon2;
 	}
 
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) {
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		try {
 			Object value1 = operon1.get_value(f, main);
 			Object value2 = operon2.get_value(f, main);

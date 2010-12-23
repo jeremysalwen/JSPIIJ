@@ -9,6 +9,7 @@ import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
 public class FunctionCall implements ReturnsValue, Executable {
@@ -24,7 +25,7 @@ public class FunctionCall implements ReturnsValue, Executable {
 		this.arguments = arguments;
 	}
 
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) {
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		Object[] values = new Object[arguments.length];
 		for (int i = 0; i < values.length; i++) {
 			values[i] = arguments[i].get_value(f, main);
@@ -47,7 +48,7 @@ public class FunctionCall implements ReturnsValue, Executable {
 		return function.name() + "(" + Arrays.toString(arguments) + ')';
 	}
 
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) {
+	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		get_value(f, main);
 		return ExecutionResult.NONE;
 	}

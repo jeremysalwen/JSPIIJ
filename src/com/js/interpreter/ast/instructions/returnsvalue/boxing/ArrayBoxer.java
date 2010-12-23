@@ -8,6 +8,7 @@ import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class ArrayBoxer implements ReturnsValue {
 	ReturnsValue[] values;
@@ -25,7 +26,7 @@ public class ArrayBoxer implements ReturnsValue {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) {
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		Object[] result = (Object[]) Array.newInstance(type.getRuntimeClass(),
 				values.length);
 		for (int i = 0; i < values.length; i++) {

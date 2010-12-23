@@ -8,6 +8,7 @@ import com.js.interpreter.runtime.ArrayPointer;
 import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	ReturnsValue value;
@@ -23,7 +24,7 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 
 	@Override
 	public Object get(Object container, VariableContext f,
-			RuntimeExecutable<?> main) {
+			RuntimeExecutable<?> main) throws RuntimePascalException {
 		int index = -1;
 		try {
 			index = ((Number) value.get_value(f, main)).intValue();
@@ -43,7 +44,7 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 
 	@Override
 	public VariableBoxer create_pointer(Object container,
-			VariableContext context, RuntimeExecutable<?> main) {
+			VariableContext context, RuntimeExecutable<?> main) throws RuntimePascalException {
 		return new ArrayPointer(container, ((Number) value.get_value(context,
 				main)).intValue());
 	}
@@ -55,7 +56,7 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 
 	@Override
 	public void set(Object container, VariableContext context,
-			RuntimeExecutable<?> main, Object input) {
+			RuntimeExecutable<?> main, Object input) throws RuntimePascalException {
 		int index = ((Number) value.get_value(context, main)).intValue();
 		if (container instanceof StringBuilder) {
 			((StringBuilder) container).setCharAt(index, (Character) input);

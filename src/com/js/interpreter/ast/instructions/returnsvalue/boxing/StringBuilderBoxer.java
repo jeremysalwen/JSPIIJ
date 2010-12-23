@@ -6,6 +6,7 @@ import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class StringBuilderBoxer implements ReturnsValue {
 	public StringBuilderBoxer(ReturnsValue s) {
@@ -20,7 +21,7 @@ public class StringBuilderBoxer implements ReturnsValue {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) {
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		return s.get_value(f, main).toString();
 	}
 

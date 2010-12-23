@@ -7,6 +7,7 @@ import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.SubvarIdentifier;
 
 public class CreatePointer implements ReturnsValue {
@@ -38,7 +39,7 @@ public class CreatePointer implements ReturnsValue {
 
 	}
 
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) {
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		Object value;
 		if (container == null) {
 			value = f;

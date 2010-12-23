@@ -1,13 +1,14 @@
 package com.js.interpreter.runtime;
 
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
 public abstract class VariableContext implements ContainsVariables {
-	protected abstract Object getLocalVar(String name);
+	protected abstract Object getLocalVar(String name) throws RuntimePascalException;
 
 	protected abstract boolean setLocalVar(String name, Object val);
 
-	public Object get_var(String name) {
+	public Object get_var(String name) throws RuntimePascalException {
 		Object result = this.getLocalVar(name);
 		VariableContext parentcontext = getParentContext();
 		if (result == null && parentcontext != null) {

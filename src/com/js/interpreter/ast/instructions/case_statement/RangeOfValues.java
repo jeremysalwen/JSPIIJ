@@ -5,6 +5,7 @@ import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.tokens.OperatorTypes;
 
 public class RangeOfValues implements CaseCondition {
@@ -17,7 +18,7 @@ public class RangeOfValues implements CaseCondition {
 		this.higher = higher;
 	}
 
-	public boolean fits(RuntimeExecutable<?> main,VariableContext f, Object value) {
+	public boolean fits(RuntimeExecutable<?> main,VariableContext f, Object value) throws RuntimePascalException {
 		ConstantAccess access = new ConstantAccess(value);
 		BinaryOperatorEvaluation greater_than_lower = new BinaryOperatorEvaluation(
 				access, lower, OperatorTypes.GREATEREQ);

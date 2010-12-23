@@ -32,6 +32,7 @@ import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.FunctionOnStack;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ReturnsValue_SubvarIdentifier;
 import com.js.interpreter.runtime.variables.String_SubvarIdentifier;
 import com.js.interpreter.runtime.variables.VariableIdentifier;
@@ -151,7 +152,7 @@ public class FunctionDeclaration extends AbstractFunction {
 
 	@Override
 	public Object call(VariableContext parentcontext,
-			RuntimeExecutable<?> main, Object[] arguments) {
+			RuntimeExecutable<?> main, Object[] arguments) throws RuntimePascalException{
 		if (this.program instanceof Library) {
 			parentcontext = main.getLibrary((Library) this.program);
 		}

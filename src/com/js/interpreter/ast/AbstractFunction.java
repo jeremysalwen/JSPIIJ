@@ -9,6 +9,7 @@ import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public abstract class AbstractFunction {
 
@@ -39,9 +40,10 @@ public abstract class AbstractFunction {
 	 *            The program context.
 	 * @param arguments
 	 * @return The return value of the called function.
+	 * @throws RuntimePascalException 
 	 */
 	public abstract Object call(VariableContext parentcontext,
-			RuntimeExecutable<?> main, Object[] arguments);
+			RuntimeExecutable<?> main, Object[] arguments) throws RuntimePascalException;
 
 	/**
 	 * 

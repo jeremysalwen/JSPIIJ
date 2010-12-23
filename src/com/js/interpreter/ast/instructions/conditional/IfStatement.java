@@ -5,6 +5,7 @@ import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class IfStatement implements Executable {
 	ReturnsValue condition;
@@ -24,7 +25,7 @@ public class IfStatement implements Executable {
 		this.instruction = instruction;
 	}
 
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) {
+	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		if (((Boolean) (condition.get_value(f, null))).booleanValue()) {
 			return instruction.execute(f, main);
 		} else {

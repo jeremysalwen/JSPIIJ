@@ -5,9 +5,10 @@ import java.util.Map;
 
 import com.js.interpreter.ast.codeunit.ExecutableCodeUnit;
 import com.js.interpreter.ast.codeunit.Library;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public abstract class RuntimeExecutable<parent extends ExecutableCodeUnit>
-		extends RuntimeCodeUnit<parent> implements Runnable {
+		extends RuntimeCodeUnit<parent> {
 	Map<Library, RuntimeLibrary> RuntimeLibs = new HashMap<Library, RuntimeLibrary>();
 
 	public RuntimeLibrary getLibrary(Library l) {
@@ -18,5 +19,7 @@ public abstract class RuntimeExecutable<parent extends ExecutableCodeUnit>
 		}
 		return result;
 	}
-	
+
+	public abstract void run() throws RuntimePascalException;
+
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class FunctionOnStack extends VariableContext {
 	public HashMap<String, Object> local_variables = new HashMap<String, Object>();
@@ -23,7 +24,7 @@ public class FunctionOnStack extends VariableContext {
 			Object[] arguments) {
 		this.prototype = declaration;
 		this.parentContext = parentContext;
-		this.main=main;
+		this.main = main;
 		if (prototype.local_variables != null) {
 			for (VariableDeclaration v : prototype.local_variables) {
 				v.initialize(local_variables);
@@ -46,12 +47,12 @@ public class FunctionOnStack extends VariableContext {
 		this.prototype = declaration;
 	}
 
-	public Object execute() {
+	public Object execute() throws RuntimePascalException {
 		prototype.instructions.execute(this, main);
 		return local_variables.get("result");
 	}
 
-	public Object getLocalVar(String name) {
+	public Object getLocalVar(String name) throws RuntimePascalException {
 		if (local_variables.containsKey(name)) {
 			return local_variables.get(name);
 		} else if (reference_variables.containsKey(name)) {

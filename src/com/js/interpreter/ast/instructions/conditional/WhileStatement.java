@@ -5,6 +5,7 @@ import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class WhileStatement implements Executable {
 	ReturnsValue condition;
@@ -16,7 +17,7 @@ public class WhileStatement implements Executable {
 		this.command = command;
 	}
 
-	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) {
+	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) throws RuntimePascalException {
 		while_loop: while ((Boolean) condition.get_value(f, main)) {
 			switch (command.execute(f,main)) {
 			case BREAK:

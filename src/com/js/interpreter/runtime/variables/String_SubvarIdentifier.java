@@ -6,6 +6,7 @@ import com.js.interpreter.runtime.ContainsVariablesPointer;
 import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class String_SubvarIdentifier implements SubvarIdentifier {
 	String s;
@@ -20,7 +21,7 @@ public class String_SubvarIdentifier implements SubvarIdentifier {
 	}
 
 	@Override
-	public Object get(Object container, VariableContext context, RuntimeExecutable<?> main) {
+	public Object get(Object container, VariableContext context, RuntimeExecutable<?> main) throws RuntimePascalException {
 		return ((ContainsVariables) container).get_var(s);
 	}
 

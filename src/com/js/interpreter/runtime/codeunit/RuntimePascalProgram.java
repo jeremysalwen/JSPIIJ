@@ -4,6 +4,7 @@ import com.js.interpreter.ast.codeunit.PascalProgram;
 import com.js.interpreter.ast.codeunit.RunMode;
 import com.js.interpreter.runtime.FunctionOnStack;
 import com.js.interpreter.runtime.VariableContext;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class RuntimePascalProgram extends RuntimeExecutable<PascalProgram> {
 
@@ -21,7 +22,7 @@ public class RuntimePascalProgram extends RuntimeExecutable<PascalProgram> {
 	}
 
 	@Override
-	public Object getLocalVar(String name) {
+	public Object getLocalVar(String name) throws RuntimePascalException {
 		Object result = super.getLocalVar(name);
 		if (result != null) {
 			return result;
@@ -34,7 +35,7 @@ public class RuntimePascalProgram extends RuntimeExecutable<PascalProgram> {
 		return main.setLocalVar(name, value);
 	}
 
-	public void run() {
+	public void run() throws RuntimePascalException{
 		this.mode = RunMode.running;
 		main = new FunctionOnStack(this, this, program.main, new Object[0]);
 		main.execute();

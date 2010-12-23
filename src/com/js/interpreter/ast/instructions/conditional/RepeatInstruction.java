@@ -5,6 +5,7 @@ import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class RepeatInstruction implements Executable {
 	Executable command;
@@ -16,7 +17,7 @@ public class RepeatInstruction implements Executable {
 		this.condition = condition;
 	}
 
-	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) {
+	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) throws RuntimePascalException {
 		do_loop: do {
 			switch (command.execute(f,main)) {
 			case BREAK:

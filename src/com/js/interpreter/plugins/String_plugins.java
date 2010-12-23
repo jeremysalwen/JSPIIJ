@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import com.js.interpreter.ast.PascalPlugin;
 import com.js.interpreter.runtime.VariableBoxer;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class String_plugins implements PascalPlugin {
 
@@ -36,7 +37,7 @@ public class String_plugins implements PascalPlugin {
 		return s.substring(ifrom, ifrom + count);
 	}
 
-	public static void delete(VariableBoxer<StringBuilder> s, int ifrom, int count) {
+	public static void delete(VariableBoxer<StringBuilder> s, int ifrom, int count) throws RuntimePascalException {
 		s.set(s.get().delete(ifrom-1, ifrom+count-1));
 	}
 
@@ -97,7 +98,7 @@ public class String_plugins implements PascalPlugin {
 	}
 
 	public static void insert(String toinsert,
-			VariableBoxer<StringBuilder> reciever, int pos) {
+			VariableBoxer<StringBuilder> reciever, int pos) throws RuntimePascalException {
 		reciever.set(reciever.get().insert(pos-1,toinsert));
 	}
 
@@ -205,11 +206,11 @@ public class String_plugins implements PascalPlugin {
 		return s.startsWith(prefix);
 	}
 
-	public static char strget(VariableBoxer<StringBuilder> s, int index) {
+	public static char strget(VariableBoxer<StringBuilder> s, int index) throws RuntimePascalException {
 		return s.get().charAt(index);
 	}
 
-	public static void strset(char c, int index, VariableBoxer<StringBuilder> s) {
+	public static void strset(char c, int index, VariableBoxer<StringBuilder> s) throws RuntimePascalException {
 		
 		s.get().setCharAt(index, c);
 		s.set(s.get());

@@ -5,12 +5,13 @@ import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class CaseInstruction implements Executable {
 	ReturnsValue switch_value;
 	CasePossibility[] possibilies;
 
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) {
+	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		Object value = switch_value.get_value(f, main);
 		int index = -1;
 		for (int i = 0; i < possibilies.length; i++) {

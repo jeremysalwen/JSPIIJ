@@ -5,6 +5,7 @@ import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.VariableIdentifier;
 
 public class VariableAccess implements ReturnsValue {
@@ -14,7 +15,7 @@ public class VariableAccess implements ReturnsValue {
 		this.variable_name = name;
 	}
 
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) {
+	public Object get_value(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
 		return variable_name.get_value(f, main);
 	}
 

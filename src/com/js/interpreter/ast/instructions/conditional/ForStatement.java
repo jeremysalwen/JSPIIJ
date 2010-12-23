@@ -9,6 +9,7 @@ import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.VariableIdentifier;
 import com.js.interpreter.tokens.OperatorTypes;
 
@@ -29,7 +30,7 @@ public class ForStatement implements Executable {
 		this.command = command;
 	}
 
-	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) {
+	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) throws RuntimePascalException {
 		ConstantAccess last_value = new ConstantAccess(last.get_value(f, null));
 		VariableAccess get_temp_var = new VariableAccess(temp_var);
 		new VariableSet(temp_var, first).execute(f,main);

@@ -10,6 +10,7 @@ import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 	LineInfo lineinfo;
@@ -55,7 +56,7 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 	}
 
 	public Object get_variable_holder(VariableContext context,
-			RuntimeExecutable<?> main) {
+			RuntimeExecutable<?> main) throws RuntimePascalException {
 		Object v = context;
 		for (int i = 0; i < size() - 1; i++) {
 			SubvarIdentifier index = get(i);
@@ -65,13 +66,13 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 	}
 
 	public void set_value(VariableContext context, RuntimeExecutable<?> main,
-			Object val) {
+			Object val) throws RuntimePascalException {
 		zero_length_check();
 		Object variable_holder = get_variable_holder(context, main);
 		get(size() - 1).set(variable_holder, context, main, val);
 	}
 
-	public Object get_value(VariableContext context, RuntimeExecutable<?> main) {
+	public Object get_value(VariableContext context, RuntimeExecutable<?> main) throws RuntimePascalException {
 		zero_length_check();
 		Object var_holder = get_variable_holder(context, main);
 		return get(size() - 1).get(var_holder, context, main);
