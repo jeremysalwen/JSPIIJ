@@ -27,9 +27,6 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 			RuntimeExecutable<?> main) throws RuntimePascalException {
 		int index = -1;
 		Object indexvalue = value.get_value(f, main);
-		if(!(indexvalue instanceof Number)) {
-			throw new 
-		}
 		index = ((Number) indexvalue).intValue();
 
 		if (container instanceof StringBuilder) {
