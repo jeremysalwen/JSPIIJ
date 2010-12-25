@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.conditional;
 
+import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.VariableSet;
@@ -14,7 +15,7 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.VariableIdentifier;
 import com.js.interpreter.tokens.OperatorTypes;
 
-public class ForStatement implements Executable {
+public class ForStatement extends DebuggableExecutable {
 	VariableIdentifier temp_var;
 
 	ReturnsValue first;
@@ -34,10 +35,10 @@ public class ForStatement implements Executable {
 	}
 
 	@Override
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		VariableAccess get_temp_var = new VariableAccess(temp_var, line);
-		new VariableSet(temp_var, first, line).execute(f, main);
+		new VariableSet(temp_var, first, line).executeImpl(f, main);
 		BinaryOperatorEvaluation less_than_last = new BinaryOperatorEvaluation(
 				get_temp_var, last, OperatorTypes.LESSEQ, this.line);
 		VariableSet increment_temp = new VariableSet(temp_var,
@@ -45,7 +46,7 @@ public class ForStatement implements Executable {
 						1, this.line), OperatorTypes.PLUS, this.line),
 				this.line);
 
-		while_loop: while (((Boolean) less_than_last.get_value(f, null))
+		while_loop: while (((Boolean) less_than_last.getValueImpl(f, null))
 				.booleanValue()) {
 			switch (command.execute(f, main)) {
 			case RETURN:
@@ -53,7 +54,7 @@ public class ForStatement implements Executable {
 			case BREAK:
 				break while_loop;
 			}
-			increment_temp.execute(f, main);
+			increment_temp.executeImpl(f, main);
 		}
 		return ExecutionResult.NONE;
 	}

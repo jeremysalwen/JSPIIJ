@@ -24,7 +24,7 @@ public class MultipleValues implements CaseCondition {
 		ConstantAccess access = new ConstantAccess(value,line);
 		for (ReturnsValue v : values) {
 			if ((Boolean) new BinaryOperatorEvaluation(v, access,
-					OperatorTypes.EQUALS,line).get_value(f, main)) {
+					OperatorTypes.EQUALS,line).getValueImpl(f, main)) {
 				return true;
 			}
 		}

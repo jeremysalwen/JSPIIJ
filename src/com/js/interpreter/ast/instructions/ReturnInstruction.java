@@ -5,7 +5,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class ReturnInstruction implements Executable {
+public class ReturnInstruction extends DebuggableExecutable {
 LineInfo line;
 public ReturnInstruction(LineInfo line) {
 	this.line=line;
@@ -15,7 +15,7 @@ public ReturnInstruction(LineInfo line) {
 		return line;
 	}
 	@Override
-	public ExecutionResult execute(VariableContext f,RuntimeExecutable<?> main) throws RuntimePascalException {
+	public ExecutionResult executeImpl(VariableContext f,RuntimeExecutable<?> main) throws RuntimePascalException {
 		return ExecutionResult.RETURN;
 	}
 

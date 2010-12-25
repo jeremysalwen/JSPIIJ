@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.case_statement;
 
+import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.linenumber.LineInfo;
@@ -7,7 +8,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class CasePossibility implements Executable {
+public class CasePossibility extends DebuggableExecutable {
 	/**
 	 * This class represents a line in a case statement.
 	 */
@@ -31,7 +32,7 @@ public class CasePossibility implements Executable {
 	 * @return Whether or not it has broken.
 	 */
 	@Override
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		for_loop: for (Executable e : commands) {
 			switch (e.execute(f, main)) {

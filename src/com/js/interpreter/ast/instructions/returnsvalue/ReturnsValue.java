@@ -9,7 +9,7 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public interface ReturnsValue {
-	public abstract Object get_value(VariableContext f,
+	public abstract Object getValue(VariableContext f,
 			RuntimeExecutable<?> main) throws RuntimePascalException;
 
 	public abstract RuntimeType get_type(FunctionDeclaration f)

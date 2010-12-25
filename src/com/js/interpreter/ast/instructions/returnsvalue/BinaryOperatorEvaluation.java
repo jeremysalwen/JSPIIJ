@@ -3,6 +3,7 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -13,7 +14,7 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.tokens.OperatorTypes;
 
-public class BinaryOperatorEvaluation implements ReturnsValue {
+public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 	OperatorTypes operator_type;
 
 	ReturnsValue operon1;
@@ -35,11 +36,11 @@ public class BinaryOperatorEvaluation implements ReturnsValue {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		try {
-			Object value1 = operon1.get_value(f, main);
-			Object value2 = operon2.get_value(f, main);
+			Object value1 = operon1.getValue(f, main);
+			Object value2 = operon2.getValue(f, main);
 			/*
 			 * TODO: seperate the different type operations into different
 			 * classes so there is no runtime type checking.

@@ -1,6 +1,7 @@
 package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
 import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
@@ -9,7 +10,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class StringBoxer implements ReturnsValue {
+public class StringBoxer extends DebuggableReturnsValue {
 
 	public StringBoxer(ReturnsValue tobox) {
 		this.s = tobox;
@@ -28,9 +29,9 @@ public class StringBoxer implements ReturnsValue {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
-		return new StringBuilder(s.get_value(f, main).toString());
+		return new StringBuilder(s.getValue(f, main).toString());
 	}
 
 }

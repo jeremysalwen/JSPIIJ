@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.linenumber.LineInfo;
@@ -16,7 +17,7 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.exception.internal.PluginReflectionException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
-public class FunctionCall implements ReturnsValue, Executable {
+public class FunctionCall extends DebuggableExecutableReturnsValue {
 	AbstractFunction function;
 
 	ReturnsValue[] arguments;
@@ -38,11 +39,11 @@ public class FunctionCall implements ReturnsValue, Executable {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		Object[] values = new Object[arguments.length];
 		for (int i = 0; i < values.length; i++) {
-			values[i] = arguments[i].get_value(f, main);
+			values[i] = arguments[i].getValue(f, main);
 			if (function.isByReference(i)) {
 				continue;
 			}
@@ -72,9 +73,9 @@ public class FunctionCall implements ReturnsValue, Executable {
 	}
 
 	@Override
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
-			throws RuntimePascalException {
-		get_value(f, main);
+	public ExecutionResult executeImpl(VariableContext f,
+			RuntimeExecutable<?> main) throws RuntimePascalException {
+		getValueImpl(f, main);
 		return ExecutionResult.NONE;
 	}
 

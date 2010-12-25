@@ -29,7 +29,7 @@ public class RangeOfValues implements CaseCondition {
 				access, lower, OperatorTypes.GREATEREQ, line);
 		BinaryOperatorEvaluation less_than_higher = new BinaryOperatorEvaluation(
 				access, higher, OperatorTypes.LESSEQ, line);
-		return (Boolean) greater_than_lower.get_value(f, main)
-				&& (Boolean) less_than_higher.get_value(f, main);
+		return (Boolean) greater_than_lower.getValueImpl(f, main)
+				&& (Boolean) less_than_higher.getValueImpl(f, main);
 	}
 }

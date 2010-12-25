@@ -26,7 +26,7 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	public Object get(Object container, VariableContext f,
 			RuntimeExecutable<?> main) throws RuntimePascalException {
 		int index = -1;
-		Object indexvalue = value.get_value(f, main);
+		Object indexvalue = value.getValue(f, main);
 		index = ((Number) indexvalue).intValue();
 
 		if (container instanceof StringBuilder) {
@@ -41,7 +41,7 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	public VariableBoxer create_pointer(Object container,
 			VariableContext context, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
-		return new ArrayPointer(container, ((Number) value.get_value(context,
+		return new ArrayPointer(container, ((Number) value.getValue(context,
 				main)).intValue());
 	}
 
@@ -54,7 +54,7 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	public void set(Object container, VariableContext context,
 			RuntimeExecutable<?> main, Object input)
 			throws RuntimePascalException {
-		int index = ((Number) value.get_value(context, main)).intValue();
+		int index = ((Number) value.getValue(context, main)).intValue();
 		if (container instanceof StringBuilder) {
 			((StringBuilder) container).setCharAt(index, (Character) input);
 		} else {

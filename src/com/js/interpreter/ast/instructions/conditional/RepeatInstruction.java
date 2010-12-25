@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.conditional;
 
+import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -8,7 +9,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class RepeatInstruction implements Executable {
+public class RepeatInstruction extends DebuggableExecutable {
 	Executable command;
 
 	ReturnsValue condition;
@@ -27,7 +28,7 @@ public class RepeatInstruction implements Executable {
 	}
 
 	@Override
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		do_loop: do {
 			switch (command.execute(f, main)) {
@@ -36,7 +37,7 @@ public class RepeatInstruction implements Executable {
 			case RETURN:
 				return ExecutionResult.RETURN;
 			}
-		} while (!((Boolean) condition.get_value(f, main)));
+		} while (!((Boolean) condition.getValue(f, main)));
 		return ExecutionResult.NONE;
 	}
 }

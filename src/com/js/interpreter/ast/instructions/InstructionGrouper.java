@@ -8,7 +8,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class InstructionGrouper implements Executable {
+public class InstructionGrouper extends DebuggableExecutable {
 	List<Executable> instructions;
 	LineInfo line;
 
@@ -27,15 +27,9 @@ public class InstructionGrouper implements Executable {
 	}
 
 	@Override
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		forloop: for (Executable e : instructions) {
-			/*
-			 * switch (f.parentContext.mode) { case stopped: return
-			 * ExecutionResult.RETURN; case paused: while (f.parentContext.mode
-			 * == RunMode.paused) { try { f.parentContext.wait(); } catch
-			 * (InterruptedException e1) { } } }
-			 */
 			switch (e.execute(f, main)) {
 			case BREAK:
 				break forloop;

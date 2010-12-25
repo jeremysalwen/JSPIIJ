@@ -1,6 +1,7 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
 import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -10,7 +11,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class BuiltinTypeConversion implements ReturnsValue {
+public class BuiltinTypeConversion extends DebuggableReturnsValue {
 	DeclaredType output;
 	ReturnsValue input;
 	LineInfo line;
@@ -42,9 +43,9 @@ public class BuiltinTypeConversion implements ReturnsValue {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
-		Object value = input.get_value(f, main);
+		Object value = input.getValue(f, main);
 		if (output == JavaClassBasedType.Integer) {
 			return ((Number) value).intValue();
 		}

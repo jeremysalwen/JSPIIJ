@@ -11,7 +11,7 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.tokens.OperatorTypes;
 
-public class UnaryOperatorEvaluation implements ReturnsValue {
+public class UnaryOperatorEvaluation extends DebuggableReturnsValue {
 	public OperatorTypes type;
 
 	public ReturnsValue operon;
@@ -30,10 +30,10 @@ public class UnaryOperatorEvaluation implements ReturnsValue {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		try {
-			Object value = operon.get_value(f, main);
+			Object value = operon.getValue(f, main);
 			return type.operate(value);
 		} catch (OperationNotSupportedException e) {
 			throw new RuntimeException(e);

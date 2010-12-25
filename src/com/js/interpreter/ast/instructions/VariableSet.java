@@ -7,7 +7,7 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.VariableIdentifier;
 
-public class VariableSet implements Executable {
+public class VariableSet extends DebuggableExecutable {
 	VariableIdentifier name;
 
 	ReturnsValue value;
@@ -19,8 +19,8 @@ public class VariableSet implements Executable {
 	}
 
 	@Override
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
-		name.set_value(f,main,value.get_value(f, main));
+	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+		name.set_value(f,main,value.getValue(f, main));
 		return ExecutionResult.NONE;
 	}
 

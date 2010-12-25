@@ -1,13 +1,14 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
 import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 
-public class ConstantAccess implements ReturnsValue {
+public class ConstantAccess extends DebuggableReturnsValue {
 	final Object constant_value;
 	final LineInfo line;
 
@@ -22,7 +23,7 @@ public class ConstantAccess implements ReturnsValue {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main) {
+	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main) {
 		return constant_value;
 	}
 

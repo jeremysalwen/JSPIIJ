@@ -9,7 +9,7 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.VariableIdentifier;
 
-public class VariableAccess implements ReturnsValue {
+public class VariableAccess extends DebuggableReturnsValue {
 	public VariableIdentifier variable_name;
 	LineInfo line;
 
@@ -24,7 +24,7 @@ public class VariableAccess implements ReturnsValue {
 	}
 
 	@Override
-	public Object get_value(VariableContext f, RuntimeExecutable<?> main)
+	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		return variable_name.get_value(f, main);
 	}

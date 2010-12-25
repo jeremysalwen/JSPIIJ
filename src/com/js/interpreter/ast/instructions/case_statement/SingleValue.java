@@ -22,7 +22,7 @@ public class SingleValue implements CaseCondition {
 	public boolean fits(RuntimeExecutable<?> main, VariableContext f,
 			Object value) throws RuntimePascalException {
 		return (Boolean) new BinaryOperatorEvaluation(new ConstantAccess(value,
-				line), this.value, OperatorTypes.EQUALS, line).get_value(f,
+				line), this.value, OperatorTypes.EQUALS, line).getValueImpl(f,
 				main);
 	}
 

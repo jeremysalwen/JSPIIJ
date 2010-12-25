@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.conditional;
 
+import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -8,7 +9,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class WhileStatement implements Executable {
+public class WhileStatement extends DebuggableExecutable {
 	ReturnsValue condition;
 
 	Executable command;
@@ -22,9 +23,9 @@ public class WhileStatement implements Executable {
 	}
 
 	@Override
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
-		while_loop: while ((Boolean) condition.get_value(f, main)) {
+		while_loop: while ((Boolean) condition.getValue(f, main)) {
 			switch (command.execute(f, main)) {
 			case BREAK:
 				break while_loop;

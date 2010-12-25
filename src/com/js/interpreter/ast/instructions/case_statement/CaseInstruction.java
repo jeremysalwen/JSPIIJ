@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.case_statement;
 
+import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -8,7 +9,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class CaseInstruction implements Executable {
+public class CaseInstruction extends DebuggableExecutable {
 	ReturnsValue switch_value;
 	CasePossibility[] possibilies;
 	LineInfo line;
@@ -18,9 +19,9 @@ public class CaseInstruction implements Executable {
 	}
 
 	@Override
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
-		Object value = switch_value.get_value(f, main);
+		Object value = switch_value.getValue(f, main);
 		int index = -1;
 		for (int i = 0; i < possibilies.length; i++) {
 			if (possibilies[i].condition.fits(main, f, value)) {
@@ -29,7 +30,7 @@ public class CaseInstruction implements Executable {
 			}
 		}
 		while_loop: while (index < possibilies.length) {
-			switch (possibilies[index++].execute(f, main)) {
+			switch (possibilies[index++].executeImpl(f, main)) {
 			case BREAK:
 				break while_loop;
 			case RETURN:
