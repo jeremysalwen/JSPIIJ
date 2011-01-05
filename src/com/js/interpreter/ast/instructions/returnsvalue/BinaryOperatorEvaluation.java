@@ -11,6 +11,7 @@ import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.PascalArithmeticException;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.tokens.OperatorTypes;
 
@@ -84,6 +85,8 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 			}
 		} catch (OperationNotSupportedException e) {
 			throw new RuntimeException(e);
+		} catch (ArithmeticException e) {
+			throw new PascalArithmeticException(this.line, e);
 		}
 	}
 

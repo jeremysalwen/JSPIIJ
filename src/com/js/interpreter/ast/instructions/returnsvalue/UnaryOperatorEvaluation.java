@@ -8,6 +8,7 @@ import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.PascalArithmeticException;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.tokens.OperatorTypes;
 
@@ -37,6 +38,8 @@ public class UnaryOperatorEvaluation extends DebuggableReturnsValue {
 			return type.operate(value);
 		} catch (OperationNotSupportedException e) {
 			throw new RuntimeException(e);
+		} catch (ArithmeticException e) {
+			throw new PascalArithmeticException(line, e);
 		}
 	}
 
