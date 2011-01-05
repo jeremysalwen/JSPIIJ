@@ -13,10 +13,10 @@ import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.returnsvalue.FunctionCall;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
-import com.js.interpreter.classgeneration.CustomTypeGenerator;
 import com.js.interpreter.exceptions.BadFunctionCallException;
 import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
+import com.js.interpreter.exceptions.GroupingException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.exceptions.UnrecognizedTypeException;
@@ -47,7 +47,6 @@ import com.js.interpreter.tokens.grouping.BaseGrouperToken;
 import com.js.interpreter.tokens.grouping.BeginEndToken;
 import com.js.interpreter.tokens.grouping.BracketedToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
-import com.js.interpreter.tokens.grouping.RecordToken;
 import com.js.interpreter.tokens.grouping.TypeToken;
 import com.js.interpreter.tokens.value.IntegerToken;
 import com.js.interpreter.tokens.value.ValueToken;
@@ -68,11 +67,7 @@ public abstract class CodeUnit {
 	 */
 	private ListMultimap<String, AbstractFunction> callable_functions;
 
-	private CustomTypeGenerator type_generator;
-
-	public CodeUnit(ListMultimap<String, AbstractFunction> functionTable,
-			CustomTypeGenerator type_generator) {
-		this.type_generator = type_generator;
+	public CodeUnit(ListMultimap<String, AbstractFunction> functionTable) {
 		constants = new HashMap<String, Object>();
 		callable_functions = functionTable;
 		custom_types = new HashMap<String, CustomType>();
@@ -82,9 +77,9 @@ public abstract class CodeUnit {
 
 	public CodeUnit(Reader program,
 			ListMultimap<String, AbstractFunction> functionTable,
-			String sourcename, List<ScriptSource> includeDirectories,
-			CustomTypeGenerator type_generator) throws ParsingException {
-		this(functionTable, type_generator);
+			String sourcename, List<ScriptSource> includeDirectories)
+			throws ParsingException {
+		this(functionTable);
 		Grouper grouper = new Grouper(program, sourcename, includeDirectories);
 		new Thread(grouper).start();
 		parse_tree(grouper.token_queue);
@@ -121,9 +116,6 @@ public abstract class CodeUnit {
 					is_procedure);
 			declaration = get_function_declaration(declaration);
 			declaration.parse_function_body(i);
-		} else if (next instanceof TypeToken) {
-			i.take();
-			add_custom_type_declaration(i);
 		} else if (next instanceof BeginEndToken) {
 			handleBeginEnd(i);
 		} else if (next instanceof VarToken) {
@@ -201,7 +193,7 @@ public abstract class CodeUnit {
 	}
 
 	public String get_word_value(GrouperToken i)
-			throws ExpectedAnotherTokenException {
+			throws ExpectedAnotherTokenException, GroupingException {
 		return get_word_value(i.take());
 	}
 
@@ -225,6 +217,9 @@ public abstract class CodeUnit {
 		if (s == "character" || s == "char") {
 			return JavaClassBasedType.Character;
 		}
+		if (s == "date") {
+			return JavaClassBasedType.Date;
+		}
 		DeclaredType type = typedefs.get(s);
 		if (type != null) {
 			return type;
@@ -238,7 +233,8 @@ public abstract class CodeUnit {
 	}
 
 	SubrangeType parseSubrangeType(GrouperToken i)
-			throws ExpectedTokenException, ExpectedAnotherTokenException {
+			throws ExpectedTokenException, ExpectedAnotherTokenException,
+			GroupingException {
 		int lower = ((IntegerToken) i.take()).value;
 		Token t = i.take();
 		if (!(t instanceof PeriodToken)) {
@@ -315,7 +311,7 @@ public abstract class CodeUnit {
 		for (AbstractFunction a : possibilities) {
 			converted = a.format_args(arguments, f);
 			if (converted != null) {
-				return new FunctionCall(a, converted,name.lineInfo);
+				return new FunctionCall(a, converted, name.lineInfo);
 			}
 			if (a.argumentTypes().length == arguments.size()) {
 				matching = true;
@@ -379,18 +375,4 @@ public abstract class CodeUnit {
 		}
 		return null;
 	}
-
-	private void add_custom_type_declaration(GrouperToken i) throws ParsingException {
-		CustomType result = new CustomType();
-		result.name = get_word_value(i);
-		Token next = i.take();
-		assert (next instanceof OperatorToken);
-		assert ((OperatorToken) next).type == OperatorTypes.EQUALS;
-		next = i.take();
-		assert (next instanceof RecordToken);
-		result.variable_types = get_variable_declarations((RecordToken) next);
-		custom_types.put(result.name, result);
-		type_generator.output_class(result);
-	}
-
 }

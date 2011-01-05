@@ -1,6 +1,8 @@
 package com.js.interpreter.exceptions;
 
-public class GroupingException extends RuntimeException {
+import com.js.interpreter.linenumber.LineInfo;
+
+public class GroupingException extends ParsingException {
 	/**
 	 * 
 	 */
@@ -12,7 +14,9 @@ public class GroupingException extends RuntimeException {
 				"Unfinished begin-end construct"), UNFINISHED_PARENS(
 				"You forgot to close your parentheses"), EXTRA_END_PARENS(
 				"You have an extra closing parenthesis"), EXTRA_END(
-				"You have an extra 'end' in your program"), ;
+				"You have an extra 'end' in your program"), UNFINISHED_CONSTRUCT(
+				"You forgot to complete the structure you started here"), IO_EXCEPTION(
+				"IOException occured while reading the input");
 		public String message;
 
 		grouping_exception_types(String message) {
@@ -20,14 +24,22 @@ public class GroupingException extends RuntimeException {
 		}
 	};
 
+	public Exception caused;
 	grouping_exception_types grouping_exception_type;
 
-	public GroupingException(grouping_exception_types t) {
+	public GroupingException(LineInfo line, grouping_exception_types t) {
+		super(line);
 		this.grouping_exception_type = t;
 	}
 
 	@Override
+	public String getMessage() {
+		return grouping_exception_type.message + ": " + ((caused == null) ? ""
+				: caused.getMessage());
+	}
+
+	@Override
 	public String toString() {
-		return grouping_exception_type.message;
+		return line + ":" + grouping_exception_type.message;
 	}
 }

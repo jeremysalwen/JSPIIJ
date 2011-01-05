@@ -13,6 +13,7 @@ import com.js.interpreter.exceptions.GroupingException.grouping_exception_types;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.startup.ScriptSource;
 import com.js.interpreter.tokens.EOF_Token;
+import com.js.interpreter.tokens.GroupingExceptionToken;
 import com.js.interpreter.tokens.OperatorToken;
 import com.js.interpreter.tokens.OperatorTypes;
 import com.js.interpreter.tokens.Token;
@@ -98,13 +99,13 @@ public class Grouper implements Runnable {
 
 	public void parse() {
 		OperatorTypes temp_type = null;
-		try {
-			do_loop_break: do {
-				GrouperToken top_of_stack = groupers.peek();
-				StreamTokenizer tokenizer = tokenizers.peek();
-				Token next_token = null;
+		do_loop_break: do {
+			GrouperToken top_of_stack = groupers.peek();
+			StreamTokenizer tokenizer = tokenizers.peek();
+			LineInfo line = new LineInfo(tokenizer.lineno(), sourcename);
+			Token next_token = null;
+			try {
 				int nextToken = tokenizer.nextToken();
-				LineInfo line = new LineInfo(tokenizer.lineno(), sourcename);
 				switch (nextToken) {
 				case StreamTokenizer.TT_EOF:
 					readers.pop().close();
@@ -135,8 +136,11 @@ public class Grouper implements Runnable {
 							groupers.pop();
 							continue do_loop_break;
 						} else {
-							throw new GroupingException(
-									grouping_exception_types.MISMATCHED_BEGIN_END);
+							top_of_stack
+									.put(new GroupingExceptionToken(
+											line,
+											grouping_exception_types.MISMATCHED_BEGIN_END));
+							return;
 						}
 					} else if (tokenizer.sval == "if") {
 						next_token = new IfToken(line);
@@ -234,8 +238,8 @@ public class Grouper implements Runnable {
 					break;
 				case '\'':
 					if (tokenizer.sval.length() == 1) {
-						next_token = new CharacterToken(line,
-								tokenizer.sval.charAt(0));
+						next_token = new CharacterToken(line, tokenizer.sval
+								.charAt(0));
 					} else {
 						next_token = new StringToken(line, tokenizer.sval);
 					}
@@ -247,11 +251,14 @@ public class Grouper implements Runnable {
 					continue do_loop_break;
 				case ')':
 					if (!(groupers.pop() instanceof ParenthesizedToken)) {
-						throw new GroupingException(
-								GroupingException.grouping_exception_types.MISMATCHED_PARENS);
+						top_of_stack.put(new GroupingExceptionToken(line,
+								grouping_exception_types.MISMATCHED_PARENS));
+						return;
+
 					} else if (groupers.size() == 0) {
-						throw new GroupingException(
-								GroupingException.grouping_exception_types.EXTRA_END_PARENS);
+						top_of_stack.put(new GroupingExceptionToken(line,
+								grouping_exception_types.EXTRA_END_PARENS));
+						return;
 					}
 					top_of_stack.put(new EOF_Token(line));
 					continue do_loop_break;
@@ -311,11 +318,13 @@ public class Grouper implements Runnable {
 					continue do_loop_break;
 				case ']':
 					if (!(groupers.pop() instanceof BracketedToken)) {
-						throw new GroupingException(
-								GroupingException.grouping_exception_types.MISMATCHED_BEGIN_END);
+						top_of_stack.put(new GroupingExceptionToken(line,
+								grouping_exception_types.MISMATCHED_BEGIN_END));
+						return;
 					} else if (groupers.size() == 0) {
-						throw new GroupingException(
-								GroupingException.grouping_exception_types.EXTRA_END_PARENS);
+						top_of_stack.put(new GroupingExceptionToken(line,
+								grouping_exception_types.EXTRA_END_PARENS));
+						return;
 					}
 					top_of_stack.put(new EOF_Token(line));
 					continue do_loop_break;
@@ -351,6 +360,7 @@ public class Grouper implements Runnable {
 					continue do_loop_break;
 				case '}':
 				}
+
 				if (temp_type != null) {
 					next_token = new OperatorToken(line, temp_type);
 					temp_type = null;
@@ -358,18 +368,30 @@ public class Grouper implements Runnable {
 				if (next_token != null) {
 					top_of_stack.put(next_token);
 				}
-			} while (true);
-		} catch (IOException e) {
-		}
+			} catch (IOException e) {
+				GroupingExceptionToken t = new GroupingExceptionToken(line,
+						grouping_exception_types.IO_EXCEPTION);
+				t.exception.caused = e;
+				top_of_stack.put(t);
+			}
+		} while (true);
 		if (groupers.size() != 1) {
-			if (groupers.peek() instanceof ParenthesizedToken) {
-				throw new GroupingException(
-						GroupingException.grouping_exception_types.UNFINISHED_PARENS);
-			} else if (groupers.peek() instanceof BeginEndToken) {
-				throw new GroupingException(
-						GroupingException.grouping_exception_types.UNFINISHED_BEGIN_END);
+			GrouperToken top_of_stack = groupers.peek();
+			if (top_of_stack instanceof ParenthesizedToken) {
+				top_of_stack.put(new GroupingExceptionToken(
+						top_of_stack.lineInfo,
+						grouping_exception_types.UNFINISHED_PARENS));
+				return;
+			} else if (top_of_stack instanceof BeginEndToken) {
+				top_of_stack.put(new GroupingExceptionToken(
+						top_of_stack.lineInfo,
+						grouping_exception_types.UNFINISHED_BEGIN_END));
+				return;
 			} else {
-				throw new GroupingException(null);
+				top_of_stack.put(new GroupingExceptionToken(
+						top_of_stack.lineInfo,
+						grouping_exception_types.UNFINISHED_CONSTRUCT));
+				return;
 			}
 		}
 	}

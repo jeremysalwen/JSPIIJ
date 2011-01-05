@@ -40,8 +40,7 @@ public class FileScriptSource implements ScriptSource {
 	public Reader read(String scriptname) {
 		try {
 			return new FileReader(new File(directory, scriptname));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		} catch (FileNotFoundException e) { 
 			return null;
 		}
 	}
