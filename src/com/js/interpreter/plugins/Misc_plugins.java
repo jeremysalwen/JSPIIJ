@@ -1,6 +1,7 @@
 package com.js.interpreter.plugins;
 
 import java.lang.reflect.Array;
+import java.util.Map;
 
 import com.js.interpreter.ast.PascalPlugin;
 import com.js.interpreter.plugins.annotations.ArrayBoundsInfo;
@@ -9,14 +10,15 @@ import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class Misc_plugins implements PascalPlugin {
+	
 	@MethodTypeData(info = { @ArrayBoundsInfo(starts = { 0 }, lengths = { 0 }) })
-	public long GetArrayLength(Object[] o) {
+	public static long GetArrayLength(Object[] o) {
 		return o.length;
 	}
 
 	@MethodTypeData(info = { @ArrayBoundsInfo(starts = { 0 }, lengths = { 0 }),
 			@ArrayBoundsInfo })
-	public void SetArrayLength(VariableBoxer<Object[]> a, int length) throws RuntimePascalException {
+	public static void SetArrayLength(VariableBoxer<Object[]> a, int length) throws RuntimePascalException {
 		Object[] old = a.get();
 		Class c = old.getClass().getComponentType();
 		Object[] result = (Object[]) Array.newInstance(c, length);
@@ -25,7 +27,12 @@ public class Misc_plugins implements PascalPlugin {
 	}
 
 	@MethodTypeData(info = { @ArrayBoundsInfo(starts = { 0 }, lengths = { 0 }) })
-	public int length(Object[] o) {
+	public static int length(Object[] o) {
 		return o.length;
+	}
+
+	@Override
+	public boolean instantiate(Map<String, Object> pluginargs) {
+		return true;
 	}
 }

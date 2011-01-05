@@ -3,6 +3,7 @@ package com.js.interpreter.plugins;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +12,10 @@ import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class String_plugins implements PascalPlugin {
+	@Override
+	public boolean instantiate(Map<String, Object> pluginargs) {
+		return true;
+	}
 
 	public static String between(String s1, String s2, String s) {
 		int startindex = s.indexOf(s1) + s1.length();
@@ -37,8 +42,9 @@ public class String_plugins implements PascalPlugin {
 		return s.substring(ifrom, ifrom + count);
 	}
 
-	public static void delete(VariableBoxer<StringBuilder> s, int ifrom, int count) throws RuntimePascalException {
-		s.set(s.get().delete(ifrom-1, ifrom+count-1));
+	public static void delete(VariableBoxer<StringBuilder> s, int ifrom,
+			int count) throws RuntimePascalException {
+		s.set(s.get().delete(ifrom - 1, ifrom + count - 1));
 	}
 
 	public static boolean endswith(String suffix, String tosearch) {
@@ -98,8 +104,9 @@ public class String_plugins implements PascalPlugin {
 	}
 
 	public static void insert(String toinsert,
-			VariableBoxer<StringBuilder> reciever, int pos) throws RuntimePascalException {
-		reciever.set(reciever.get().insert(pos-1,toinsert));
+			VariableBoxer<StringBuilder> reciever, int pos)
+			throws RuntimePascalException {
+		reciever.set(reciever.get().insert(pos - 1, toinsert));
 	}
 
 	public static int LastPosEx(String tofind, String findin, int from) {
@@ -118,15 +125,10 @@ public class String_plugins implements PascalPlugin {
 		return s.length();
 	}
 
-	public static String md5(String s) {
-		try {
-			MessageDigest digester = MessageDigest.getInstance("MD5");
-			digester.update(s.getBytes());
-			return new BigInteger(1, digester.digest()).toString(16);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public static String md5(String s) throws NoSuchAlgorithmException {
+		MessageDigest digester = MessageDigest.getInstance("MD5");
+		digester.update(s.getBytes());
+		return new BigInteger(1, digester.digest()).toString(16);
 	}
 
 	public static String padl(String topad, int size) {
@@ -206,12 +208,14 @@ public class String_plugins implements PascalPlugin {
 		return s.startsWith(prefix);
 	}
 
-	public static char strget(VariableBoxer<StringBuilder> s, int index) throws RuntimePascalException {
+	public static char strget(VariableBoxer<StringBuilder> s, int index)
+			throws RuntimePascalException {
 		return s.get().charAt(index);
 	}
 
-	public static void strset(char c, int index, VariableBoxer<StringBuilder> s) throws RuntimePascalException {
-		
+	public static void strset(char c, int index, VariableBoxer<StringBuilder> s)
+			throws RuntimePascalException {
+
 		s.get().setCharAt(index, c);
 		s.set(s.get());
 	}

@@ -12,11 +12,12 @@ public class IO_plugins implements PascalPlugin {
 		this.stdout = System.out;
 	}
 
-	public IO_plugins(Map<String, Object> arguments) {
+	public boolean instantiate(Map<String, Object> arguments) {
 		this.stdout = (PrintStream) arguments.get("stdout");
 		if (stdout == null) {
 			stdout = System.out;
 		}
+		return true;
 	}
 
 	/**

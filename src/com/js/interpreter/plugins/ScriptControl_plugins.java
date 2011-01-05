@@ -1,10 +1,14 @@
 package com.js.interpreter.plugins;
 
+import java.util.Map;
+
 import com.js.interpreter.ast.PascalPlugin;
 
 public class ScriptControl_plugins implements PascalPlugin {
 
-	public ScriptControl_plugins() {
+	@Override
+	public boolean instantiate(Map<String, Object> pluginargs) {
+		return true;
 	}
 
 	public static void sleep(int ms) {
@@ -20,11 +24,11 @@ public class ScriptControl_plugins implements PascalPlugin {
 		sleep(ms);
 	}
 
-	public void performException() {
-
+	public static void performException() {
+		throw new RuntimeException();
 	}
 
-	public void performException(String message) {
+	public static void performException(String message) {
 		throw new RuntimeException(message);
 	}
 }

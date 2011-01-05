@@ -1,5 +1,7 @@
 package com.js.interpreter.plugins;
 
+import java.util.Map;
+
 import com.js.interpreter.ast.PascalPlugin;
 
 public class Conversion_plugins implements PascalPlugin {
@@ -29,5 +31,10 @@ public class Conversion_plugins implements PascalPlugin {
 
 	public static char chr(int i) {
 		return (char) i;
+	}
+
+	@Override
+	public boolean instantiate(Map<String, Object> pluginargs) {
+		return true;
 	}
 }

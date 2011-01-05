@@ -1,5 +1,6 @@
 package com.js.interpreter.plugins;
 
+import java.util.Map;
 import java.util.Random;
 
 import com.js.interpreter.ast.PascalPlugin;
@@ -7,8 +8,9 @@ import com.js.interpreter.ast.PascalPlugin;
 public class Math_plugins implements PascalPlugin {
 	Random r;
 
-	public Math_plugins() {
+	public boolean instantiate(Map<String,Object> pluginargs) {
 		r = new Random();
+		return true;
 	}
 
 	public static int ceil(double d) {
