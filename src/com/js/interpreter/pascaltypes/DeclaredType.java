@@ -13,6 +13,7 @@ public abstract class DeclaredType {
 
 	public abstract Class toclass();
 
+	@SuppressWarnings("rawtypes")
 	public ArrayType get_type_array() {
 		return ((ArrayType) this);
 	}

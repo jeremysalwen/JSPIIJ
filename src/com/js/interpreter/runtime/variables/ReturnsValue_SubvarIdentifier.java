@@ -37,6 +37,7 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public VariableBoxer create_pointer(Object container,
 			VariableContext context, RuntimeExecutable<?> main)
