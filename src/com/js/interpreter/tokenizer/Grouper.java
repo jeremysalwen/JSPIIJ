@@ -397,13 +397,6 @@ public class Grouper implements Runnable {
 	}
 
 	void addInclude(String name) throws FileNotFoundException {
-		try {
-			Reader r = new FileReader(name);
-			tokenizers.push(getTokenizer(r));
-			readers.push(r);
-			return;
-		} catch (IOException e) {
-		}
 		for (ScriptSource s : searchDirectories) {
 			Reader r = s.read(name);
 			if (r != null) {
