@@ -60,13 +60,7 @@ public class Interface {
 				includeSearchPath);
 	}
 
-	/**
-	 * Implementation only. Subject to change
-	 * 
-	 * @throws ParsingException
-	 */
-	public static void executeScript(String sourcename, Reader in,
-			ExecutionMode runmode, List<ClassLoader> classloaders,
+	public static void executeScript(String sourcename, Reader in, List<ClassLoader> classloaders,
 			List<ScriptSource> includeSearchPath,
 			List<ScriptSource> librarySearchPath,
 			Map<String, Object> context) throws ParsingException,
