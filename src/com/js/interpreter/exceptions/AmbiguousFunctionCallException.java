@@ -1,7 +1,6 @@
 package com.js.interpreter.exceptions;
 
 import com.js.interpreter.ast.AbstractFunction;
-import com.js.interpreter.ast.instructions.returnsvalue.FunctionCall;
 import com.js.interpreter.linenumber.LineInfo;
 
 public class AmbiguousFunctionCallException extends ParsingException {

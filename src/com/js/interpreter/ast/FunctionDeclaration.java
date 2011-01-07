@@ -22,7 +22,6 @@ import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.UnaryOperatorEvaluation;
 import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.BadOperationTypeException;
-import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
 import com.js.interpreter.exceptions.NonIntegerIndexException;

@@ -23,7 +23,6 @@ import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.exceptions.UnrecognizedTypeException;
-import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;

@@ -5,8 +5,6 @@ import java.util.Arrays;
 
 import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.FunctionDeclaration;
-import com.js.interpreter.ast.instructions.DebuggableExecutable;
-import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;

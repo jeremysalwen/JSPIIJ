@@ -1,7 +1,6 @@
 package com.js.interpreter.ast.instructions.case_statement;
 
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
-import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.linenumber.LineInfo;

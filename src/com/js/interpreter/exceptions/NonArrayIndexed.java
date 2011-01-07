@@ -2,8 +2,6 @@ package com.js.interpreter.exceptions;
 
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.RuntimeType;
-import com.js.interpreter.runtime.exception.internal.InternalInterpreterException;
 
 public class NonArrayIndexed extends ParsingException {
 	DeclaredType t;

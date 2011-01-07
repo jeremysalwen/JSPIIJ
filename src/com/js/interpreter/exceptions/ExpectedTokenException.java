@@ -1,6 +1,5 @@
 package com.js.interpreter.exceptions;
 
-import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.tokens.Token;
 
 public class ExpectedTokenException extends ParsingException {
