@@ -59,6 +59,9 @@ public class RuntimeType implements ArgumentType {
 	@Override
 	public ReturnsValue convertArgType(Iterator<ReturnsValue> args,
 			FunctionDeclaration f) throws ParsingException {
+		if (!args.hasNext()) {
+			return null;
+		}
 		return convert(args.next(), f);
 	}
 
