@@ -84,6 +84,8 @@ public class FunctionDeclaration extends AbstractFunction {
 
 	public DeclaredType return_type;
 
+	public LineInfo line;
+
 	/* These go together ----> */
 	public String[] argument_names;
 
@@ -95,6 +97,7 @@ public class FunctionDeclaration extends AbstractFunction {
 
 	public FunctionDeclaration(CodeUnit p, GrouperToken i, boolean is_procedure)
 			throws ParsingException {
+		this.line = i.peek().lineInfo;
 		this.program = p;
 		instructions = new InstructionGrouper(i.peek_no_EOF().lineInfo);
 		name = program.get_word_value(i);
@@ -123,7 +126,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			i.take();
 		} else {
 			if (instructions != null) {
-				throw new OverridingFunctionException(next.lineInfo, this);
+				throw new OverridingFunctionException(this, i.lineInfo);
 			}
 			instructions = get_next_command(i);
 		}

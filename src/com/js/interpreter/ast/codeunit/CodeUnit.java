@@ -18,9 +18,11 @@ import com.js.interpreter.exceptions.BadFunctionCallException;
 import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.GroupingException;
+import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.exceptions.UnrecognizedTypeException;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -102,9 +104,13 @@ public abstract class CodeUnit {
 		i.take();
 	}
 
-	private FunctionDeclaration get_function_declaration(FunctionDeclaration f) {
+	private FunctionDeclaration get_function_declaration(FunctionDeclaration f)
+			throws OverridingFunctionException {
 		for (AbstractFunction g : callable_functions.get(f.name)) {
 			if (f.headerMatches(g)) {
+				if (!(g instanceof FunctionDeclaration)) {
+					throw new OverridingFunctionException(g, f);
+				}
 				return (FunctionDeclaration) g;
 			}
 		}
