@@ -39,11 +39,12 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 public class Interface {
 	public static void main(String[] args) {
 		try {
-			executeScript("tmp", new FileReader("test.pas"),
-					new ArrayList<ClassLoader>(0), new ArrayList<ScriptSource>(
-							0), new ArrayList<ScriptSource>(0),
-					new CustomTypeGenerator(new File("/tmp/")),
-					new HashMap<String, Object>());
+			List<ClassLoader> classloaders = new ArrayList<ClassLoader>();
+			classloaders.add(ClassLoader.getSystemClassLoader());
+			executeScript("tmp", new FileReader("test.pas"), classloaders,
+					new ArrayList<ScriptSource>(0),
+					new ArrayList<ScriptSource>(0), new CustomTypeGenerator(
+							new File("/tmp/")), new HashMap<String, Object>());
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
