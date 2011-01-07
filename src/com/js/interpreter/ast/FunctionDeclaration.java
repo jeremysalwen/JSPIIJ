@@ -8,6 +8,7 @@ import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.InstructionGrouper;
+import com.js.interpreter.ast.instructions.NopInstruction;
 import com.js.interpreter.ast.instructions.VariableSet;
 import com.js.interpreter.ast.instructions.case_statement.CaseInstruction;
 import com.js.interpreter.ast.instructions.conditional.DowntoForStatement;
@@ -21,6 +22,7 @@ import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.UnaryOperatorEvaluation;
 import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.BadOperationTypeException;
+import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
 import com.js.interpreter.exceptions.NonIntegerIndexException;
@@ -219,13 +221,21 @@ public class FunctionDeclaration extends AbstractFunction {
 					}
 				}
 
-				assert (next instanceof ColonToken);
+				if (!(next instanceof ColonToken)) {
+					throw new ExpectedTokenException(":", next);
+				}
 				DeclaredType type;
 				type = program.get_next_pascal_type(arguments_token);
 
 				while (j > 0) {
 					types_list.add(new RuntimeType(type, is_varargs));
 					j--;
+				}
+				if (arguments_token.hasNext()) {
+					next = arguments_token.take();
+					if (!(next instanceof SemicolonToken)) {
+						throw new ExpectedTokenException(";", next);
+					}
 				}
 			}
 		}
@@ -332,8 +342,8 @@ public class FunctionDeclaration extends AbstractFunction {
 					identifier.add(new String_SubvarIdentifier(
 							((WordToken) next).name));
 				} else {
-					throw new ExpectedTokenException(next.lineInfo,
-							"[Variable Identifier]");
+					throw new ExpectedTokenException("[Variable Identifier]",
+							next);
 				}
 			} else if (i.peek() instanceof BracketedToken) {
 				identifier.add(new ReturnsValue_SubvarIdentifier(
@@ -424,8 +434,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			if (next instanceof DowntoToken) {
 				downto = true;
 			} else if (!(next instanceof ToToken)) {
-				throw new ExpectedTokenException(next.lineInfo,
-						"[To] or [Downto]");
+				throw new ExpectedTokenException("[To] or [Downto]", next);
 			}
 			ReturnsValue last_value = getNextExpression(token_iterator);
 			next = token_iterator.take();
@@ -451,7 +460,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			}
 			next = token_iterator.take();
 			if (!(next instanceof UntilToken)) {
-				throw new ExpectedTokenException(next.lineInfo, "until");
+				throw new ExpectedTokenException("until", next);
 			}
 			ReturnsValue condition = getNextExpression(token_iterator);
 			return new RepeatInstruction(command, condition, initialline);
@@ -475,7 +484,7 @@ public class FunctionDeclaration extends AbstractFunction {
 						nametoken, token_iterator);
 				next = token_iterator.take();
 				if (!(next instanceof AssignmentToken)) {
-					throw new ExpectedTokenException(next.lineInfo, ":=");
+					throw new ExpectedTokenException(":=", next);
 				}
 				ReturnsValue value_to_assign = getNextExpression(token_iterator);
 				DeclaredType output_type = identifier.get_type(this).declType;
@@ -495,7 +504,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			ReturnsValue switchvalue = getNextExpression(grouper);
 			next = grouper.take();
 			if (!(next instanceof OfToken)) {
-				throw new ExpectedTokenException(next.lineInfo, "of");
+				throw new ExpectedTokenException("of", next);
 			}
 			CaseInstruction inst = new CaseInstruction(initialline);
 			next = grouper.take();
@@ -503,6 +512,8 @@ public class FunctionDeclaration extends AbstractFunction {
 				ReturnsValue possibility = getNextExpression(grouper);
 
 			}
+		} else if (next instanceof SemicolonToken) {
+			return new NopInstruction(next.lineInfo);
 		}
 		return program.handleUnrecognizedToken(next, token_iterator);
 	}

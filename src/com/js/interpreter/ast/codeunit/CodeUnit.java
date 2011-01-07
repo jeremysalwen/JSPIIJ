@@ -143,7 +143,7 @@ public abstract class CodeUnit {
 				String name = get_word_value(i);
 				next = i.take();
 				if (!(next instanceof OperatorToken && ((OperatorToken) next).type == OperatorTypes.EQUALS)) {
-					throw new ExpectedTokenException(next.lineInfo, "=");
+					throw new ExpectedTokenException("=", next);
 				}
 				typedefs.put(name, get_next_pascal_type(i));
 				this.assert_next_semicolon(i);
@@ -171,7 +171,7 @@ public abstract class CodeUnit {
 				next = i.take();
 			} while (next instanceof CommaToken);
 			if (!(next instanceof ColonToken)) {
-				throw new ExpectedTokenException(next.lineInfo, ":");
+				throw new ExpectedTokenException(":", next);
 			}
 			DeclaredType type;
 			type = get_next_pascal_type(i);
@@ -191,7 +191,7 @@ public abstract class CodeUnit {
 	public void assert_next_semicolon(GrouperToken i) throws ParsingException {
 		Token next = i.peek();
 		if (!(next instanceof SemicolonToken)) {
-			throw new ExpectedTokenException(next.lineInfo, ";");
+			throw new ExpectedTokenException(";", next);
 		}
 		i.take();
 	}
@@ -239,11 +239,12 @@ public abstract class CodeUnit {
 	}
 
 	SubrangeType parseSubrangeType(GrouperToken i)
-			throws ExpectedTokenException, ExpectedAnotherTokenException, GroupingException {
+			throws ExpectedTokenException, ExpectedAnotherTokenException,
+			GroupingException {
 		int lower = ((IntegerToken) i.take()).value;
 		Token t = i.take();
 		if (!(t instanceof PeriodToken)) {
-			throw new ExpectedTokenException(t.lineInfo, "..");
+			throw new ExpectedTokenException("..", t);
 		}
 		t = i.take();
 		if (t instanceof PeriodToken) {
@@ -262,7 +263,7 @@ public abstract class CodeUnit {
 		} else {
 			Token next = i.take();
 			if (!(next instanceof OfToken)) {
-				throw new ExpectedTokenException(next.lineInfo, "of");
+				throw new ExpectedTokenException("of", next);
 			}
 			elementType = get_next_pascal_type(i);
 		}
@@ -283,12 +284,11 @@ public abstract class CodeUnit {
 			} else if (next instanceof WordToken) {
 				elementType = get_basic_type((WordToken) next);
 			} else {
-				throw new ExpectedTokenException(next.lineInfo,
-						"[Type Identifier]");
+				throw new ExpectedTokenException("[Type Identifier]", next);
 			}
 			return new ArrayType<DeclaredType>(elementType, new SubrangeType());
 		} else {
-			throw new ExpectedTokenException(next.lineInfo, "of");
+			throw new ExpectedTokenException("of", next);
 		}
 	}
 
@@ -301,7 +301,7 @@ public abstract class CodeUnit {
 		}
 		i.take();
 		if (!(next instanceof WordToken)) {
-			throw new ExpectedTokenException(next.lineInfo, "[Type Identifier]");
+			throw new ExpectedTokenException("[Type Identifier]", next);
 		}
 		return get_basic_type((WordToken) next);
 	}
@@ -316,7 +316,7 @@ public abstract class CodeUnit {
 		for (AbstractFunction a : possibilities) {
 			converted = a.format_args(arguments, f);
 			if (converted != null) {
-				return new FunctionCall(a, converted,name.lineInfo);
+				return new FunctionCall(a, converted, name.lineInfo);
 			}
 			if (a.argumentTypes().length == arguments.size()) {
 				matching = true;
@@ -342,7 +342,7 @@ public abstract class CodeUnit {
 			Token equals = i.take();
 			if (!(equals instanceof OperatorToken)
 					|| ((OperatorToken) equals).type != OperatorTypes.EQUALS) {
-				throw new ExpectedTokenException(constname.lineInfo, "=");
+				throw new ExpectedTokenException("=", constname);
 			}
 			Token value = i.take();
 			if (!(value instanceof ValueToken)) {/*
@@ -350,7 +350,7 @@ public abstract class CodeUnit {
 												 * parsing for more complex
 												 * expressions.
 												 */
-				throw new ExpectedTokenException(value.lineInfo, "[value]");
+				throw new ExpectedTokenException("[explicit value]", value);
 			}
 			ValueToken val = (ValueToken) value;
 			this.constants.put(constname.name, val.getValue());
@@ -381,7 +381,8 @@ public abstract class CodeUnit {
 		return null;
 	}
 
-	private void add_custom_type_declaration(GrouperToken i) throws ParsingException {
+	private void add_custom_type_declaration(GrouperToken i)
+			throws ParsingException {
 		CustomType result = new CustomType();
 		result.name = get_word_value(i);
 		Token next = i.take();

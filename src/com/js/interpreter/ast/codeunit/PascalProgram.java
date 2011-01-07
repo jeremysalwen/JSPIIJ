@@ -54,7 +54,7 @@ public class PascalProgram extends ExecutableCodeUnit {
 		}
 		main.instructions = main.get_next_command(i);
 		if (!(i.peek() instanceof PeriodToken)) {
-			throw new ExpectedTokenException(i.peek().lineInfo, ".");
+			throw new ExpectedTokenException(".", i.peek());
 		}
 		i.take();
 	}
