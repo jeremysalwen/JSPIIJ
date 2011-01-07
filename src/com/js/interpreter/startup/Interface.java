@@ -31,51 +31,72 @@ import com.js.interpreter.ast.PluginDeclaration;
 import com.js.interpreter.ast.codeunit.ExecutableCodeUnit;
 import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.ast.codeunit.PascalProgram;
+import com.js.interpreter.classgeneration.CustomTypeGenerator;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class Interface {
+	public static void main(String[] args) {
+		try {
+			executeScript("tmp", new FileReader("test.pas"),
+					new ArrayList<ClassLoader>(0), new ArrayList<ScriptSource>(
+							0), new ArrayList<ScriptSource>(0),
+					new CustomTypeGenerator(new File("/tmp/")),
+					new HashMap<String, Object>());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParsingException e) {
+			System.err.println(e.line + ":" + e.getMessage());
+		} catch (RuntimePascalException e) {
+			System.err.println(e.line + ":" + e.getMessage());
+		}
+	}
 
 	public static ListMultimap<String, AbstractFunction> loadFunctionTable(
 			List<ClassLoader> classloaders, Map<String, Object> context,
 			List<ScriptSource> includeSearchPath,
-			List<ScriptSource> librarySearchPath) throws ParsingException {
+			List<ScriptSource> librarySearchPath,
+			CustomTypeGenerator typegenerator) throws ParsingException {
 		ListMultimap<String, AbstractFunction> functionTable = ArrayListMultimap
 				.create();
 		loadPlugins(functionTable, classloaders, context);
-		loadLibraries(functionTable, librarySearchPath, includeSearchPath);
+		loadLibraries(functionTable, librarySearchPath, includeSearchPath,
+				typegenerator);
 		return functionTable;
 	}
-
 
 	public static PascalProgram loadPascal(String sourcename, Reader in,
 			List<ClassLoader> classloaders,
 			List<ScriptSource> includeSearchPath,
 			List<ScriptSource> librarySearchPath,
-			Map<String, Object> context) throws ParsingException {
+			CustomTypeGenerator typeGenerator, Map<String, Object> context)
+			throws ParsingException {
 		ListMultimap<String, AbstractFunction> functiontable = loadFunctionTable(
-				classloaders, context, includeSearchPath, librarySearchPath);
+				classloaders, context, includeSearchPath, librarySearchPath,
+				typeGenerator);
 		return new PascalProgram(in, functiontable, sourcename,
-				includeSearchPath);
+				includeSearchPath, typeGenerator);
 	}
 
-	public static void executeScript(String sourcename, Reader in, List<ClassLoader> classloaders,
+	public static void executeScript(String sourcename, Reader in,
+			List<ClassLoader> classloaders,
 			List<ScriptSource> includeSearchPath,
 			List<ScriptSource> librarySearchPath,
-			Map<String, Object> context) throws ParsingException,
-			RuntimePascalException {
+			CustomTypeGenerator typeGenerator, Map<String, Object> context)
+			throws ParsingException, RuntimePascalException {
 		ListMultimap<String, AbstractFunction> functionTable = loadFunctionTable(
-				classloaders, context, includeSearchPath, librarySearchPath);
+				classloaders, context, includeSearchPath, librarySearchPath,
+				typeGenerator);
 		ExecutableCodeUnit code;
 		// long beforetime = System.currentTimeMillis();
-			code = new PascalProgram(in, functionTable, sourcename,
-					includeSearchPath);
+		code = new PascalProgram(in, functionTable, sourcename,
+				includeSearchPath, typeGenerator);
 		// System.out.println("Parse time=" + (System.currentTimeMillis() -
 		// beforetime)+" ms");
 
-		RuntimeExecutable<PascalProgram> runtime = code
-					.run();
+		RuntimeExecutable<?> runtime = code.run();
 
 		runtime.run();
 	}
@@ -83,14 +104,15 @@ public class Interface {
 	public static void loadLibraries(
 			ListMultimap<String, AbstractFunction> functionTable,
 			List<ScriptSource> librarySearchPath,
-			List<ScriptSource> includeSearchPath) throws ParsingException {
+			List<ScriptSource> includeSearchPath,
+			CustomTypeGenerator type_generator) throws ParsingException {
 		for (ScriptSource directory : librarySearchPath) {
 			for (String sourcefile : directory.list()) {
 				Reader in = directory.read(sourcefile);
 				if (in != null) {
 					// Automatically adds its definitions to the function table.
 					new Library(in, functionTable, sourcefile,
-							includeSearchPath);
+							includeSearchPath, type_generator);
 				} else {
 					System.err.println("Warning, unable to read library "
 							+ sourcefile);
