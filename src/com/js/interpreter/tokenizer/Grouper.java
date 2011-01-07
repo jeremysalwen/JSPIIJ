@@ -111,8 +111,29 @@ public class Grouper implements Runnable {
 					readers.pop().close();
 					tokenizers.pop();
 					if (tokenizers.size() == 0) {
-						top_of_stack.put(new EOF_Token(line));
-						break do_loop_break;
+						Token end = null;
+						if (groupers.size() != 1) {
+							if (top_of_stack instanceof ParenthesizedToken) {
+								end = new GroupingExceptionToken(
+										top_of_stack.lineInfo,
+										grouping_exception_types.UNFINISHED_PARENS);
+							} else if (top_of_stack instanceof BeginEndToken) {
+								end = new GroupingExceptionToken(
+										top_of_stack.lineInfo,
+										grouping_exception_types.UNFINISHED_BEGIN_END);
+							} else {
+								end = new GroupingExceptionToken(
+										top_of_stack.lineInfo,
+										grouping_exception_types.UNFINISHED_CONSTRUCT);
+							}
+							for (GrouperToken t : groupers) {
+								t.put(end);
+							}
+							return;
+						} else {
+							top_of_stack.put(new EOF_Token(line));
+						}
+						return;
 					} else {
 						continue do_loop_break;
 					}
@@ -375,25 +396,6 @@ public class Grouper implements Runnable {
 				top_of_stack.put(t);
 			}
 		} while (true);
-		if (groupers.size() != 1) {
-			GrouperToken top_of_stack = groupers.peek();
-			if (top_of_stack instanceof ParenthesizedToken) {
-				top_of_stack.put(new GroupingExceptionToken(
-						top_of_stack.lineInfo,
-						grouping_exception_types.UNFINISHED_PARENS));
-				return;
-			} else if (top_of_stack instanceof BeginEndToken) {
-				top_of_stack.put(new GroupingExceptionToken(
-						top_of_stack.lineInfo,
-						grouping_exception_types.UNFINISHED_BEGIN_END));
-				return;
-			} else {
-				top_of_stack.put(new GroupingExceptionToken(
-						top_of_stack.lineInfo,
-						grouping_exception_types.UNFINISHED_CONSTRUCT));
-				return;
-			}
-		}
 	}
 
 	void addInclude(String name) throws FileNotFoundException {

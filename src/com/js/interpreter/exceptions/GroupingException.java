@@ -34,8 +34,8 @@ public class GroupingException extends ParsingException {
 
 	@Override
 	public String getMessage() {
-		return grouping_exception_type.message + ": " + ((caused == null) ? ""
-				: caused.getMessage());
+		return grouping_exception_type.message
+				+ ((caused == null) ? ("") : (": " + caused.getMessage()));
 	}
 
 	@Override
