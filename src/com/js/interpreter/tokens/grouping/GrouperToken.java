@@ -25,9 +25,7 @@ public abstract class GrouperToken extends Token {
 				break;
 			}
 		}
-		if (next instanceof GroupingExceptionToken) {
-			throw ((GroupingExceptionToken) next).exception;
-		}
+		exceptioncheck(next);
 		return next;
 	}
 
@@ -38,6 +36,12 @@ public abstract class GrouperToken extends Token {
 
 	public boolean hasNext() throws GroupingException {
 		return !(get_next() instanceof EOF_Token);
+	}
+
+	private void exceptioncheck(Token t) throws GroupingException {
+		if (t instanceof GroupingExceptionToken) {
+			throw ((GroupingExceptionToken) t).exception;
+		}
 	}
 
 	public void put(Token t) {
@@ -59,12 +63,11 @@ public abstract class GrouperToken extends Token {
 		while (true) {
 			try {
 				next = queue.take();
+				exceptioncheck(next);
+				return result;
 			} catch (InterruptedException e) {
-				continue;
 			}
-			break;
 		}
-		return result;
 	}
 
 	public Token peek() throws GroupingException {

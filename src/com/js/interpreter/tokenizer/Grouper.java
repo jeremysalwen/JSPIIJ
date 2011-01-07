@@ -1,7 +1,6 @@
 package com.js.interpreter.tokenizer;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
@@ -31,7 +30,6 @@ import com.js.interpreter.tokens.basic.ForwardToken;
 import com.js.interpreter.tokens.basic.FunctionToken;
 import com.js.interpreter.tokens.basic.IfToken;
 import com.js.interpreter.tokens.basic.OfToken;
-import com.js.interpreter.tokens.basic.PerformActionToken;
 import com.js.interpreter.tokens.basic.PeriodToken;
 import com.js.interpreter.tokens.basic.ProcedureToken;
 import com.js.interpreter.tokens.basic.ProgramToken;
@@ -50,9 +48,6 @@ import com.js.interpreter.tokens.grouping.GrouperToken;
 import com.js.interpreter.tokens.grouping.ParenthesizedToken;
 import com.js.interpreter.tokens.grouping.RecordToken;
 import com.js.interpreter.tokens.grouping.TypeToken;
-import com.js.interpreter.tokens.section.SectionIdentifierToken;
-import com.js.interpreter.tokens.section.SectionToken;
-import com.js.interpreter.tokens.section.Sections;
 import com.js.interpreter.tokens.value.BooleanToken;
 import com.js.interpreter.tokens.value.CharacterToken;
 import com.js.interpreter.tokens.value.DoubleToken;
@@ -97,6 +92,12 @@ public class Grouper implements Runnable {
 		this.searchDirectories = searchDirectories;
 	}
 
+	void TossException(GroupingExceptionToken t) {
+		for (GrouperToken g : groupers) {
+			g.put(t);
+		}
+	}
+
 	public void parse() {
 		OperatorTypes temp_type = null;
 		do_loop_break: do {
@@ -114,20 +115,17 @@ public class Grouper implements Runnable {
 						Token end = null;
 						if (groupers.size() != 1) {
 							if (top_of_stack instanceof ParenthesizedToken) {
-								end = new GroupingExceptionToken(
+								TossException(new GroupingExceptionToken(
 										top_of_stack.lineInfo,
-										grouping_exception_types.UNFINISHED_PARENS);
+										grouping_exception_types.UNFINISHED_PARENS));
 							} else if (top_of_stack instanceof BeginEndToken) {
-								end = new GroupingExceptionToken(
+								TossException(new GroupingExceptionToken(
 										top_of_stack.lineInfo,
-										grouping_exception_types.UNFINISHED_BEGIN_END);
+										grouping_exception_types.UNFINISHED_BEGIN_END));
 							} else {
-								end = new GroupingExceptionToken(
+								TossException(new GroupingExceptionToken(
 										top_of_stack.lineInfo,
-										grouping_exception_types.UNFINISHED_CONSTRUCT);
-							}
-							for (GrouperToken t : groupers) {
-								t.put(end);
+										grouping_exception_types.UNFINISHED_CONSTRUCT));
 							}
 							return;
 						} else {
@@ -150,17 +148,15 @@ public class Grouper implements Runnable {
 						groupers.push(tmp);
 						continue do_loop_break;
 					} else if (tokenizer.sval == "end") {
-						if (groupers.size() > 0
-								&& groupers.peek() instanceof BeginEndToken
+						if (groupers.peek() instanceof BeginEndToken
 								|| groupers.peek() instanceof RecordToken) {
 							top_of_stack.put(new EOF_Token(line));
 							groupers.pop();
 							continue do_loop_break;
 						} else {
-							top_of_stack
-									.put(new GroupingExceptionToken(
-											line,
-											grouping_exception_types.MISMATCHED_BEGIN_END));
+							TossException(new GroupingExceptionToken(
+									line,
+									grouping_exception_types.MISMATCHED_BEGIN_END));
 							return;
 						}
 					} else if (tokenizer.sval == "if") {
@@ -213,22 +209,6 @@ public class Grouper implements Runnable {
 						next_token = new CaseToken(line);
 					} else if (tokenizer.sval == "of") {
 						next_token = new OfToken(line);
-					} else if (tokenizer.sval == "logic") {
-						next_token = new SectionIdentifierToken(line,
-								Sections.LOGIC);
-					} else if (tokenizer.sval == "action") {
-						next_token = new SectionIdentifierToken(line,
-								Sections.ACTION);
-					} else if (tokenizer.sval == "exception") {
-						next_token = new SectionIdentifierToken(line,
-								Sections.EXCEPTION);
-					} else if (tokenizer.sval == "logging") {
-						next_token = new SectionIdentifierToken(line,
-								Sections.LOGGING);
-					} else if (tokenizer.sval == "section") {
-						next_token = new SectionToken(line);
-					} else if (tokenizer.sval == "performaction") {
-						next_token = new PerformActionToken(line);
 					} else if (tokenizer.sval == "const") {
 						next_token = new ConstToken(line);
 					} else if (tokenizer.sval == "false") {
@@ -272,12 +252,12 @@ public class Grouper implements Runnable {
 					continue do_loop_break;
 				case ')':
 					if (!(groupers.pop() instanceof ParenthesizedToken)) {
-						top_of_stack.put(new GroupingExceptionToken(line,
+						TossException(new GroupingExceptionToken(line,
 								grouping_exception_types.MISMATCHED_PARENS));
 						return;
 
 					} else if (groupers.size() == 0) {
-						top_of_stack.put(new GroupingExceptionToken(line,
+						TossException(new GroupingExceptionToken(line,
 								grouping_exception_types.EXTRA_END_PARENS));
 						return;
 					}
@@ -339,11 +319,11 @@ public class Grouper implements Runnable {
 					continue do_loop_break;
 				case ']':
 					if (!(groupers.pop() instanceof BracketedToken)) {
-						top_of_stack.put(new GroupingExceptionToken(line,
+						TossException(new GroupingExceptionToken(line,
 								grouping_exception_types.MISMATCHED_BEGIN_END));
 						return;
 					} else if (groupers.size() == 0) {
-						top_of_stack.put(new GroupingExceptionToken(line,
+						TossException(new GroupingExceptionToken(line,
 								grouping_exception_types.EXTRA_END_PARENS));
 						return;
 					}
@@ -393,7 +373,8 @@ public class Grouper implements Runnable {
 				GroupingExceptionToken t = new GroupingExceptionToken(line,
 						grouping_exception_types.IO_EXCEPTION);
 				t.exception.caused = e;
-				top_of_stack.put(t);
+				TossException(t);
+				return;
 			}
 		} while (true);
 	}
