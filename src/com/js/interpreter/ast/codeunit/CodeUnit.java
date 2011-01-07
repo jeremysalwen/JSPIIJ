@@ -14,6 +14,7 @@ import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.returnsvalue.FunctionCall;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.classgeneration.CustomTypeGenerator;
+import com.js.interpreter.exceptions.AmbiguousFunctionCallException;
 import com.js.interpreter.exceptions.BadFunctionCallException;
 import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
@@ -318,18 +319,29 @@ public abstract class CodeUnit {
 		List<AbstractFunction> possibilities = callable_functions.get(name.name
 				.toLowerCase());
 		boolean matching = false;
-		ReturnsValue[] converted;
+		FunctionCall result = null;
+		AbstractFunction chosen = null;
 		for (AbstractFunction a : possibilities) {
-			converted = a.format_args(arguments, f);
+			ReturnsValue[] converted = a.format_args(arguments, f);
 			if (converted != null) {
-				return new FunctionCall(a, converted, name.lineInfo);
+				if (result != null) {
+					throw new AmbiguousFunctionCallException(name.lineInfo,
+							chosen, a);
+				} else {
+					chosen = a;
+					result = new FunctionCall(a, converted, name.lineInfo);
+				}
 			}
 			if (a.argumentTypes().length == arguments.size()) {
 				matching = true;
 			}
 		}
-		throw new BadFunctionCallException(name.lineInfo, name.name,
-				!possibilities.isEmpty(), matching);
+		if (result != null) {
+			return result;
+		} else {
+			throw new BadFunctionCallException(name.lineInfo, name.name,
+					!possibilities.isEmpty(), matching);
+		}
 	}
 
 	protected void prepareForParsing() {
