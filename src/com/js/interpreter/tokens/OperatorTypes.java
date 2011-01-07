@@ -1,6 +1,5 @@
 package com.js.interpreter.tokens;
 
-
 import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.exceptions.BadOperationTypeException;
@@ -372,6 +371,12 @@ public enum OperatorTypes {
 	},
 	EQUALS(false) {
 		@Override
+		public Object operate(char c1, char c2)
+				throws OperationNotSupportedException {
+			return c1 == c2;
+		}
+
+		@Override
 		public Object operate(boolean b1, boolean b2)
 				throws OperationNotSupportedException {
 			return b1 == b2;
@@ -387,6 +392,12 @@ public enum OperatorTypes {
 		public Object operate(long l1, long l2)
 				throws OperationNotSupportedException {
 			return l1 == l2;
+		}
+
+		@Override
+		public Object operate(String s1, String s2)
+				throws OperationNotSupportedException {
+			return s1.equals(s2);
 		}
 
 		@Override
@@ -456,6 +467,12 @@ public enum OperatorTypes {
 	},
 	NOTEQUAL(false) {
 		@Override
+		public Object operate(char c1, char c2)
+				throws OperationNotSupportedException {
+			return c1 != c2;
+		}
+
+		@Override
 		public Object operate(boolean b1, boolean b2)
 				throws OperationNotSupportedException {
 			return b1 != b2;
@@ -495,6 +512,12 @@ public enum OperatorTypes {
 
 	OperatorTypes(boolean can_be_unary) {
 		this.can_be_unary = can_be_unary;
+	}
+
+	public Object operate(char c1, char c2)
+			throws OperationNotSupportedException {
+		throw new OperationNotSupportedException(this
+				+ " does not support operating on character types");
 	}
 
 	public Object operate(double d1, double d2)
@@ -603,7 +626,10 @@ public enum OperatorTypes {
 				&& two == JavaClassBasedType.Boolean) {
 			return JavaClassBasedType.Boolean;
 		}
-
+		if (one == JavaClassBasedType.Character
+				&& two == JavaClassBasedType.Character) {
+			return JavaClassBasedType.Character;
+		}
 		return null;
 	}
 

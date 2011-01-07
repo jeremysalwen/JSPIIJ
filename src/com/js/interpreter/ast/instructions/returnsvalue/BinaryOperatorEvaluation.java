@@ -79,6 +79,11 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 				boolean b1 = (Boolean) value1;
 				boolean b2 = (Boolean) value2;
 				return operator_type.operate(b1, b2);
+			} else if (value1 instanceof Character
+					&& value2 instanceof Character) {
+				char c1 = (Character) value1;
+				char c2 = (Character) value2;
+				return operator_type.operate(c1, c2);
 			} else {
 
 				return null;
