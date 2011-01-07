@@ -26,6 +26,7 @@ import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
 import com.js.interpreter.exceptions.NonIntegerIndexException;
+import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
@@ -122,8 +123,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			i.take();
 		} else {
 			if (instructions != null) {
-				throw new ParsingException(next.lineInfo,
-						"Multiple definitions of " + toString());
+				throw new OverridingFunctionException(next.lineInfo, this);
 			}
 			instructions = get_next_command(i);
 		}
@@ -190,7 +190,7 @@ public class FunctionDeclaration extends AbstractFunction {
 
 	@Override
 	public String toString() {
-		return super.toString() + ",function";
+		return super.toString();
 	}
 
 	private void get_arguments_for_declaration(GrouperToken i,
