@@ -13,7 +13,7 @@ public class GroupingException extends ParsingException {
 				"Mismatched begin-end construct"), UNFINISHED_BEGIN_END(
 				"Unfinished begin-end construct"), UNFINISHED_PARENS(
 				"You forgot to close your parentheses"), EXTRA_END_PARENS(
-				"You have an extra closing parenthesis"), EXTRA_END(
+				"You have an extra closing parenthesis or bracket"), EXTRA_END(
 				"You have an extra 'end' in your program"), UNFINISHED_CONSTRUCT(
 				"You forgot to complete the structure you started here"), IO_EXCEPTION(
 				"IOException occured while reading the input");
