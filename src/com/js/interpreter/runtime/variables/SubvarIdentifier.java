@@ -1,5 +1,6 @@
 package com.js.interpreter.runtime.variables;
 
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.VariableContext;
@@ -15,6 +16,7 @@ public interface SubvarIdentifier {
 	public VariableBoxer create_pointer(Object container,
 			VariableContext context, RuntimeExecutable<?> main) throws RuntimePascalException;
 
-	public DeclaredType getType(DeclaredType containerType);
+	public DeclaredType getType(DeclaredType containerType)
+			throws ParsingException;
 
 }

@@ -3,7 +3,10 @@ package com.js.interpreter.runtime.variables;
 import java.lang.reflect.Array;
 
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.NonArrayIndexed;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.runtime.ArrayPointer;
 import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.VariableContext;
@@ -47,8 +50,14 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	}
 
 	@Override
-	public DeclaredType getType(DeclaredType containerType) {
-		return (containerType.get_type_array()).element_type;
+	public DeclaredType getType(DeclaredType containerType)
+			throws ParsingException {
+		if (containerType.isarray()) {
+			return (containerType.get_type_array()).element_type;
+		} else if (containerType == JavaClassBasedType.StringBuilder) {
+			return JavaClassBasedType.Character;
+		}
+		throw new NonArrayIndexed(null, containerType);
 	}
 
 	@Override

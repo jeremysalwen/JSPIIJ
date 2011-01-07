@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
@@ -20,8 +21,7 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 		lineinfo = info;
 	}
 
-	public RuntimeType get_type(FunctionDeclaration f)
-			throws NoSuchFunctionOrVariableException {
+	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
 		String ident = get(0).toString();
 		DeclaredType type = f.get_variable_type(ident);
 		if (type == null) {
