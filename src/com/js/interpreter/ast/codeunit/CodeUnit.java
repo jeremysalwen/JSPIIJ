@@ -65,7 +65,7 @@ public abstract class CodeUnit {
 
 	public Map<String, Object> constants;
 
-	public List<VariableDeclaration> UnitVarDefs;
+	public List<VariableDeclaration> UnitVarDefs=new ArrayList<VariableDeclaration>();
 	/*
 	 * both plugins and functions
 	 */
@@ -383,13 +383,11 @@ public abstract class CodeUnit {
 
 	protected void handleGloablVarDeclaration(
 			List<VariableDeclaration> declarations) {
-		UnitVarDefs = declarations;
+		UnitVarDefs.addAll(declarations);
 	}
 
 	public DeclaredType getGlobalVarType(String name) {
-		if (UnitVarDefs == null) {
-			return null;
-		}
+
 		for (VariableDeclaration v : UnitVarDefs) {
 			if (v.name.equals(name)) {
 				return v.type;
