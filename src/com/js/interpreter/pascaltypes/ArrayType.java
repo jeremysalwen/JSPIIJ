@@ -28,6 +28,21 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	 * This basically tells if the types are assignable from each other
 	 * according to Pascal.
 	 */
+	public boolean superset(DeclaredType obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj instanceof ArrayType) {
+			ArrayType<?> o = (ArrayType<?>) obj;
+			if (o.element_type.equals(element_type)) {
+				if (this.bounds.contains(o.bounds)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public boolean equals(DeclaredType obj) {
 		if (this == obj) {
@@ -95,7 +110,8 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	@Override
 	public ReturnsValue convert(ReturnsValue value, FunctionDeclaration f) throws ParsingException{
 		RuntimeType other = value.get_type(f);
-		return this.equals(other.declType) ? value : null;
+		
+		return this.superset(other.declType) ? value : null;
 	}
 
 	@Override

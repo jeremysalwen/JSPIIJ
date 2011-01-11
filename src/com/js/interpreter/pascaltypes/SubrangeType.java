@@ -34,7 +34,16 @@ public class SubrangeType {
 		SubrangeType other = (SubrangeType) obj;
 		return lower == other.lower && size == other.size;
 	}
-
+	public boolean contains(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof SubrangeType))
+			return false;
+		SubrangeType other = (SubrangeType) obj;
+		return lower <= other.lower && (lower+size) >= (other.lower+other.size);
+	}
 	@Override
 	public String toString() {
 		return lower + ".." + (lower + size - 1);
