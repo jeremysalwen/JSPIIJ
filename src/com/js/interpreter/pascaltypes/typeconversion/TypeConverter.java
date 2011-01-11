@@ -105,6 +105,16 @@ public class TypeConverter {
 		public LineInfo getLineNumber() {
 			return other.getLineNumber();
 		}
+
+		@Override
+		public Object compileTimeValue() throws ParsingException {
+			Object o=other.compileTimeValue();
+			if(o!=null) {
+				return ((Number)o).doubleValue();
+			} else {
+				return null;
+			}
+		}
 	}
 
 	static class NumberToLong implements ReturnsValue {
@@ -130,6 +140,15 @@ public class TypeConverter {
 		@Override
 		public LineInfo getLineNumber() {
 			return other.getLineNumber();
+		}
+		@Override
+		public Object compileTimeValue() throws ParsingException {
+			Object o=other.compileTimeValue();
+			if(o!=null) {
+				return ((Number)o).longValue();
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -157,6 +176,15 @@ public class TypeConverter {
 		public LineInfo getLineNumber() {
 			return other.getLineNumber();
 		}
+		@Override
+		public Object compileTimeValue() throws ParsingException {
+			Object o=other.compileTimeValue();
+			if(o!=null) {
+				return (char)((Number)o).longValue();
+			} else {
+				return null;
+			}
+		}
 	}
 
 	static class NumberToInt implements ReturnsValue {
@@ -183,6 +211,15 @@ public class TypeConverter {
 		public LineInfo getLineNumber() {
 			return other.getLineNumber();
 		}
+		@Override
+		public Object compileTimeValue() throws ParsingException {
+			Object o=other.compileTimeValue();
+			if(o!=null) {
+				return ((Number)o).intValue();
+			} else {
+				return null;
+			}
+		}
 	}
 
 	static class CharToInt implements ReturnsValue {
@@ -208,6 +245,15 @@ public class TypeConverter {
 		@Override
 		public LineInfo getLineNumber() {
 			return other.getLineNumber();
+		}
+		@Override
+		public Object compileTimeValue() throws ParsingException {
+			Object o=other.compileTimeValue();
+			if(o!=null) {
+				return (int)((Character)o).charValue();
+			} else {
+				return null;
+			}
 		}
 	}
 }

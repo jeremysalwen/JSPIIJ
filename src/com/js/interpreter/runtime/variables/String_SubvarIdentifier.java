@@ -1,5 +1,7 @@
 package com.js.interpreter.runtime.variables;
 
+import com.js.interpreter.exceptions.ConstantCalculationException;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.runtime.ContainsVariablesPointer;
@@ -21,7 +23,8 @@ public class String_SubvarIdentifier implements SubvarIdentifier {
 	}
 
 	@Override
-	public Object get(Object container, VariableContext context, RuntimeExecutable<?> main) throws RuntimePascalException {
+	public Object get(Object container, VariableContext context,
+			RuntimeExecutable<?> main) throws RuntimePascalException {
 		return ((ContainsVariables) container).get_var(s);
 	}
 
@@ -40,12 +43,20 @@ public class String_SubvarIdentifier implements SubvarIdentifier {
 		return ((CustomType) containerType).getMemberType(this.s);
 	}
 
-
 	@Override
 	public void set(Object container, VariableContext context,
 			RuntimeExecutable<?> main, Object value) {
 		((ContainsVariables) container).set_var(this.s, value);
-		
+
+	}
+
+	@Override
+	public Object compileTimeGet(Object container) throws ParsingException {
+		try {
+			return ((ContainsVariables) container).get_var(s);
+		} catch (RuntimePascalException e) {
+			throw new ConstantCalculationException(e);
+		}
 	}
 
 }

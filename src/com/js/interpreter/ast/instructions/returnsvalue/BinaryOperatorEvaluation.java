@@ -3,6 +3,7 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -38,9 +39,14 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 	@Override
 	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
+		Object value1 = operon1.getValue(f, main);
+		Object value2 = operon2.getValue(f, main);
+		return operate(value1, value2);
+	}
+
+	public Object operate(Object value1, Object value2)
+			throws PascalArithmeticException {
 		try {
-			Object value1 = operon1.getValue(f, main);
-			Object value2 = operon2.getValue(f, main);
 			/*
 			 * TODO: seperate the different type operations into different
 			 * classes so there is no runtime type checking.
@@ -125,6 +131,21 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 			DeclaredType gcf = OperatorTypes.get_GCF(type1, type2);
 			return new RuntimeType(gcf, false);
 		default:
+			return null;
+		}
+	}
+
+	@Override
+	public Object compileTimeValue() throws ParsingException {
+		Object value1 = operon1.compileTimeValue();
+		Object value2 = operon2.compileTimeValue();
+		if (value1 != null && value2 != null) {
+			try {
+				return operate(value1, value2);
+			} catch (PascalArithmeticException e) {
+				throw new ConstantCalculationException(e);
+			}
+		} else {
 			return null;
 		}
 	}

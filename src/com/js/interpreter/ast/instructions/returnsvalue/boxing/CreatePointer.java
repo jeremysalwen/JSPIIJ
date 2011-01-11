@@ -59,4 +59,13 @@ public class CreatePointer extends DebuggableReturnsValue {
 		}
 		return index.create_pointer(value, f, main);
 	}
+
+	@Override
+	public Object compileTimeValue() throws ParsingException {
+		Object cont=container.compileTimeValue();
+		if(cont!=null) {
+			return null;
+		}
+		return null;
+	}
 }

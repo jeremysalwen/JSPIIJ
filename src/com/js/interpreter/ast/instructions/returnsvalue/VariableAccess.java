@@ -38,4 +38,9 @@ public class VariableAccess extends DebuggableReturnsValue {
 	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
 		return variable_name.get_type(f);
 	}
+
+	@Override
+	public Object compileTimeValue() {
+		return null;
+	}
 }

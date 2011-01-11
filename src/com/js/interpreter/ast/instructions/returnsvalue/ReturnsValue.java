@@ -15,4 +15,9 @@ public interface ReturnsValue {
 	public abstract RuntimeType get_type(FunctionDeclaration f)
 			throws ParsingException;
 	public abstract LineInfo getLineNumber();
+	
+	/*
+	 * returns null if not a compile-time constant.
+	 */
+	public Object compileTimeValue() throws ParsingException;
 }

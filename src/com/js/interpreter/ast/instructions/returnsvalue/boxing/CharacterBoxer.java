@@ -3,6 +3,7 @@ package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -30,7 +31,17 @@ public class CharacterBoxer extends DebuggableReturnsValue {
 	@Override
 	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
-		return c.getValue(f, main).toString();
+		return new StringBuilder(c.getValue(f, main).toString());
+	}
+
+	@Override
+	public Object compileTimeValue() throws ParsingException {
+		Object val = c.compileTimeValue();
+		if (val != null) {
+			return new StringBuilder(val.toString());
+		} else {
+			return null;
+		}
 	}
 
 }

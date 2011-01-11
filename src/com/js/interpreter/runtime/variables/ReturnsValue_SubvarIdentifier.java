@@ -28,16 +28,17 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	@Override
 	public Object get(Object container, VariableContext f,
 			RuntimeExecutable<?> main) throws RuntimePascalException {
-		int index = -1;
-		Object indexvalue = value.getValue(f, main);
-		index = ((Number) indexvalue).intValue();
+		return get(container, value.getValue(f, main));
+	}
+
+	Object get(Object container, Object indexvalue) {
+		int index = ((Number) indexvalue).intValue();
 
 		if (container instanceof StringBuilder) {
 			return ((StringBuilder) container).charAt(index);
 		} else {
 			return Array.get(container, index);
 		}
-
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -72,4 +73,13 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 		}
 	}
 
+	@Override
+	public Object compileTimeGet(Object container) throws ParsingException {
+		Object index = value.compileTimeValue();
+		if (value != null) {
+			return get(container, index);
+		} else {
+			return null;
+		}
+	}
 }

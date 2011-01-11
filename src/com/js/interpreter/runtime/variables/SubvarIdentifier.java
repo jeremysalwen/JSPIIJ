@@ -19,4 +19,5 @@ public interface SubvarIdentifier {
 	public DeclaredType getType(DeclaredType containerType)
 			throws ParsingException;
 
+	public Object compileTimeGet(Object container) throws ParsingException;
 }

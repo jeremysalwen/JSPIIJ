@@ -3,6 +3,7 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -33,8 +34,12 @@ public class UnaryOperatorEvaluation extends DebuggableReturnsValue {
 	@Override
 	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
+		Object value = operon.getValue(f, main);
+		return operate(value);
+	}
+
+	public Object operate(Object value) throws PascalArithmeticException {
 		try {
-			Object value = operon.getValue(f, main);
 			return type.operate(value);
 		} catch (OperationNotSupportedException e) {
 			throw new RuntimeException(e);
@@ -53,4 +58,16 @@ public class UnaryOperatorEvaluation extends DebuggableReturnsValue {
 		return operon.get_type(f);
 	}
 
+	@Override
+	public Object compileTimeValue() throws ParsingException {
+		Object value = operon.compileTimeValue();
+		if (value == null) {
+			return null;
+		}
+		try {
+			return operate(value);
+		} catch (PascalArithmeticException e) {
+			throw new ConstantCalculationException(e);
+		}
+	}
 }

@@ -81,4 +81,8 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 	public RuntimeType get_type(FunctionDeclaration f) {
 		return new RuntimeType(function.return_type(), false);
 	}
+	@Override
+	public Object compileTimeValue() {
+		return null;
+	}
 }

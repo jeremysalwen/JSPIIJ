@@ -37,4 +37,8 @@ public class ConstantAccess extends DebuggableReturnsValue {
 				.getClass()), false);
 	}
 
+	@Override
+	public Object compileTimeValue() {
+		return constant_value;
+	}
 }

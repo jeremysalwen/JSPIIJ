@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -42,6 +43,21 @@ public class ArrayBoxer extends DebuggableReturnsValue {
 				values.length);
 		for (int i = 0; i < values.length; i++) {
 			result[i] = values[i].getValue(f, main);
+		}
+		return result;
+	}
+
+	@Override
+	public Object compileTimeValue() throws ParsingException {
+		Object[] result = (Object[]) Array.newInstance(type.getRuntimeClass(),
+				values.length);
+		for (int i = 0; i < values.length; i++) {
+			Object val = values[i].compileTimeValue();
+			if (val == null) {
+				return null;
+			} else {
+				result[i] = val;
+			}
 		}
 		return result;
 	}

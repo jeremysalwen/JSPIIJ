@@ -139,7 +139,7 @@ public class JavaClassBasedType extends DeclaredType {
 		
 		if (other_type.declType instanceof JavaClassBasedType) {
 			
-			if (this==other_type.declType) {
+			if (this.equals(other_type.declType)) {
 				return value;
 			}
 			if (this==StringBuilder
