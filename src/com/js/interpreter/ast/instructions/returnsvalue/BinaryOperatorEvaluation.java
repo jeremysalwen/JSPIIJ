@@ -49,9 +49,7 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 
 			DeclaredType type2 = JavaClassBasedType.anew(value2.getClass());
 			if (value1 instanceof StringBuilder
-					|| value2 instanceof StringBuilder
-					|| value1 instanceof Character
-					|| value2 instanceof Character) {
+					|| value2 instanceof StringBuilder) {
 				String val1 = value1.toString();
 				String val2 = value2.toString();
 				return operator_type.operate(val1, val2);

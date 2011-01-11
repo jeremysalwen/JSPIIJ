@@ -2,18 +2,15 @@ package com.js.interpreter.pascaltypes;
 
 import java.util.HashMap;
 
+import ncsa.tools.common.util.TypeUtils;
 import serp.bytecode.Code;
 
-import ncsa.tools.common.util.TypeUtils;
-
 import com.js.interpreter.ast.FunctionDeclaration;
-import com.js.interpreter.ast.instructions.returnsvalue.BuiltinTypeConversion;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.CharacterBoxer;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.StringBoxer;
-import com.js.interpreter.ast.instructions.returnsvalue.boxing.StringBuilderBoxer;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.exceptions.UnconvertableTypeException;
+import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
 
 public class JavaClassBasedType extends DeclaredType {
 	Class c;
@@ -139,33 +136,21 @@ public class JavaClassBasedType extends DeclaredType {
 	public ReturnsValue convert(ReturnsValue value, FunctionDeclaration f) throws ParsingException {
 
 		RuntimeType other_type = value.get_type(f);
+		
 		if (other_type.declType instanceof JavaClassBasedType) {
-			if (this.equals(other_type.declType)) {
+			
+			if (this==other_type.declType) {
 				return value;
 			}
-			if (c == String.class
-					&& other_type.declType == JavaClassBasedType.StringBuilder) {
-				return new StringBuilderBoxer(value);
-			}
-			if (c == String.class
+			if (this==StringBuilder
 					&& other_type.declType == JavaClassBasedType.Character) {
 				return new CharacterBoxer(value);
 			}
-			if (c == StringBuilder.class
+			if (this == StringBuilder
 					&& ((JavaClassBasedType) other_type.declType).c == String.class) {
 				return new StringBoxer(value);
 			}
-
-			try {
-				/*
-				 * TODO Kind of ugly. Really we should have it generate a
-				 * different instruction for each type we are converting to.
-				 */
-				BuiltinTypeConversion conversion = new BuiltinTypeConversion(
-						null, this, value, other_type.declType);
-				return conversion;
-			} catch (UnconvertableTypeException e) {
-			}
+			return TypeConverter.autoConvert(this, value, (JavaClassBasedType) other_type.declType);
 		}
 		return null;
 	}
