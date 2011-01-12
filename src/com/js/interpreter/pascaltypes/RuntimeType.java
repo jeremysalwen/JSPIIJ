@@ -1,6 +1,7 @@
 package com.js.interpreter.pascaltypes;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -63,6 +64,18 @@ public class RuntimeType implements ArgumentType {
 			return null;
 		}
 		return convert(args.next(), f);
+	}
+
+	@Override
+	public boolean perfectFit(Iterator<RuntimeType> types) {
+		try {
+			RuntimeType other = types.next();
+			return other.declType.equals(declType)
+					&& (!writable || other.writable);
+		} catch (NoSuchElementException e) {
+			return false;
+		}
+
 	}
 
 }

@@ -10,6 +10,8 @@ public interface ArgumentType {
 	public ReturnsValue convertArgType(Iterator<ReturnsValue> args,
 			ExpressionContext f) throws ParsingException;
 
+	public boolean perfectFit(Iterator<RuntimeType> types);
+
 	@SuppressWarnings("rawtypes")
 	public Class getRuntimeClass();
 }

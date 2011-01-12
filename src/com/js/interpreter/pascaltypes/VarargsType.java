@@ -30,14 +30,19 @@ public class VarargsType implements ArgumentType {
 			}
 			convertedargs.add(tmp);
 		}
-		return new ArrayBoxer(
-				convertedargs.toArray(new ReturnsValue[convertedargs.size()]),
-				elementType, line);
+		return new ArrayBoxer(convertedargs
+				.toArray(new ReturnsValue[convertedargs.size()]), elementType,
+				line);
 	}
 
 	@Override
 	public Class getRuntimeClass() {
 		return elementType.getClass();
+	}
+
+	@Override
+	public boolean perfectFit(Iterator<RuntimeType> types) {
+		return false;
 	}
 
 }

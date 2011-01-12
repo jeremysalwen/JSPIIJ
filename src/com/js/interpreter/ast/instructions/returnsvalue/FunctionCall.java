@@ -1,6 +1,7 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -86,6 +87,7 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 	public RuntimeType get_type(ExpressionContext f) {
 		return new RuntimeType(function.return_type(), false);
 	}
+
 	@Override
 	public Object compileTimeValue() {
 		return null;
@@ -96,30 +98,50 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 			throws ParsingException {
 		List<AbstractFunction> possibilities = f.getCallableFunctions(name.name
 				.toLowerCase());
+		List<RuntimeType> passedtypes = new ArrayList<RuntimeType>(arguments
+				.size());
+		ReturnsValue[] args = arguments.toArray(new ReturnsValue[arguments
+				.size()]);
+		for (ReturnsValue r : arguments) {
+			passedtypes.add(r.get_type(f));
+		}
 		boolean matching = false;
-	
-		FunctionCall result = null;
+
 		AbstractFunction chosen = null;
+		boolean perfectfit = false;
+		AbstractFunction ambigous = null;
+		FunctionCall result = null;
 		for (AbstractFunction a : possibilities) {
-			ReturnsValue[] converted = a.format_args(arguments, f);
-			if (converted != null) {
-				if (result != null) {
+			if (a.perfectMatch(passedtypes)) {
+				if (perfectfit == true) {
 					throw new AmbiguousFunctionCallException(name.lineInfo,
 							chosen, a);
-				} else {
-					chosen = a;
-					result = new FunctionCall(a, converted, name.lineInfo);
 				}
+				perfectfit = true;
+				chosen = a;
+				result = new FunctionCall(a, args, name.lineInfo);
+			}
+			ReturnsValue[] converted = a.format_args(arguments, f);
+			if (converted != null && !perfectfit) {
+				if (chosen != null) {
+					ambigous = chosen;
+				}
+				chosen = a;
+				result = new FunctionCall(a, converted, name.lineInfo);
 			}
 			if (a.argumentTypes().length == arguments.size()) {
 				matching = true;
 			}
 		}
-		if (result != null) {
-			return result;
-		} else {
+		if (result == null) {
 			throw new BadFunctionCallException(name.lineInfo, name.name,
 					!possibilities.isEmpty(), matching);
+		} else if (!perfectfit && ambigous != null) {
+			throw new AmbiguousFunctionCallException(name.lineInfo, chosen,
+					ambigous);
+		} else {
+			return result;
 		}
+
 	}
 }

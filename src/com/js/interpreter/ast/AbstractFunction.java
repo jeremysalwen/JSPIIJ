@@ -8,6 +8,7 @@ import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
@@ -41,19 +42,21 @@ public abstract class AbstractFunction {
 	 *            The program context.
 	 * @param arguments
 	 * @return The return value of the called function.
-	 * @throws RuntimePascalException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
+	 * @throws RuntimePascalException
+	 * @throws InvocationTargetException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
 	 */
 	public abstract Object call(VariableContext parentcontext,
-			RuntimeExecutable<?> main, Object[] arguments) throws RuntimePascalException, IllegalArgumentException, IllegalAccessException, InvocationTargetException;
+			RuntimeExecutable<?> main, Object[] arguments)
+			throws RuntimePascalException, IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
 	 * @param values
 	 * @return converted arguments, or null, if they do not fit.
-	 * @throws ParsingException 
+	 * @throws ParsingException
 	 */
 	public ReturnsValue[] format_args(List<ReturnsValue> values,
 			ExpressionContext f) throws ParsingException {
@@ -72,5 +75,16 @@ public abstract class AbstractFunction {
 			return null;
 		}
 		return result;
+	}
+
+	public boolean perfectMatch(List<RuntimeType> args) {
+		ArgumentType[] accepted_types = argumentTypes();
+		Iterator<RuntimeType> iterator = args.iterator();
+		for (int i = 0; i < accepted_types.length; i++) {
+			if (!accepted_types[i].perfectFit(iterator)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
