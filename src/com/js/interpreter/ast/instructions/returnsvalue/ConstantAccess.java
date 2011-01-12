@@ -1,7 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;

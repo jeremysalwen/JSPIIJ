@@ -5,7 +5,6 @@ import java.lang.reflect.Array;
 import serp.bytecode.Code;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 

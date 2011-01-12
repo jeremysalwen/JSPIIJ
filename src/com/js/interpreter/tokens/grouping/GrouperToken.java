@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.BinaryOperatorEvaluation;
 import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;

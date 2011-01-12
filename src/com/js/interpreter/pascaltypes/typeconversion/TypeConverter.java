@@ -3,7 +3,6 @@ package com.js.interpreter.pascaltypes.typeconversion;
 import java.util.HashMap;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;

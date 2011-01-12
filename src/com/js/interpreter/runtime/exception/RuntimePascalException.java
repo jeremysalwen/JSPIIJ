@@ -1,6 +1,5 @@
 package com.js.interpreter.runtime.exception;
 
-import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 
 public class RuntimePascalException extends Exception {

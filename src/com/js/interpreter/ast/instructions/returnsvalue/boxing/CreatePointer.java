@@ -1,7 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.ParsingException;

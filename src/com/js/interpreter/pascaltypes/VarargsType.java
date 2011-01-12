@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.ArrayBoxer;
 import com.js.interpreter.exceptions.ParsingException;

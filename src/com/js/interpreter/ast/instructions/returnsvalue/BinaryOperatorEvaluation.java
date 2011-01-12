@@ -3,7 +3,6 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;

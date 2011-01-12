@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.exceptions.AmbiguousFunctionCallException;
 import com.js.interpreter.exceptions.BadFunctionCallException;
