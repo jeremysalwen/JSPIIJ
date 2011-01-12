@@ -17,8 +17,19 @@ public class Math_plugins implements PascalPlugin {
 		return (int) Math.ceil(d);
 	}
 
+	public static int trunc(double d) {
+		return floor(d);
+	}
+	public static double frac(double d){
+		return d-floor(d);
+	}
+	
 	public static int floor(double d) {
 		return (int) Math.floor(d);
+	}
+
+	public static double abs(double d){
+		return Math.abs(d);
 	}
 
 	public static int round(double d) {
