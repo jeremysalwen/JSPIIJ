@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
@@ -32,7 +33,7 @@ public class ConstantAccess extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public RuntimeType get_type(FunctionDeclaration f) {
+	public RuntimeType get_type(ExpressionContext f) {
 		return new RuntimeType(JavaClassBasedType.anew(constant_value
 				.getClass()), false);
 	}

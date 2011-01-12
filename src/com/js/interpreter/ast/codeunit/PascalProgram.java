@@ -72,6 +72,6 @@ public class PascalProgram extends ExecutableCodeUnit {
 
 	@Override
 	public DeclaredType getGlobalVarType(String name) {
-		return main.get_variable_type(name);
+		return main.getVariableType(name);
 	}
 }

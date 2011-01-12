@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -25,7 +26,7 @@ public class StringBoxer extends DebuggableReturnsValue {
 	final ReturnsValue s;
 
 	@Override
-	public RuntimeType get_type(FunctionDeclaration f) {
+	public RuntimeType get_type(ExpressionContext f) {
 		return new RuntimeType(JavaClassBasedType.StringBuilder, false);
 	}
 

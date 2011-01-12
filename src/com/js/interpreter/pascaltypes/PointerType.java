@@ -2,6 +2,7 @@ package com.js.interpreter.pascaltypes;
 
 import serp.bytecode.Code;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
@@ -15,7 +16,7 @@ public class PointerType extends DeclaredType {
 	}
 
 	@Override
-	public ReturnsValue convert(ReturnsValue returnsValue, FunctionDeclaration f) throws ParsingException {
+	public ReturnsValue convert(ReturnsValue returnsValue, ExpressionContext f) throws ParsingException {
 		RuntimeType other = returnsValue.get_type(f);
 		if (this.equals(other)) {
 			return returnsValue;
@@ -25,7 +26,7 @@ public class PointerType extends DeclaredType {
 
 	@Override
 	public Object initialize() {
-		return new ObjectBasedPointer();
+		return new ObjectBasedPointer(pointedToType.initialize());
 	}
 
 	@Override

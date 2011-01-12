@@ -2,10 +2,15 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.List;
 
 import com.js.interpreter.ast.AbstractFunction;
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.ExecutionResult;
+import com.js.interpreter.exceptions.AmbiguousFunctionCallException;
+import com.js.interpreter.exceptions.BadFunctionCallException;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
@@ -14,6 +19,7 @@ import com.js.interpreter.runtime.exception.PluginCallException;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.exception.internal.PluginReflectionException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
+import com.js.interpreter.tokens.WordToken;
 
 public class FunctionCall extends DebuggableExecutableReturnsValue {
 	AbstractFunction function;
@@ -78,11 +84,43 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 	}
 
 	@Override
-	public RuntimeType get_type(FunctionDeclaration f) {
+	public RuntimeType get_type(ExpressionContext f) {
 		return new RuntimeType(function.return_type(), false);
 	}
 	@Override
 	public Object compileTimeValue() {
 		return null;
+	}
+
+	public static FunctionCall generate_function_call(WordToken name,
+			List<ReturnsValue> arguments, ExpressionContext f)
+			throws ParsingException {
+		List<AbstractFunction> possibilities = f.getCallableFunctions(name.name
+				.toLowerCase());
+		boolean matching = false;
+	
+		FunctionCall result = null;
+		AbstractFunction chosen = null;
+		for (AbstractFunction a : possibilities) {
+			ReturnsValue[] converted = a.format_args(arguments, f);
+			if (converted != null) {
+				if (result != null) {
+					throw new AmbiguousFunctionCallException(name.lineInfo,
+							chosen, a);
+				} else {
+					chosen = a;
+					result = new FunctionCall(a, converted, name.lineInfo);
+				}
+			}
+			if (a.argumentTypes().length == arguments.size()) {
+				matching = true;
+			}
+		}
+		if (result != null) {
+			return result;
+		} else {
+			throw new BadFunctionCallException(name.lineInfo, name.name,
+					!possibilities.isEmpty(), matching);
+		}
 	}
 }

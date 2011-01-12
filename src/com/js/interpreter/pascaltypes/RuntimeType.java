@@ -2,6 +2,7 @@ package com.js.interpreter.pascaltypes;
 
 import java.util.Iterator;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
@@ -18,7 +19,7 @@ public class RuntimeType implements ArgumentType {
 		this.writable = writable;
 	}
 
-	public ReturnsValue convert(ReturnsValue value, FunctionDeclaration f)
+	public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
 			throws ParsingException {
 
 		RuntimeType other = value.get_type(f);
@@ -58,7 +59,7 @@ public class RuntimeType implements ArgumentType {
 
 	@Override
 	public ReturnsValue convertArgType(Iterator<ReturnsValue> args,
-			FunctionDeclaration f) throws ParsingException {
+			ExpressionContext f) throws ParsingException {
 		if (!args.hasNext()) {
 			return null;
 		}

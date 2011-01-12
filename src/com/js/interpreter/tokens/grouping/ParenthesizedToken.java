@@ -1,7 +1,16 @@
 package com.js.interpreter.tokens.grouping;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ExpectedTokenException;
+import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.tokens.Token;
+import com.js.interpreter.tokens.basic.CommaToken;
 
 public class ParenthesizedToken extends GrouperToken {
 	public ParenthesizedToken(LineInfo line) {
@@ -24,5 +33,30 @@ public class ParenthesizedToken extends GrouperToken {
 		}
 		builder.append(')');
 		return builder.toString();
+	}
+
+	public ReturnsValue get_single_value(ExpressionContext context)
+			throws ParsingException {
+		ReturnsValue result = getNextExpression(context);
+		if (hasNext()) {
+			Token next = take();
+			throw new ExpectedTokenException(")", next);
+		}
+		return result;
+	}
+
+	public List<ReturnsValue> get_arguments_for_call(ExpressionContext context)
+			throws ParsingException {
+		List<ReturnsValue> result = new ArrayList<ReturnsValue>();
+		while (hasNext()) {
+			result.add(getNextExpression(context));
+			if (hasNext()) {
+				Token next = take();
+				if (!(next instanceof CommaToken)) {
+					throw new ExpectedTokenException(",", next);
+				}
+			}
+		}
+		return result;
 	}
 }

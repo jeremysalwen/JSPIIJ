@@ -56,7 +56,7 @@ public abstract class AbstractFunction {
 	 * @throws ParsingException 
 	 */
 	public ReturnsValue[] format_args(List<ReturnsValue> values,
-			FunctionDeclaration f) throws ParsingException {
+			ExpressionContext f) throws ParsingException {
 		ArgumentType[] accepted_types = argumentTypes();
 		ReturnsValue[] result = new ReturnsValue[accepted_types.length];
 		Iterator<ReturnsValue> iterator = values.iterator();

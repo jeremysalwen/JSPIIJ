@@ -2,6 +2,7 @@ package com.js.interpreter.runtime.variables;
 
 import java.util.ArrayList;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
 import com.js.interpreter.exceptions.ParsingException;
@@ -21,18 +22,14 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 		lineinfo = info;
 	}
 
-	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
+	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
 		String ident = get(0).toString();
-		DeclaredType type = f.get_variable_type(ident);
+		DeclaredType type = f.getVariableType(ident);
 		if (type == null) {
-			Object value = f.program.constants.get(ident);
+			Object value = f.getConstant(ident);
 			if (value != null) {
 				type = JavaClassBasedType.anew(value.getClass());
 			}
-
-		}
-		if (type == null) {
-			type = f.program.getGlobalVarType(ident);
 		}
 		if (type == null) {
 			throw new NoSuchFunctionOrVariableException(lineinfo, ident);

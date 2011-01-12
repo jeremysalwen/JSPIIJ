@@ -2,6 +2,7 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 
 import javax.naming.OperationNotSupportedException;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
@@ -104,7 +105,7 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
+	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
 		DeclaredType type1 = operon1.get_type(f).declType;
 		DeclaredType type2 = operon2.get_type(f).declType;
 		switch (operator_type) {

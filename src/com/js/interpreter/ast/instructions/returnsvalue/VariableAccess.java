@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -35,7 +36,7 @@ public class VariableAccess extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
+	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
 		return variable_name.get_type(f);
 	}
 

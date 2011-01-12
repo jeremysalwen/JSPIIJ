@@ -2,6 +2,7 @@ package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
 import java.lang.reflect.Array;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -31,7 +32,7 @@ public class ArrayBoxer extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public RuntimeType get_type(FunctionDeclaration f) {
+	public RuntimeType get_type(ExpressionContext f) {
 		throw new RuntimeException(
 				"Attempted to get type of varargs boxer. This should not happen as we are only supposed to pass varargs to plugins");
 	}

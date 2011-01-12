@@ -16,35 +16,22 @@ import com.js.interpreter.ast.instructions.conditional.ForStatement;
 import com.js.interpreter.ast.instructions.conditional.IfStatement;
 import com.js.interpreter.ast.instructions.conditional.RepeatInstruction;
 import com.js.interpreter.ast.instructions.conditional.WhileStatement;
-import com.js.interpreter.ast.instructions.returnsvalue.BinaryOperatorEvaluation;
-import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;
+import com.js.interpreter.ast.instructions.returnsvalue.FunctionCall;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.UnaryOperatorEvaluation;
-import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
-import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
-import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
-import com.js.interpreter.exceptions.NonIntegerIndexException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
-import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.FunctionOnStack;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
-import com.js.interpreter.runtime.variables.ReturnsValue_SubvarIdentifier;
-import com.js.interpreter.runtime.variables.String_SubvarIdentifier;
 import com.js.interpreter.runtime.variables.VariableIdentifier;
 import com.js.interpreter.tokens.EOF_Token;
-import com.js.interpreter.tokens.OperatorToken;
-import com.js.interpreter.tokens.OperatorTypes;
-import com.js.interpreter.tokens.OperatorTypes.precedence;
 import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.WordToken;
 import com.js.interpreter.tokens.basic.AssignmentToken;
@@ -57,7 +44,6 @@ import com.js.interpreter.tokens.basic.ForToken;
 import com.js.interpreter.tokens.basic.ForwardToken;
 import com.js.interpreter.tokens.basic.IfToken;
 import com.js.interpreter.tokens.basic.OfToken;
-import com.js.interpreter.tokens.basic.PeriodToken;
 import com.js.interpreter.tokens.basic.RepeatToken;
 import com.js.interpreter.tokens.basic.SemicolonToken;
 import com.js.interpreter.tokens.basic.ThenToken;
@@ -66,15 +52,15 @@ import com.js.interpreter.tokens.basic.UntilToken;
 import com.js.interpreter.tokens.basic.VarToken;
 import com.js.interpreter.tokens.basic.WhileToken;
 import com.js.interpreter.tokens.grouping.BeginEndToken;
-import com.js.interpreter.tokens.grouping.BracketedToken;
 import com.js.interpreter.tokens.grouping.CaseToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 import com.js.interpreter.tokens.grouping.ParenthesizedToken;
-import com.js.interpreter.tokens.value.ValueToken;
 
-public class FunctionDeclaration extends AbstractFunction {
-	public CodeUnit program;
+public class FunctionDeclaration extends AbstractFunction implements
+		ExpressionContext {
 
+	CodeUnit root;
+	ExpressionContext parentContext;
 	public String name;
 
 	public List<VariableDeclaration> local_variables;
@@ -94,24 +80,25 @@ public class FunctionDeclaration extends AbstractFunction {
 
 	/* <----- */
 
-	public FunctionDeclaration(CodeUnit p, GrouperToken i, boolean is_procedure)
-			throws ParsingException {
+	public FunctionDeclaration(ExpressionContext parent, GrouperToken i,
+			boolean is_procedure) throws ParsingException {
+		this.parentContext = parent;
+		this.root = parent.root();
 		this.line = i.peek().lineInfo;
-		this.program = p;
 		instructions = new InstructionGrouper(i.peek_no_EOF().lineInfo);
-		name = program.get_word_value(i);
+		name = i.next_word_value();
 		get_arguments_for_declaration(i, is_procedure);
 		Token next = i.peek();
 		assert (is_procedure ^ (next instanceof ColonToken));
 		if (!is_procedure && next instanceof ColonToken) {
 			i.take();
-			return_type = program.get_next_pascal_type(i);
+			return_type = i.get_next_pascal_type(this);
 		}
-		program.assert_next_semicolon(i);
+		i.assert_next_semicolon();
 		next = i.peek();
 		if (next instanceof VarToken) {
 			i.take();
-			local_variables = program.get_variable_declarations(i);
+			local_variables = i.get_variable_declarations(this);
 		} else {
 			local_variables = new ArrayList<VariableDeclaration>();
 		}
@@ -129,25 +116,27 @@ public class FunctionDeclaration extends AbstractFunction {
 			}
 			instructions = get_next_command(i);
 		}
-		program.assert_next_semicolon(i);
+		i.assert_next_semicolon();
 	}
 
 	public void add_local_variable(VariableDeclaration v) {
 		local_variables.add(v);
 	}
 
-	public FunctionDeclaration(CodeUnit p) {
-		this.program = p;
+	public FunctionDeclaration(ExpressionContext p) {
+		this.parentContext = p;
+		this.root = p.root();
 		this.local_variables = new ArrayList<VariableDeclaration>();
 		this.are_varargs = new boolean[0];
 		this.argument_names = new String[0];
 		this.argument_types = new RuntimeType[0];
 	}
 
-	public FunctionDeclaration(CodeUnit parent,
+	public FunctionDeclaration(ExpressionContext parent,
 			List<VariableDeclaration> local_variables,
 			InstructionGrouper instructions) {
-		this.program = parent;
+		this.parentContext = parent;
+		this.root = parent.root();
 		this.local_variables = local_variables;
 		this.instructions = instructions;
 	}
@@ -161,14 +150,14 @@ public class FunctionDeclaration extends AbstractFunction {
 	public Object call(VariableContext parentcontext,
 			RuntimeExecutable<?> main, Object[] arguments)
 			throws RuntimePascalException {
-		if (this.program instanceof Library) {
-			parentcontext = main.getLibrary((Library) this.program);
+		if (this.root instanceof Library) {
+			parentcontext = main.getLibrary((Library) this.root);
 		}
 		return new FunctionOnStack(parentcontext, main, this, arguments)
 				.execute();
 	}
 
-	public DeclaredType get_variable_type(String name) {
+	public DeclaredType getVariableType(String name) {
 		if (name.equalsIgnoreCase("result")) {
 			return return_type;
 		}
@@ -182,7 +171,7 @@ public class FunctionDeclaration extends AbstractFunction {
 				}
 			}
 		}
-		return null;
+		return parentContext.getVariableType(name);
 	}
 
 	@Override
@@ -227,7 +216,7 @@ public class FunctionDeclaration extends AbstractFunction {
 					throw new ExpectedTokenException(":", next);
 				}
 				DeclaredType type;
-				type = program.get_next_pascal_type(arguments_token);
+				type = arguments_token.get_next_pascal_type(this);
 
 				while (j > 0) {
 					types_list.add(new RuntimeType(type, is_varargs));
@@ -249,151 +238,12 @@ public class FunctionDeclaration extends AbstractFunction {
 		}
 	}
 
-	ReturnsValue getNextTerm(GrouperToken iterator) throws ParsingException {
-		Token next = iterator.take();
-		if (next instanceof ParenthesizedToken) {
-			return get_single_value((ParenthesizedToken) next);
-		} else if (next instanceof ValueToken) {
-			return new ConstantAccess(((ValueToken) next).getValue(),
-					next.lineInfo);
-		} else if (next instanceof WordToken) {
-			WordToken name = ((WordToken) next);
-			next = iterator.peek();
-
-			if (next instanceof ParenthesizedToken) {
-				List<ReturnsValue> arguments = get_arguments_for_call((ParenthesizedToken) iterator
-						.take());
-				return program.generate_function_call(name, arguments, this);
-			} else if (program.functionExists(name.name)) {
-				return program.generate_function_call(name,
-						new ArrayList<ReturnsValue>(0), this);
-			}
-			VariableAccess result = new VariableAccess(get_next_var_identifier(
-					name, iterator), name.lineInfo);
-			if (result.get_type(this) == null) {
-				throw new NoSuchFunctionOrVariableException(name.lineInfo,
-						name.name);
-			}
-			return result;
-
-		} else {
-			throw new UnrecognizedTokenException(next);
-		}
-	}
-
-	ReturnsValue getNextExpression(GrouperToken iterator,
-			OperatorTypes.precedence precedence) throws ParsingException {
-		ReturnsValue nextTerm;
-		Token next = iterator.peek();
-		if (next instanceof OperatorToken) {
-			iterator.take();
-			OperatorToken nextOperator = (OperatorToken) next;
-			if (!nextOperator.can_be_unary()) {
-				throw new BadOperationTypeException(next.lineInfo,
-						nextOperator.type);
-			}
-			nextTerm = new UnaryOperatorEvaluation(getNextExpression(iterator,
-					nextOperator.type.getPrecedence()), nextOperator.type,
-					nextOperator.lineInfo);
-		} else {
-			nextTerm = getNextTerm(iterator);
-		}
-
-		while ((next = iterator.peek()) instanceof OperatorToken) {
-			OperatorToken nextOperator = (OperatorToken) next;
-			if (nextOperator.type.getPrecedence().compareTo(precedence) >= 0) {
-				break;
-			}
-			iterator.take();
-			ReturnsValue nextvalue = getNextExpression(iterator,
-					nextOperator.type.getPrecedence());
-			OperatorTypes operationtype = ((OperatorToken) next).type;
-			DeclaredType type1 = nextTerm.get_type(this).declType;
-			DeclaredType type2 = nextvalue.get_type(this).declType;
-			try {
-				operationtype.verifyOperation(type1, type2);
-			} catch (BadOperationTypeException e) {
-				throw new BadOperationTypeException(next.lineInfo, type1,
-						type2, nextTerm, nextvalue, operationtype);
-			}
-			nextTerm = new BinaryOperatorEvaluation(nextTerm, nextvalue,
-					operationtype, nextOperator.lineInfo);
-
-		}
-		return nextTerm;
-	}
-
-	ReturnsValue getNextExpression(GrouperToken iterator)
-			throws ParsingException {
-		return getNextExpression(iterator, precedence.NoPrecedence);
-	}
-
-	VariableIdentifier get_next_var_identifier(GrouperToken i)
-			throws ParsingException {
-		Token next;
-		WordToken nametoken = (WordToken) i.take();
-
-		VariableIdentifier identifier = new VariableIdentifier(
-				nametoken.lineInfo);
-		identifier.add(new String_SubvarIdentifier(nametoken.name));
-		while (true) {
-			if (i.peek() instanceof PeriodToken) {
-				i.take();
-				next = i.take();
-				if (next instanceof WordToken) {
-					identifier.add(new String_SubvarIdentifier(
-							((WordToken) next).name));
-				} else {
-					throw new ExpectedTokenException("[Variable Identifier]",
-							next);
-				}
-			} else if (i.peek() instanceof BracketedToken) {
-				identifier.add(new ReturnsValue_SubvarIdentifier(
-						getNextExpression((BracketedToken) i.take())));
-			} else {
-				break;
-			}
-		}
-		return identifier;
-	}
-
-	VariableIdentifier get_next_var_identifier(WordToken initial, GrouperToken i)
-			throws ParsingException {
-		Token next;
-		VariableIdentifier identifier = new VariableIdentifier(initial.lineInfo);
-		identifier.add(new String_SubvarIdentifier(initial.name));
-		while (true) {
-			if (i.peek() instanceof PeriodToken) {
-				i.take();
-				next = i.take();
-				if (next instanceof WordToken) {
-					identifier.add(new String_SubvarIdentifier(
-							((WordToken) next).name));
-				} else {
-					throw new UnrecognizedTokenException(next);
-				}
-			} else if (i.peek() instanceof BracketedToken) {
-				ReturnsValue index = getNextExpression((BracketedToken) i
-						.take());
-				RuntimeType indextype = index.get_type(this);
-				if (!(indextype.declType.equals(JavaClassBasedType.Integer) || indextype.declType
-						.equals(JavaClassBasedType.Long))) {
-					throw new NonIntegerIndexException(index);
-				}
-				identifier.add(new ReturnsValue_SubvarIdentifier(index));
-			} else {
-				break;
-			}
-		}
-		return identifier;
-	}
-
 	public Executable get_next_command(GrouperToken token_iterator)
 			throws ParsingException {
 		Token next = token_iterator.take();
 		LineInfo initialline = next.lineInfo;
 		if (next instanceof IfToken) {
-			ReturnsValue condition = getNextExpression(token_iterator);
+			ReturnsValue condition = token_iterator.getNextExpression(this);
 			next = token_iterator.take();
 			assert (next instanceof ThenToken);
 			Executable command = get_next_command(token_iterator);
@@ -406,7 +256,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			return new IfStatement(condition, command, else_command,
 					initialline);
 		} else if (next instanceof WhileToken) {
-			ReturnsValue condition = getNextExpression(token_iterator);
+			ReturnsValue condition = token_iterator.getNextExpression(this);
 			next = token_iterator.take();
 			assert (next instanceof DoToken);
 			Executable command = get_next_command(token_iterator);
@@ -422,15 +272,16 @@ public class FunctionDeclaration extends AbstractFunction {
 				begin_end_preprocessed
 						.add_command(get_next_command(cast_token));
 				if (cast_token.hasNext()) {
-					program.assert_next_semicolon(cast_token);
+					cast_token.assert_next_semicolon();
 				}
 			}
 			return begin_end_preprocessed;
 		} else if (next instanceof ForToken) {
-			VariableIdentifier tmp_var = get_next_var_identifier(token_iterator);
+			VariableIdentifier tmp_var = token_iterator
+					.get_next_var_identifier(this);
 			next = token_iterator.take();
 			assert (next instanceof AssignmentToken);
-			ReturnsValue first_value = getNextExpression(token_iterator);
+			ReturnsValue first_value = token_iterator.getNextExpression(this);
 			next = token_iterator.take();
 			boolean downto = false;
 			if (next instanceof DowntoToken) {
@@ -438,7 +289,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			} else if (!(next instanceof ToToken)) {
 				throw new ExpectedTokenException("[To] or [Downto]", next);
 			}
-			ReturnsValue last_value = getNextExpression(token_iterator);
+			ReturnsValue last_value = token_iterator.getNextExpression(this);
 			next = token_iterator.take();
 			assert (next instanceof DoToken);
 			Executable result;
@@ -457,14 +308,14 @@ public class FunctionDeclaration extends AbstractFunction {
 			while (!(token_iterator.peek_no_EOF() instanceof UntilToken)) {
 				command.add_command(get_next_command(token_iterator));
 				if (!(token_iterator.peek_no_EOF() instanceof UntilToken)) {
-					program.assert_next_semicolon(token_iterator);
+					token_iterator.assert_next_semicolon();
 				}
 			}
 			next = token_iterator.take();
 			if (!(next instanceof UntilToken)) {
 				throw new ExpectedTokenException("until", next);
 			}
-			ReturnsValue condition = getNextExpression(token_iterator);
+			ReturnsValue condition = token_iterator.getNextExpression(this);
 			return new RepeatInstruction(command, condition, initialline);
 		} else if (next instanceof WordToken) {
 
@@ -472,23 +323,25 @@ public class FunctionDeclaration extends AbstractFunction {
 			next = token_iterator.peek();
 			if (next instanceof ParenthesizedToken) {
 				token_iterator.take();
-				List<ReturnsValue> arguments = get_arguments_for_call((ParenthesizedToken) next);
-				return program.generate_function_call(nametoken, arguments,
-						this);
+				List<ReturnsValue> arguments = ((ParenthesizedToken) next)
+						.get_arguments_for_call(this);
+				return FunctionCall.generate_function_call(nametoken,
+						arguments, this);
 			} else if (next instanceof SemicolonToken
 					|| next instanceof EOF_Token) {
 				List<ReturnsValue> arguments = new ArrayList<ReturnsValue>();
-				return program.generate_function_call(nametoken, arguments,
-						this);
+				return FunctionCall.generate_function_call(nametoken,
+						arguments, this);
 			} else {
 				// at this point assuming it is a variable identifier.
-				VariableIdentifier identifier = get_next_var_identifier(
-						nametoken, token_iterator);
+				VariableIdentifier identifier = token_iterator
+						.get_next_var_identifier(this, nametoken);
 				next = token_iterator.take();
 				if (!(next instanceof AssignmentToken)) {
 					throw new ExpectedTokenException(":=", next);
 				}
-				ReturnsValue value_to_assign = getNextExpression(token_iterator);
+				ReturnsValue value_to_assign = token_iterator
+						.getNextExpression(this);
 				DeclaredType output_type = identifier.get_type(this).declType;
 				DeclaredType input_type = value_to_assign.get_type(this).declType;
 				/*
@@ -503,7 +356,7 @@ public class FunctionDeclaration extends AbstractFunction {
 			}
 		} else if (next instanceof CaseToken) {
 			CaseToken grouper = (CaseToken) next;
-			ReturnsValue switchvalue = getNextExpression(grouper);
+			ReturnsValue switchvalue = grouper.getNextExpression(this);
 			next = grouper.take();
 			if (!(next instanceof OfToken)) {
 				throw new ExpectedTokenException("of", next);
@@ -511,35 +364,13 @@ public class FunctionDeclaration extends AbstractFunction {
 			CaseInstruction inst = new CaseInstruction(initialline);
 			next = grouper.take();
 			while (!(next instanceof ElseToken || next instanceof EOF_Token)) {
-				ReturnsValue possibility = getNextExpression(grouper);
+				ReturnsValue possibility = grouper.getNextExpression(this);
 
 			}
 		} else if (next instanceof SemicolonToken) {
 			return new NopInstruction(next.lineInfo);
 		}
-		return program.handleUnrecognizedToken(next, token_iterator);
-	}
-
-	List<ReturnsValue> get_arguments_for_call(ParenthesizedToken t)
-			throws ParsingException {
-		List<ReturnsValue> result = new ArrayList<ReturnsValue>();
-		while (t.hasNext()) {
-			result.add(getNextExpression(t));
-			if (t.hasNext()) {
-				Token next = t.take();
-				assert (next instanceof CommaToken);
-			}
-		}
-		return result;
-	}
-
-	ReturnsValue get_single_value(ParenthesizedToken t) throws ParsingException {
-		ReturnsValue result = getNextExpression(t);
-		if (t.hasNext()) {
-			Token next = t.take();
-			throw new UnrecognizedTokenException(next);
-		}
-		return result;
+		return root.handleUnrecognizedToken(next, token_iterator);
 	}
 
 	@Override
@@ -569,5 +400,30 @@ public class FunctionDeclaration extends AbstractFunction {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean functionExists(String name) {
+		return parentContext.functionExists(name);
+	}
+
+	@Override
+	public List<AbstractFunction> getCallableFunctions(String name) {
+		return parentContext.getCallableFunctions(name);
+	}
+
+	@Override
+	public Object getConstant(String ident) {
+		return parentContext.getConstant(ident);
+	}
+
+	@Override
+	public DeclaredType getTypedefType(String ident) {
+		return parentContext.getTypedefType(ident);
+	}
+
+	@Override
+	public CodeUnit root() {
+		return root;
 	}
 }

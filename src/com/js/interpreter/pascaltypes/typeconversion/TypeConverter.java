@@ -2,6 +2,7 @@ package com.js.interpreter.pascaltypes.typeconversion;
 
 import java.util.HashMap;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
@@ -96,7 +97,7 @@ public class TypeConverter {
 		}
 
 		@Override
-		public RuntimeType get_type(FunctionDeclaration f)
+		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
 			return new RuntimeType(JavaClassBasedType.Double, false);
 		}
@@ -132,7 +133,7 @@ public class TypeConverter {
 		}
 
 		@Override
-		public RuntimeType get_type(FunctionDeclaration f)
+		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
 			return new RuntimeType(JavaClassBasedType.Long, false);
 		}
@@ -167,7 +168,7 @@ public class TypeConverter {
 		}
 
 		@Override
-		public RuntimeType get_type(FunctionDeclaration f)
+		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
 			return new RuntimeType(JavaClassBasedType.Character, false);
 		}
@@ -202,7 +203,7 @@ public class TypeConverter {
 		}
 
 		@Override
-		public RuntimeType get_type(FunctionDeclaration f)
+		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
 			return new RuntimeType(JavaClassBasedType.Integer, false);
 		}
@@ -237,7 +238,7 @@ public class TypeConverter {
 		}
 
 		@Override
-		public RuntimeType get_type(FunctionDeclaration f)
+		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
 			return new RuntimeType(JavaClassBasedType.Integer, false);
 		}

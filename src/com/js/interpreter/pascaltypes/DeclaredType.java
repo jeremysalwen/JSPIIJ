@@ -2,6 +2,7 @@ package com.js.interpreter.pascaltypes;
 
 import serp.bytecode.Code;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
@@ -19,7 +20,7 @@ public abstract class DeclaredType {
 	}
 
 	public abstract ReturnsValue convert(ReturnsValue returns_value,
-			FunctionDeclaration f) throws ParsingException;
+			ExpressionContext f) throws ParsingException;
 
 	public abstract boolean equals(DeclaredType other);
 

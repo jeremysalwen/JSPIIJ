@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.ArrayBoxer;
@@ -19,7 +20,7 @@ public class VarargsType implements ArgumentType {
 
 	@Override
 	public ReturnsValue convertArgType(Iterator<ReturnsValue> args,
-			FunctionDeclaration f) throws ParsingException {
+			ExpressionContext f) throws ParsingException {
 		List<ReturnsValue> convertedargs = new ArrayList<ReturnsValue>();
 		LineInfo line = null;
 		while (args.hasNext()) {

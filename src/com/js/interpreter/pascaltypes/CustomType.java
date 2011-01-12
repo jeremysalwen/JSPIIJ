@@ -5,6 +5,7 @@ import java.util.List;
 
 import serp.bytecode.Code;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -80,7 +81,7 @@ public class CustomType extends DeclaredType {
 	}
 
 	@Override
-	public ReturnsValue convert(ReturnsValue value, FunctionDeclaration f) throws ParsingException {
+	public ReturnsValue convert(ReturnsValue value, ExpressionContext f) throws ParsingException {
 		RuntimeType other_type = value.get_type(f);
 		if (this.equals(other_type)) {
 			return value;

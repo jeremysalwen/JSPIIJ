@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
@@ -37,9 +38,9 @@ public class CreatePointer extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public RuntimeType get_type(FunctionDeclaration f) throws ParsingException {
+	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
 		if (container == null) {
-			return new RuntimeType(f.get_variable_type(index.toString()), true);
+			return new RuntimeType(f.getVariableType(index.toString()), true);
 		} else {
 			RuntimeType container_type = container.get_type(f);
 			return new RuntimeType(index.getType(container_type.declType),
