@@ -44,6 +44,8 @@ public class PascalProgram extends ExecutableCodeUnit {
 		main.argument_names = new String[0];
 		main.argument_types = new RuntimeType[0];
 		main.name = "main";
+		// we replace the UnitVarDefs with the reference to main.locals 
+		this.UnitVarDefs = main.local_variables;
 	}
 
 	@Override
@@ -62,12 +64,6 @@ public class PascalProgram extends ExecutableCodeUnit {
 	@Override
 	public RuntimeExecutable<PascalProgram> run() {
 		return new RuntimePascalProgram(this);
-	}
-
-	@Override
-	protected void handleGloablVarDeclaration(
-			List<VariableDeclaration> declarations) {
-		main.local_variables.addAll(declarations);
 	}
 
 	@Override

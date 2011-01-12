@@ -19,6 +19,7 @@ import com.js.interpreter.ast.instructions.conditional.WhileStatement;
 import com.js.interpreter.ast.instructions.returnsvalue.FunctionCall;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ExpectedTokenException;
+import com.js.interpreter.exceptions.OverridingException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
@@ -96,11 +97,22 @@ public class FunctionDeclaration extends AbstractFunction implements
 		}
 		i.assert_next_semicolon();
 		next = i.peek();
-		if (next instanceof VarToken) {
+		local_variables = new ArrayList<VariableDeclaration>();
+		while(next instanceof VarToken){
 			i.take();
-			local_variables = i.get_variable_declarations(this);
-		} else {
-			local_variables = new ArrayList<VariableDeclaration>();
+			List<VariableDeclaration> newvars = i.get_variable_declarations(this);
+			for(VariableDeclaration v : newvars){
+				//no nested functions yet
+				//for(AbstractFunction f : callable_functions.get(v.name)){
+				//	throw new OverridingFunctionWithVariableException(f,v,i.lineInfo);
+				//}
+				for(VariableDeclaration e : local_variables){
+					if(v.name.equals(e.name))
+						throw new OverridingException(e,v,i.lineInfo);
+				}
+			}
+			local_variables.addAll(newvars);
+			next = i.peek();
 		}
 		instructions = null;
 	}

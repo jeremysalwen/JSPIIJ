@@ -37,6 +37,10 @@ public class Misc_plugins implements PascalPlugin {
 		return o.length;
 	}
 
+	public static int length(StringBuilder s) {
+		return s.length();
+	}
+
 	@Override
 	public boolean instantiate(Map<String, Object> pluginargs) {
 		return true;

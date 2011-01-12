@@ -3,6 +3,7 @@ package com.js.interpreter.ast.codeunit;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.classgeneration.CustomTypeGenerator;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
+import com.js.interpreter.exceptions.OverridingException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
@@ -88,20 +90,58 @@ public abstract class CodeUnit implements ExpressionContext {
 		i.take();
 	}
 
-	private FunctionDeclaration get_function_declaration(FunctionDeclaration f)
-			throws OverridingFunctionException {
-		for (AbstractFunction g : callable_functions.get(f.name)) {
-			if (f.headerMatches(g)) {
-				if (!(g instanceof FunctionDeclaration)) {
-					throw new OverridingFunctionException(g, f);
-				}
-				return (FunctionDeclaration) g;
-			}
+	/* Checks if there is already another definition 
+	 * for something we want to define now.
+	 */
+	private void checkForDoubleDeclaration(Object toCheck, BaseGrouperToken i) throws ParsingException {
+		String checkForName = "";
+    	if(toCheck instanceof FunctionDeclaration)
+    		checkForName = ((FunctionDeclaration)toCheck).name;
+    	if(toCheck instanceof VariableDeclaration)
+    		checkForName = ((VariableDeclaration)toCheck).name;
+    	if(toCheck instanceof String) // const
+    		checkForName = toCheck.toString();
+    	
+		// check for constants
+		Iterator it = constants.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        String constname = pairs.getKey().toString();
+	        if(constname.equals(checkForName)){
+	        	if(toCheck instanceof FunctionDeclaration)
+	        		throw new OverridingException(constname,(FunctionDeclaration)toCheck,i.lineInfo);
+	        	if(toCheck instanceof VariableDeclaration)
+        			throw new OverridingException(constname,(VariableDeclaration)toCheck,i.lineInfo);
+	        	if(toCheck instanceof String) // const
+	        		throw new OverridingException(constname,toCheck.toString(),i.lineInfo);
+	        }
+	    }
+		// check for variables
+		for(VariableDeclaration e : UnitVarDefs){
+	        if(e.name.equals(checkForName)){
+	        	if(toCheck instanceof FunctionDeclaration)
+        			throw new OverridingException(e,(FunctionDeclaration)toCheck,i.lineInfo);
+	        	if(toCheck instanceof VariableDeclaration)
+        			throw new OverridingException(e,(VariableDeclaration)toCheck,i.lineInfo);
+	        	if(toCheck instanceof String) // const
+	        		throw new OverridingException(e,toCheck.toString(),i.lineInfo);
+	        }
 		}
-		callable_functions.put(f.name, f);
-		return f;
+	    // check for functions 
+		for (AbstractFunction g : callable_functions.get(checkForName)) {
+        	if(toCheck instanceof FunctionDeclaration){
+        		if (((FunctionDeclaration)toCheck).headerMatches(g)) 
+       				throw new OverridingException(g, ((FunctionDeclaration)toCheck) ,i.lineInfo);
+			}
+        	if(toCheck instanceof VariableDeclaration){
+    			throw new OverridingException(g,(VariableDeclaration)toCheck,i.lineInfo);
+        	}
+        	if(toCheck instanceof String){
+    			throw new OverridingException(g,toCheck.toString(),i.lineInfo);
+        	}
+		}
+	    
 	}
-
 	private void add_next_declaration(BaseGrouperToken i)
 			throws ParsingException {
 		Token next = i.peek();
@@ -110,8 +150,10 @@ public abstract class CodeUnit implements ExpressionContext {
 			boolean is_procedure = next instanceof ProcedureToken;
 			FunctionDeclaration declaration = new FunctionDeclaration(this, i,
 					is_procedure);
-			declaration = get_function_declaration(declaration);
+			// check for overriding
+			checkForDoubleDeclaration(declaration,i);
 			declaration.parse_function_body(i);
+			callable_functions.put(declaration.name, declaration);
 		} else if (next instanceof TypeToken) {
 			i.take();
 			add_custom_type_declaration(i);
@@ -119,7 +161,12 @@ public abstract class CodeUnit implements ExpressionContext {
 			handleBeginEnd(i);
 		} else if (next instanceof VarToken) {
 			i.take();
-			handleGloablVarDeclaration(i.get_variable_declarations(this));
+			// check for overriding
+			List<VariableDeclaration> newvars = i.get_variable_declarations(this);
+			for(VariableDeclaration v : newvars){
+				checkForDoubleDeclaration(v,i);
+			}			
+			handleGloablVarDeclaration(newvars);
 		} else if (next instanceof ProgramToken) {
 			i.take();
 			this.program_name = i.next_word_value();
@@ -170,6 +217,10 @@ public abstract class CodeUnit implements ExpressionContext {
 			if (comptimeval == null) {
 				throw new NonConstantExpressionException(value);
 			}
+
+			// check for overriding
+			checkForDoubleDeclaration(constname.name,i);
+
 			this.constants.put(constname.name, comptimeval);
 			i.assert_next_semicolon();
 		}
