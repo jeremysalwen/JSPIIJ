@@ -1,4 +1,4 @@
-You are given permission to use this program under the BSD license.  As in you can use it for any purpose.
+You are given permission to use this program under the BSD license.
 
 It also includes Serp, a bytecode library under the BSD License 
 
@@ -70,4 +70,4 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
 
 
-and HTTPClient from Apache, and google collections from google, under the apache license.
+and HTTPClient from Apache, and google collections from google, under the Apache license, a copy of which can be found in a file named APACHE-LICENSE.txt
