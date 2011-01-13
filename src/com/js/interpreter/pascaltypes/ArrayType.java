@@ -12,7 +12,7 @@ import com.js.interpreter.exceptions.ParsingException;
 public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	public final T element_type;
 
-	SubrangeType bounds;
+	public SubrangeType bounds;
 
 	public ArrayType(T element_class, SubrangeType bounds) {
 		this.element_type = element_class;
@@ -42,7 +42,7 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean equals(DeclaredType obj) {
 		if (this == obj) {
@@ -108,15 +108,16 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	 * array_type.equals(Object o)}.
 	 */
 	@Override
-	public ReturnsValue convert(ReturnsValue value, ExpressionContext f) throws ParsingException{
+	public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
+			throws ParsingException {
 		RuntimeType other = value.get_type(f);
-		
+
 		return this.superset(other.declType) ? value : null;
 	}
 
 	@Override
 	public void pushDefaultValue(Code constructor_code) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

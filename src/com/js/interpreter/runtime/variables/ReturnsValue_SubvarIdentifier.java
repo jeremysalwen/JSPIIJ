@@ -3,6 +3,7 @@ package com.js.interpreter.runtime.variables;
 import java.lang.reflect.Array;
 
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -11,13 +12,17 @@ import com.js.interpreter.runtime.ArrayPointer;
 import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.PascalIndexOutOfBoundsException;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	ReturnsValue value;
+	int offset;
 
-	public ReturnsValue_SubvarIdentifier(ReturnsValue next_returns_value) {
+	public ReturnsValue_SubvarIdentifier(ReturnsValue next_returns_value,
+			int offset) {
 		value = next_returns_value;
+		this.offset = offset;
 	}
 
 	@Override
@@ -31,14 +36,34 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 		return get(container, value.getValue(f, main));
 	}
 
-	Object get(Object container, Object indexvalue) {
-		int index = ((Number) indexvalue).intValue();
-		if (container instanceof StringBuilder) {
-			/* pascal strings start indexing at 1 */
-			return ((StringBuilder) container).charAt(index - 1);
-		} else {
-			return Array.get(container, index);
+	Object get(Object container, Object indexvalue)
+			throws RuntimePascalException {
+		int index = (Integer) indexvalue;
+		try {
+			if (container instanceof StringBuilder) {
+				/* pascal strings start indexing at 1 */
+				return ((StringBuilder) container).charAt(index - 1);
+			} else {
+				return Array.get(container, index - offset);
+			}
+		} catch (IndexOutOfBoundsException e) {
+			throwBoundsException(container, index);
+			return null;
 		}
+	}
+
+	private void throwBoundsException(Object container, int index)
+			throws PascalIndexOutOfBoundsException {
+		int min, max;
+		if (container instanceof StringBuilder) {
+			min = 1;
+			max = ((StringBuilder) container).length();
+		} else {
+			min = offset;
+			max = offset + Array.getLength(container)-1;
+		}
+		throw new PascalIndexOutOfBoundsException(value.getLineNumber(), index,
+				min, max);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -65,11 +90,16 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	public void set(Object container, VariableContext context,
 			RuntimeExecutable<?> main, Object input)
 			throws RuntimePascalException {
-		int index = ((Number) value.getValue(context, main)).intValue();
-		if (container instanceof StringBuilder) {
-			((StringBuilder) container).setCharAt(index, (Character) input);
-		} else {
-			Array.set(container, index, input);
+		int index = (Integer) value.getValue(context, main);
+		try {
+			if (container instanceof StringBuilder) {
+				((StringBuilder) container).setCharAt(index - 1,
+						(Character) input);
+			} else {
+				Array.set(container, index - offset, input);
+			}
+		} catch (IndexOutOfBoundsException e) {
+			throwBoundsException(container, index);
 		}
 	}
 
@@ -77,7 +107,11 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	public Object compileTimeGet(Object container) throws ParsingException {
 		Object index = value.compileTimeValue();
 		if (value != null) {
-			return get(container, index);
+			try {
+				return get(container, index);
+			} catch (RuntimePascalException e) {
+				throw new ConstantCalculationException(e);
+			}
 		} else {
 			return null;
 		}

@@ -29,6 +29,7 @@ import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
 import com.js.interpreter.runtime.variables.ReturnsValue_SubvarIdentifier;
 import com.js.interpreter.runtime.variables.String_SubvarIdentifier;
+import com.js.interpreter.runtime.variables.SubvarIdentifier;
 import com.js.interpreter.runtime.variables.VariableIdentifier;
 import com.js.interpreter.tokens.EOF_Token;
 import com.js.interpreter.tokens.GroupingExceptionToken;
@@ -281,63 +282,42 @@ public abstract class GrouperToken extends Token {
 	public VariableIdentifier get_next_var_identifier(
 			ExpressionContext context, WordToken initial)
 			throws ParsingException {
-		Token next;
 		VariableIdentifier identifier = new VariableIdentifier(initial.lineInfo);
 		identifier.add(new String_SubvarIdentifier(initial.name));
+		DeclaredType type = identifier.get_type(context).declType;
 		while (true) {
+			SubvarIdentifier s;
 			if (peek() instanceof PeriodToken) {
 				take();
-				next = take();
-				if (next instanceof WordToken) {
-					identifier.add(new String_SubvarIdentifier(
-							((WordToken) next).name));
+
+				if (peek() instanceof WordToken) {
+					s = new String_SubvarIdentifier(get_word_value().name);
 				} else {
-					throw new UnrecognizedTokenException(next);
+					break;
 				}
 			} else if (peek() instanceof BracketedToken) {
-
-				ReturnsValue index = JavaClassBasedType.Integer.convert(
-						((BracketedToken) take()).get_single_value(context),
-						context);
-
-				if (index == null) {
-					throw new NonIntegerIndexException(index);
+				int offset = 0;
+				if (type instanceof ArrayType) {
+					offset = ((ArrayType) type).bounds.lower;
 				}
-				identifier.add(new ReturnsValue_SubvarIdentifier(index));
+				s = new ReturnsValue_SubvarIdentifier(((BracketedToken) take())
+						.getNextExpression(context), offset);
 			} else {
 				break;
 			}
+			type = s.getType(type);
+			identifier.add(s);
 		}
 		return identifier;
 	}
 
 	public VariableIdentifier get_next_var_identifier(ExpressionContext context)
 			throws ParsingException {
-		Token next;
-		WordToken nametoken = (WordToken) take();
-
-		VariableIdentifier identifier = new VariableIdentifier(
-				nametoken.lineInfo);
-		identifier.add(new String_SubvarIdentifier(nametoken.name));
-		while (true) {
-			if (peek() instanceof PeriodToken) {
-				take();
-				next = take();
-				if (next instanceof WordToken) {
-					identifier.add(new String_SubvarIdentifier(
-							((WordToken) next).name));
-				} else {
-					throw new ExpectedTokenException("[Variable Identifier]",
-							next);
-				}
-			} else if (peek() instanceof BracketedToken) {
-				identifier.add(new ReturnsValue_SubvarIdentifier(
-						((BracketedToken) take()).getNextExpression(context)));
-			} else {
-				break;
-			}
+		Token initial = take();
+		if (!(initial instanceof WordToken)) {
+			throw new ExpectedTokenException("[Variable name]", initial);
 		}
-		return identifier;
+		return get_next_var_identifier(context, (WordToken) initial);
 	}
 
 	public List<VariableDeclaration> get_variable_declarations(

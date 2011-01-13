@@ -57,8 +57,8 @@ public class SubrangeType {
 		this.size = size;
 	}
 
-	int lower;
-	int size;
+	public int lower;
+	public int size;
 
 	@Override
 	public int hashCode() {
