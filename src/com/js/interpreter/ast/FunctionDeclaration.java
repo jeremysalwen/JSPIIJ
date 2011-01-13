@@ -68,7 +68,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 
 	public Executable instructions;
 
-	public VariableDeclaration return_type;
+	public VariableDeclaration result_definition;
 
 	public LineInfo line;
 
@@ -86,15 +86,8 @@ public class FunctionDeclaration extends AbstractFunction implements
 		this.parentContext = parent;
 		this.root = parent.root();
 		this.line = i.peek().lineInfo;
-		instructions = new InstructionGrouper(i.peek_no_EOF().lineInfo);
 		name = i.next_word_value();
-		if (parent.getVariableDefinition(name) != null) {
-			throw new SameNameException(line, getVariableDefinition(name),
-					this, name);
-		} else if (parent.getConstantDefinition(name) != null) {
-			throw new SameNameException(line, getConstantDefinition(name),
-					this, name);
-		}
+
 		get_arguments_for_declaration(i, is_procedure);
 		Token next = i.peek();
 		if (!(is_procedure ^ (next instanceof ColonToken))) {
@@ -103,7 +96,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 		}
 		if (!is_procedure && next instanceof ColonToken) {
 			i.take();
-			return_type = new VariableDeclaration("resiult", i
+			result_definition = new VariableDeclaration("resiult", i
 					.get_next_pascal_type(this), line);
 		}
 		i.assert_next_semicolon();
@@ -115,6 +108,13 @@ public class FunctionDeclaration extends AbstractFunction implements
 			local_variables = new ArrayList<VariableDeclaration>();
 		}
 		instructions = null;
+		if (parent.getVariableDefinition(name) != null) {
+			throw new SameNameException(line, getVariableDefinition(name),
+					this, name);
+		} else if (parent.getConstantDefinition(name) != null) {
+			throw new SameNameException(line, getConstantDefinition(name),
+					this, name);
+		}
 	}
 
 	public void parse_function_body(GrouperToken i) throws ParsingException {
@@ -144,15 +144,6 @@ public class FunctionDeclaration extends AbstractFunction implements
 		this.argument_types = new RuntimeType[0];
 	}
 
-	public FunctionDeclaration(ExpressionContext parent,
-			List<VariableDeclaration> local_variables,
-			InstructionGrouper instructions) {
-		this.parentContext = parent;
-		this.root = parent.root();
-		this.local_variables = local_variables;
-		this.instructions = instructions;
-	}
-
 	@Override
 	public String name() {
 		return name;
@@ -171,7 +162,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 
 	public VariableDeclaration getVariableDefinition(String name) {
 		if (name.equalsIgnoreCase("result")) {
-			return this.return_type;
+			return this.result_definition;
 		}
 		int index = StaticMethods.indexOf(argument_names, name);
 		if (index != -1) {
@@ -393,19 +384,18 @@ public class FunctionDeclaration extends AbstractFunction implements
 
 	@Override
 	public DeclaredType return_type() {
-		return return_type.type;
+		return result_definition == null ? null : result_definition.type;
 	}
 
-	public boolean headerMatches(AbstractFunction other) {
+	public boolean headerMatches(AbstractFunction other)
+			throws ParsingException {
 		if (name.equals(other.name())
 				&& Arrays.equals(argument_types, other.argumentTypes())) {
-			if (!(other instanceof FunctionDeclaration)) {
-				System.err
-						.println("Warning: attempting to override plugin declaration "
-								+ name + " with pascal code");
-				return false;
+			if (result_definition == null && other.return_type() == null) {
+				return true;
 			}
-			if (!return_type.equals(other.return_type())) {
+			if (result_definition == null || other.return_type() == null
+					|| !result_definition.equals(other.return_type())) {
 				System.err
 						.println("Warning: Overriding previously declared return type for function "
 								+ name);

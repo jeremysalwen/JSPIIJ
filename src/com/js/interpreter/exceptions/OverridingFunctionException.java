@@ -7,8 +7,8 @@ import com.js.interpreter.linenumber.LineInfo;
 public class OverridingFunctionException extends ParsingException {
 
 	public OverridingFunctionException(FunctionDeclaration old, LineInfo line) {
-		super(line, "Redfining function body for " + old.toString()
-				+ "which was previous define at " + old.getLineNumber());
+		super(line, "Redefining function body for " + old.toString()
+				+ ", which was previous define at " + old.getLineNumber());
 	}
 
 	public OverridingFunctionException(AbstractFunction old,

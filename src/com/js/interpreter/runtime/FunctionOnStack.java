@@ -39,8 +39,8 @@ public class FunctionOnStack extends VariableContext {
 				local_variables.put(prototype.argument_names[i], arguments[i]);
 			}
 		}
-		if (declaration.return_type != null) {
-			declaration.return_type.initialize(local_variables);
+		if (declaration.result_definition != null) {
+			declaration.result_definition.initialize(local_variables);
 		}
 		this.parentContext = parentContext;
 		this.prototype = declaration;

@@ -91,7 +91,7 @@ public abstract class CodeUnit implements ExpressionContext {
 	}
 
 	private FunctionDeclaration get_function_declaration(FunctionDeclaration f)
-			throws OverridingFunctionException {
+			throws ParsingException {
 		for (AbstractFunction g : callable_functions.get(f.name)) {
 			if (f.headerMatches(g)) {
 				if (!(g instanceof FunctionDeclaration)) {

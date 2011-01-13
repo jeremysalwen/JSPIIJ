@@ -33,9 +33,9 @@ public class RuntimeType implements ArgumentType {
 		return declType.convert(value, f);
 	}
 
-	public boolean equals(RuntimeType obj) {
+	public boolean equals(Object obj) {
 		if (obj instanceof RuntimeType) {
-			RuntimeType other = obj;
+			RuntimeType other = (RuntimeType) obj;
 			return other.writable == this.writable
 					&& this.declType.equals(other.declType);
 		} else {
