@@ -34,16 +34,6 @@ public class ParenthesizedToken extends GrouperToken {
 		return builder.toString();
 	}
 
-	public ReturnsValue get_single_value(ExpressionContext context)
-			throws ParsingException {
-		ReturnsValue result = getNextExpression(context);
-		if (hasNext()) {
-			Token next = take();
-			throw new ExpectedTokenException(")", next);
-		}
-		return result;
-	}
-
 	public List<ReturnsValue> get_arguments_for_call(ExpressionContext context)
 			throws ParsingException {
 		List<ReturnsValue> result = new ArrayList<ReturnsValue>();
@@ -57,5 +47,10 @@ public class ParenthesizedToken extends GrouperToken {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	protected String getClosingText() {
+		return ")";
 	}
 }

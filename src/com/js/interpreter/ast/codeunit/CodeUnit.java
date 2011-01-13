@@ -32,12 +32,12 @@ import com.js.interpreter.tokens.basic.ConstToken;
 import com.js.interpreter.tokens.basic.FunctionToken;
 import com.js.interpreter.tokens.basic.ProcedureToken;
 import com.js.interpreter.tokens.basic.ProgramToken;
+import com.js.interpreter.tokens.basic.TypeToken;
 import com.js.interpreter.tokens.basic.VarToken;
 import com.js.interpreter.tokens.grouping.BaseGrouperToken;
 import com.js.interpreter.tokens.grouping.BeginEndToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 import com.js.interpreter.tokens.grouping.RecordToken;
-import com.js.interpreter.tokens.grouping.TypeToken;
 
 public abstract class CodeUnit implements ExpressionContext {
 

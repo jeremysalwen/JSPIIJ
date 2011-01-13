@@ -26,4 +26,9 @@ public class BeginEndToken extends GrouperToken {
 		builder.append("end ");
 		return builder.toString();
 	}
+
+	@Override
+	protected String getClosingText() {
+		return "end";
+	}
 }

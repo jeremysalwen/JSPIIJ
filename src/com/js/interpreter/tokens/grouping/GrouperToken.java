@@ -2,6 +2,7 @@ package com.js.interpreter.tokens.grouping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.js.interpreter.ast.ExpressionContext;
@@ -294,11 +295,12 @@ public abstract class GrouperToken extends Token {
 					throw new UnrecognizedTokenException(next);
 				}
 			} else if (peek() instanceof BracketedToken) {
-				ReturnsValue index = ((BracketedToken) take())
-						.getNextExpression(context);
-				RuntimeType indextype = index.get_type(context);
-				if (!(indextype.declType.equals(JavaClassBasedType.Integer) || indextype.declType
-						.equals(JavaClassBasedType.Long))) {
+
+				ReturnsValue index = JavaClassBasedType.Integer.convert(
+						((BracketedToken) take()).get_single_value(context),
+						context);
+
+				if (index == null) {
 					throw new NonIntegerIndexException(index);
 				}
 				identifier.add(new ReturnsValue_SubvarIdentifier(index));
@@ -369,4 +371,15 @@ public abstract class GrouperToken extends Token {
 		return result;
 	}
 
+	public ReturnsValue get_single_value(ExpressionContext context)
+			throws ParsingException {
+		ReturnsValue result = getNextExpression(context);
+		if (hasNext()) {
+			Token next = take();
+			throw new ExpectedTokenException(getClosingText(), next);
+		}
+		return result;
+	}
+
+	protected abstract String getClosingText();
 }

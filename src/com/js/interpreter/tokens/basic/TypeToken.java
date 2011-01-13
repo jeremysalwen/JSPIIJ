@@ -1,8 +1,8 @@
-package com.js.interpreter.tokens.grouping;
+package com.js.interpreter.tokens.basic;
 
 import com.js.interpreter.linenumber.LineInfo;
 
-public class TypeToken extends GrouperToken {
+public class TypeToken extends BasicToken {
 	public TypeToken(LineInfo line) {
 		super(line);
 	}
@@ -11,4 +11,5 @@ public class TypeToken extends GrouperToken {
 	public String toString() {
 		return "type";
 	}
+
 }

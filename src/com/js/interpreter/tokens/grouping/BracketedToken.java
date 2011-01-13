@@ -21,4 +21,9 @@ public class BracketedToken extends GrouperToken {
 		tmp.append(']');
 		return tmp.toString();
 	}
+
+	@Override
+	protected String getClosingText() {
+		return "]";
+	}
 }

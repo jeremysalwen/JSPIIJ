@@ -8,6 +8,7 @@ public class CaseToken extends GrouperToken {
 	public CaseToken(LineInfo line) {
 		super(line);
 	}
+
 	@Override
 	public String toString() {
 		StringBuilder tmp = new StringBuilder("case ");
@@ -20,4 +21,9 @@ public class CaseToken extends GrouperToken {
 		tmp.append("end");
 		return tmp.toString();
 	}
+
+	protected String getClosingText() {
+		return "end";
+	};
+
 }
