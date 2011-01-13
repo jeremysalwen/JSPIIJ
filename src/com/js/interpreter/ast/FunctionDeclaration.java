@@ -21,6 +21,7 @@ import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
@@ -67,7 +68,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 
 	public Executable instructions;
 
-	public DeclaredType return_type;
+	public VariableDeclaration return_type;
 
 	public LineInfo line;
 
@@ -87,12 +88,23 @@ public class FunctionDeclaration extends AbstractFunction implements
 		this.line = i.peek().lineInfo;
 		instructions = new InstructionGrouper(i.peek_no_EOF().lineInfo);
 		name = i.next_word_value();
+		if (parent.getVariableDefinition(name) != null) {
+			throw new SameNameException(line, getVariableDefinition(name),
+					this, name);
+		} else if (parent.getConstantDefinition(name) != null) {
+			throw new SameNameException(line, getConstantDefinition(name),
+					this, name);
+		}
 		get_arguments_for_declaration(i, is_procedure);
 		Token next = i.peek();
-		assert (is_procedure ^ (next instanceof ColonToken));
+		if (!(is_procedure ^ (next instanceof ColonToken))) {
+			throw new ParsingException(next.lineInfo,
+					"Functions must have a return type, and procedures cannot have one");
+		}
 		if (!is_procedure && next instanceof ColonToken) {
 			i.take();
-			return_type = i.get_next_pascal_type(this);
+			return_type = new VariableDeclaration("resiult", i
+					.get_next_pascal_type(this), line);
 		}
 		i.assert_next_semicolon();
 		next = i.peek();
@@ -157,21 +169,22 @@ public class FunctionDeclaration extends AbstractFunction implements
 				.execute();
 	}
 
-	public DeclaredType getVariableType(String name) {
+	public VariableDeclaration getVariableDefinition(String name) {
 		if (name.equalsIgnoreCase("result")) {
-			return return_type;
+			return this.return_type;
 		}
 		int index = StaticMethods.indexOf(argument_names, name);
 		if (index != -1) {
-			return argument_types[index].declType;
+			return new VariableDeclaration(name,
+					argument_types[index].declType, line);
 		} else {
 			for (VariableDeclaration v : local_variables) {
 				if (v.name.equals(name)) {
-					return v.type;
+					return v;
 				}
 			}
 		}
-		return parentContext.getVariableType(name);
+		return parentContext.getVariableDefinition(name);
 	}
 
 	@Override
@@ -322,7 +335,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 			WordToken nametoken = (WordToken) next;
 			next = token_iterator.peek();
 			if (next instanceof ParenthesizedToken) {
-				next=token_iterator.take();
+				next = token_iterator.take();
 				List<ReturnsValue> arguments = ((ParenthesizedToken) next)
 						.get_arguments_for_call(this);
 				return FunctionCall.generate_function_call(nametoken,
@@ -380,7 +393,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 
 	@Override
 	public DeclaredType return_type() {
-		return return_type;
+		return return_type.type;
 	}
 
 	public boolean headerMatches(AbstractFunction other) {
@@ -413,8 +426,8 @@ public class FunctionDeclaration extends AbstractFunction implements
 	}
 
 	@Override
-	public Object getConstant(String ident) {
-		return parentContext.getConstant(ident);
+	public ConstantDefinition getConstantDefinition(String ident) {
+		return parentContext.getConstantDefinition(ident);
 	}
 
 	@Override
@@ -425,5 +438,15 @@ public class FunctionDeclaration extends AbstractFunction implements
 	@Override
 	public CodeUnit root() {
 		return root;
+	}
+
+	@Override
+	public String getEntityType() {
+		return "function";
+	}
+
+	@Override
+	public LineInfo getLineNumber() {
+		return line;
 	}
 }

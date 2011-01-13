@@ -20,18 +20,7 @@ import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
 public class CustomTypeGenerator {
-	public static void main(String[] args) {
-		CustomTypeGenerator c = new CustomTypeGenerator(new File("/tmp/"));
-		List<VariableDeclaration> variables = new ArrayList<VariableDeclaration>();
-		variables.add(new VariableDeclaration("double_field",
-				JavaClassBasedType.Double));
-		variables.add(new VariableDeclaration("integer_field",
-				JavaClassBasedType.Integer));
-		CustomType custom = new CustomType();
-		custom.name = "blah";
-		custom.variable_types = variables;
-		c.output_class(custom);
-	}
+
 
 	/**
 	 * The base directory into which the files will be output.

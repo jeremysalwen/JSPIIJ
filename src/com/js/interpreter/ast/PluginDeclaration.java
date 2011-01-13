@@ -11,6 +11,7 @@ import java.util.List;
 
 import ncsa.tools.common.util.TypeUtils;
 
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -36,8 +37,10 @@ public class PluginDeclaration extends AbstractFunction {
 
 	@Override
 	public Object call(VariableContext parentcontext,
-			RuntimeExecutable<?> main, Object[] arguments) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-			return method.invoke(owner, arguments);
+			RuntimeExecutable<?> main, Object[] arguments)
+			throws IllegalArgumentException, IllegalAccessException,
+			InvocationTargetException {
+		return method.invoke(owner, arguments);
 	}
 
 	Type getFirstGenericType(Type t) {
@@ -155,6 +158,16 @@ public class PluginDeclaration extends AbstractFunction {
 	@Override
 	public boolean isByReference(int i) {
 		return method.getParameterTypes()[i] == VariableBoxer.class;
+	}
+
+	@Override
+	public String getEntityType() {
+		return "plugin";
+	}
+
+	@Override
+	public LineInfo getLineNumber() {
+		return new LineInfo(-1, owner.getClass().getCanonicalName());
 	}
 
 }

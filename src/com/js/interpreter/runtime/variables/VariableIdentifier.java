@@ -26,9 +26,9 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 
 	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
 		String ident = get(0).toString();
-		DeclaredType type = f.getVariableType(ident);
+		DeclaredType type = f.getVariableDefinition(ident).type;
 		if (type == null) {
-			Object value = f.getConstant(ident);
+			Object value = f.getConstantDefinition(ident);
 			if (value != null) {
 				type = JavaClassBasedType.anew(value.getClass());
 			}
@@ -95,7 +95,6 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 		}
 		return builder.toString();
 	}
-
 
 	/**
 	 * 

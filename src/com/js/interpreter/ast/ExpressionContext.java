@@ -3,11 +3,10 @@ package com.js.interpreter.ast;
 import java.util.List;
 
 import com.js.interpreter.ast.codeunit.CodeUnit;
-import com.js.interpreter.pascaltypes.DeclaredType;
 
 public interface ExpressionContext extends CompileTimeContext {
 
-	public DeclaredType getVariableType(String ident);
+	public VariableDeclaration getVariableDefinition(String ident);
 
 	public List<AbstractFunction> getCallableFunctions(String name);
 

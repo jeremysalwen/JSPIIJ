@@ -40,7 +40,8 @@ public class CreatePointer extends DebuggableReturnsValue {
 	@Override
 	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
 		if (container == null) {
-			return new RuntimeType(f.getVariableType(index.toString()), true);
+			return new RuntimeType(
+					f.getVariableDefinition(index.toString()).type, true);
 		} else {
 			RuntimeType container_type = container.get_type(f);
 			return new RuntimeType(index.getType(container_type.declType),
@@ -62,9 +63,10 @@ public class CreatePointer extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
-		Object cont=container.compileTimeValue(context);
-		if(cont!=null) {
+	public Object compileTimeValue(CompileTimeContext context)
+			throws ParsingException {
+		Object cont = container.compileTimeValue(context);
+		if (cont != null) {
 			return null;
 		}
 		return null;

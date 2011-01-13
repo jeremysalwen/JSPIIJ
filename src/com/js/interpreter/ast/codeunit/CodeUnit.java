@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.google.common.collect.ListMultimap;
 import com.js.interpreter.ast.AbstractFunction;
+import com.js.interpreter.ast.ConstantDefinition;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.VariableDeclaration;
@@ -18,6 +19,7 @@ import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -47,7 +49,7 @@ public abstract class CodeUnit implements ExpressionContext {
 
 	String program_name;
 
-	public Map<String, Object> constants;
+	public Map<String, ConstantDefinition> constants;
 
 	public List<VariableDeclaration> UnitVarDefs = new ArrayList<VariableDeclaration>();
 	/*
@@ -60,7 +62,7 @@ public abstract class CodeUnit implements ExpressionContext {
 	public CodeUnit(ListMultimap<String, AbstractFunction> functionTable,
 			CustomTypeGenerator type_generator) {
 		this.type_generator = type_generator;
-		constants = new HashMap<String, Object>();
+		constants = new HashMap<String, ConstantDefinition>();
 		callable_functions = functionTable;
 		custom_types = new HashMap<String, CustomType>();
 		typedefs = new HashMap<String, DeclaredType>();
@@ -160,6 +162,7 @@ public abstract class CodeUnit implements ExpressionContext {
 			throws ParsingException {
 		while (i.peek() instanceof WordToken) {
 			WordToken constname = (WordToken) i.take();
+			String n = constname.name;
 			Token equals = i.take();
 			if (!(equals instanceof OperatorToken)
 					|| ((OperatorToken) equals).type != OperatorTypes.EQUALS) {
@@ -170,7 +173,20 @@ public abstract class CodeUnit implements ExpressionContext {
 			if (comptimeval == null) {
 				throw new NonConstantExpressionException(value);
 			}
-			this.constants.put(constname.name, comptimeval);
+			ConstantDefinition newdef = new ConstantDefinition(comptimeval,
+					constname.lineInfo);
+			if (functionExists(n)) {
+				throw new SameNameException(constname.lineInfo,
+						getCallableFunctions(n).get(0), newdef, n);
+			} else if (getVariableDefinition(n) != null) {
+				throw new SameNameException(constname.lineInfo,
+						getVariableDefinition(n), newdef, n);
+			} else if (getConstantDefinition(n) != null) {
+				throw new SameNameException(constname.lineInfo,
+						getConstantDefinition(n), newdef, n);
+			} else {
+				this.constants.put(constname.name, newdef);
+			}
 			i.assert_next_semicolon();
 		}
 	}
@@ -184,16 +200,6 @@ public abstract class CodeUnit implements ExpressionContext {
 	protected void handleGloablVarDeclaration(
 			List<VariableDeclaration> declarations) {
 		UnitVarDefs.addAll(declarations);
-	}
-
-	public DeclaredType getGlobalVarType(String name) {
-
-		for (VariableDeclaration v : UnitVarDefs) {
-			if (v.name.equals(name)) {
-				return v.type;
-			}
-		}
-		return null;
 	}
 
 	private void add_custom_type_declaration(GrouperToken i)
@@ -215,10 +221,10 @@ public abstract class CodeUnit implements ExpressionContext {
 	}
 
 	@Override
-	public DeclaredType getVariableType(String ident) {
+	public VariableDeclaration getVariableDefinition(String ident) {
 		for (VariableDeclaration v : UnitVarDefs) {
 			if (v.name.equals(ident)) {
-				return v.type;
+				return v;
 			}
 		}
 		return null;
@@ -230,7 +236,7 @@ public abstract class CodeUnit implements ExpressionContext {
 	}
 
 	@Override
-	public Object getConstant(String ident) {
+	public ConstantDefinition getConstantDefinition(String ident) {
 		return constants.get(ident);
 	}
 

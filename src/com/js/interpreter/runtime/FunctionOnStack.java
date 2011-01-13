@@ -40,8 +40,7 @@ public class FunctionOnStack extends VariableContext {
 			}
 		}
 		if (declaration.return_type != null) {
-			new VariableDeclaration("result", prototype.return_type)
-					.initialize(local_variables);
+			declaration.return_type.initialize(local_variables);
 		}
 		this.parentContext = parentContext;
 		this.prototype = declaration;

@@ -13,7 +13,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public abstract class AbstractFunction {
+public abstract class AbstractFunction implements NamedEntity {
 
 	public abstract String name();
 

@@ -2,7 +2,6 @@ package com.js.interpreter.tokens.grouping;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.js.interpreter.ast.ExpressionContext;
@@ -18,14 +17,12 @@ import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.GroupingException;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
-import com.js.interpreter.exceptions.NonIntegerIndexException;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
-import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
 import com.js.interpreter.runtime.variables.ReturnsValue_SubvarIdentifier;
 import com.js.interpreter.runtime.variables.String_SubvarIdentifier;
@@ -260,9 +257,9 @@ public abstract class GrouperToken extends Token {
 			} else if (context.functionExists(name.name)) {
 				return FunctionCall.generate_function_call(name,
 						new ArrayList<ReturnsValue>(0), context);
-			} else if (context.getConstant(name.name) != null) {
-				return new ConstantAccess(context.getConstant(name.name),
-						name.lineInfo);
+			} else if (context.getConstantDefinition(name.name) != null) {
+				return new ConstantAccess(context.getConstantDefinition(
+						name.name).getValue(), name.lineInfo);
 			}
 			VariableAccess result = new VariableAccess(get_next_var_identifier(
 					context, name), name.lineInfo);
@@ -329,11 +326,16 @@ public abstract class GrouperToken extends Token {
 		/*
 		 * reusing it, so it is further out of scope than necessary
 		 */
-		List<String> names = new ArrayList<String>(1);
+		List<WordToken> names = new ArrayList<WordToken>();
 		Token next;
 		do {
 			do {
-				names.add(next_word_value());
+				next = take();
+				if (!(next instanceof WordToken)) {
+					throw new ExpectedTokenException("[Variable Identifier]",
+							next);
+				}
+				names.add((WordToken) next);
 				next = take();
 			} while (next instanceof CommaToken);
 			if (!(next instanceof ColonToken)) {
@@ -342,11 +344,22 @@ public abstract class GrouperToken extends Token {
 			DeclaredType type;
 			type = get_next_pascal_type(context);
 			assert_next_semicolon();
-			for (String s : names) {
-				result.add(new VariableDeclaration(s, type));
-				/*
-				 * TODO make sure this conforms to pascal
-				 */
+			for (WordToken s : names) {
+				VariableDeclaration v = new VariableDeclaration(s.name, type,
+						s.lineInfo);
+				String n = s.name;
+				if (context.functionExists(n)) {
+					throw new SameNameException(s.lineInfo, context
+							.getCallableFunctions(n).get(0), v, n);
+				} else if (context.getVariableDefinition(n) != null) {
+					throw new SameNameException(s.lineInfo, context
+							.getVariableDefinition(n), v, s.name);
+				} else if (context.getConstantDefinition(s.name) != null) {
+					throw new SameNameException(s.lineInfo, context
+							.getConstantDefinition(n), v, s.name);
+				} else {
+					result.add(v);
+				}
 			}
 			names.clear(); // reusing the list object
 			next = peek();

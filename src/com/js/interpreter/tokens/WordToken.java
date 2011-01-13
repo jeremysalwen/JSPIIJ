@@ -50,7 +50,7 @@ public class WordToken extends Token {
 		if (type != null) {
 			return type;
 		} else {
-			Object constval = context.getConstant(s);
+			Object constval = context.getConstantDefinition(s);
 			if (constval == null) {
 				throw new UnrecognizedTypeException(lineInfo, s);
 			}
