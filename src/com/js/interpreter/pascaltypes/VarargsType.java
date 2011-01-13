@@ -41,8 +41,22 @@ public class VarargsType implements ArgumentType {
 	}
 
 	@Override
-	public boolean perfectFit(Iterator<RuntimeType> types) {
-		return false;
+	public ReturnsValue perfectFit(Iterator<ReturnsValue> types,
+			ExpressionContext e) throws ParsingException {
+		LineInfo line = null;
+		List<ReturnsValue> converted = new ArrayList<ReturnsValue>();
+		while (types.hasNext()) {
+			ReturnsValue fit = elementType.perfectFit(types, e);
+			if (fit == null) {
+				return null;
+			}
+			if (line == null) {
+				line = fit.getLineNumber();
+			}
+			converted.add(fit);
+		}
+		ReturnsValue[] convert = converted.toArray(new ReturnsValue[converted
+				.size()]);
+		return new ArrayBoxer(convert, elementType, line);
 	}
-
 }

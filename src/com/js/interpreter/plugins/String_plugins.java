@@ -200,8 +200,24 @@ public class String_plugins implements PascalPlugin {
 		return s.substring(s.length() - length, s.length());
 	}
 
-	public static void setlength() {
-		// TODO no doc
+	public static void setlength(VariableBoxer<StringBuilder> s, int length)
+			throws RuntimePascalException {
+		String filler = "!@#$%";
+		StringBuilder old = s.get();
+		if (length <= old.length()) {
+			s.set(new StringBuilder(old.subSequence(0, length)));
+		} else {
+			int extra = length - old.length();
+			int count = extra / filler.length();
+			StringBuilder result = new StringBuilder(length);
+			result.append(old);
+			for (int i = 0; i < count; i++) {
+				result.append(filler);
+			}
+			int remaining = extra - count * filler.length();
+			result.append(filler.subSequence(0, remaining));
+			s.set(result);
+		}
 	}
 
 	public static boolean startswith(String prefix, String s) {

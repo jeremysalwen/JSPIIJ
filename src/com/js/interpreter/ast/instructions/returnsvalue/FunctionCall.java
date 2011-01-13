@@ -98,13 +98,7 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 			throws ParsingException {
 		List<AbstractFunction> possibilities = f.getCallableFunctions(name.name
 				.toLowerCase());
-		List<RuntimeType> passedtypes = new ArrayList<RuntimeType>(arguments
-				.size());
-		ReturnsValue[] args = arguments.toArray(new ReturnsValue[arguments
-				.size()]);
-		for (ReturnsValue r : arguments) {
-			passedtypes.add(r.get_type(f));
-		}
+
 		boolean matching = false;
 
 		AbstractFunction chosen = null;
@@ -112,16 +106,18 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 		AbstractFunction ambigous = null;
 		FunctionCall result = null;
 		for (AbstractFunction a : possibilities) {
-			if (a.perfectMatch(passedtypes)) {
+			ReturnsValue[] converted = a.perfectMatch(arguments, f);
+			if (converted != null) {
 				if (perfectfit == true) {
 					throw new AmbiguousFunctionCallException(name.lineInfo,
 							chosen, a);
 				}
 				perfectfit = true;
 				chosen = a;
-				result = new FunctionCall(a, args, name.lineInfo);
+				result = new FunctionCall(a, converted, name.lineInfo);
+				continue;
 			}
-			ReturnsValue[] converted = a.format_args(arguments, f);
+			converted = a.format_args(arguments, f);
 			if (converted != null && !perfectfit) {
 				if (chosen != null) {
 					ambigous = chosen;

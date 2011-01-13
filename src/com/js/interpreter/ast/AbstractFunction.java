@@ -77,14 +77,17 @@ public abstract class AbstractFunction {
 		return result;
 	}
 
-	public boolean perfectMatch(List<RuntimeType> args) {
+	public ReturnsValue[] perfectMatch(List<ReturnsValue> args,
+			ExpressionContext context) throws ParsingException {
 		ArgumentType[] accepted_types = argumentTypes();
-		Iterator<RuntimeType> iterator = args.iterator();
+		Iterator<ReturnsValue> iterator = args.iterator();
+		ReturnsValue[] result = new ReturnsValue[accepted_types.length];
 		for (int i = 0; i < accepted_types.length; i++) {
-			if (!accepted_types[i].perfectFit(iterator)) {
-				return false;
+			result[i] = accepted_types[i].perfectFit(iterator, context);
+			if (result[i] == null) {
+				return null;
 			}
 		}
-		return true;
+		return result;
 	}
 }

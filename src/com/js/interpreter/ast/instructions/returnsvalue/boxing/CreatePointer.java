@@ -55,7 +55,7 @@ public class CreatePointer extends DebuggableReturnsValue {
 		if (container == null) {
 			value = f;
 		} else {
-			value = container.getValueImpl(f, main);
+			value = container.getValue(f, main);
 		}
 		return index.create_pointer(value, f, main);
 	}

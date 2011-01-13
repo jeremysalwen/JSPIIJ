@@ -12,6 +12,8 @@ import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
+import com.js.interpreter.runtime.exception.internal.InternalInterpreterException;
+import com.js.interpreter.runtime.exception.internal.ZeroLengthVariableException;
 
 public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 	LineInfo lineinfo;
@@ -46,7 +48,7 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 
 	protected void zero_length_check() throws RuntimePascalException {
 		if (isEmpty()) {
-			throw new RuntimePascalException(this.lineinfo);
+			throw new ZeroLengthVariableException(this.lineinfo);
 		}
 	}
 

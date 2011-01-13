@@ -322,7 +322,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 			WordToken nametoken = (WordToken) next;
 			next = token_iterator.peek();
 			if (next instanceof ParenthesizedToken) {
-				token_iterator.take();
+				next=token_iterator.take();
 				List<ReturnsValue> arguments = ((ParenthesizedToken) next)
 						.get_arguments_for_call(this);
 				return FunctionCall.generate_function_call(nametoken,

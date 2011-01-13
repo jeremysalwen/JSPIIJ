@@ -67,15 +67,19 @@ public class RuntimeType implements ArgumentType {
 	}
 
 	@Override
-	public boolean perfectFit(Iterator<RuntimeType> types) {
-		try {
-			RuntimeType other = types.next();
-			return other.declType.equals(declType)
-					&& (!writable || other.writable);
-		} catch (NoSuchElementException e) {
-			return false;
+	public ReturnsValue perfectFit(Iterator<ReturnsValue> args,
+			ExpressionContext e) throws ParsingException {
+		ReturnsValue val = args.next();
+		RuntimeType other = val.get_type(e);
+		if (this.declType.equals(other.declType)) {
+			if (writable) {
+				return new CreatePointer((VariableAccess) val);
+			} else {
+				return val;
+			}
+		} else {
+			return null;
 		}
-
 	}
 
 }
