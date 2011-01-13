@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -20,5 +21,5 @@ public interface ReturnsValue {
 	/*
 	 * returns null if not a compile-time constant.
 	 */
-	public Object compileTimeValue() throws ParsingException;
+	public Object compileTimeValue(CompileTimeContext context) throws ParsingException;
 }

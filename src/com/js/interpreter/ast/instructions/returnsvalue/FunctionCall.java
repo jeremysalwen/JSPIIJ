@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.js.interpreter.ast.AbstractFunction;
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.exceptions.AmbiguousFunctionCallException;
@@ -89,7 +90,7 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue() {
+	public Object compileTimeValue(CompileTimeContext context) {
 		return null;
 	}
 

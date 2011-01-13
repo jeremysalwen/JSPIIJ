@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -40,7 +41,8 @@ public class VariableAccess extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue() {
+	public Object compileTimeValue(CompileTimeContext context)
+			throws ParsingException {
 		return null;
 	}
 }

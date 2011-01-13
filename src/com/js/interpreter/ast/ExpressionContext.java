@@ -5,13 +5,9 @@ import java.util.List;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.pascaltypes.DeclaredType;
 
-public interface ExpressionContext {
+public interface ExpressionContext extends CompileTimeContext {
 
 	public DeclaredType getVariableType(String ident);
-
-	public Object getConstant(String ident);
-	
-	public DeclaredType getTypedefType(String ident);
 
 	public List<AbstractFunction> getCallableFunctions(String name);
 

@@ -1,5 +1,6 @@
 package com.js.interpreter.runtime.variables;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.CustomType;
@@ -51,7 +52,8 @@ public class String_SubvarIdentifier implements SubvarIdentifier {
 	}
 
 	@Override
-	public Object compileTimeGet(Object container) throws ParsingException {
+	public Object compileTimeGet(Object container, CompileTimeContext context)
+			throws ParsingException {
 		try {
 			return ((ContainsVariables) container).get_var(s);
 		} catch (RuntimePascalException e) {

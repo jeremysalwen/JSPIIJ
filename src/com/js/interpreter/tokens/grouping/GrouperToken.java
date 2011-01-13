@@ -260,6 +260,9 @@ public abstract class GrouperToken extends Token {
 			} else if (context.functionExists(name.name)) {
 				return FunctionCall.generate_function_call(name,
 						new ArrayList<ReturnsValue>(0), context);
+			} else if (context.getConstant(name.name) != null) {
+				return new ConstantAccess(context.getConstant(name.name),
+						name.lineInfo);
 			}
 			VariableAccess result = new VariableAccess(get_next_var_identifier(
 					context, name), name.lineInfo);

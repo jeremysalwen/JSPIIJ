@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -36,8 +37,8 @@ public class StringBoxer extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue() throws ParsingException {
-		Object o = s.compileTimeValue();
+	public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
+		Object o = s.compileTimeValue(context);
 		if (o != null) {
 			return new StringBuilder(o.toString());
 		} else {

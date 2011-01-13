@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
@@ -61,8 +62,8 @@ public class CreatePointer extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue() throws ParsingException {
-		Object cont=container.compileTimeValue();
+	public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
+		Object cont=container.compileTimeValue(context);
 		if(cont!=null) {
 			return null;
 		}

@@ -2,6 +2,7 @@ package com.js.interpreter.runtime.variables;
 
 import java.lang.reflect.Array;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.NonArrayIndexed;
@@ -60,7 +61,7 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 			max = ((StringBuilder) container).length();
 		} else {
 			min = offset;
-			max = offset + Array.getLength(container)-1;
+			max = offset + Array.getLength(container) - 1;
 		}
 		throw new PascalIndexOutOfBoundsException(value.getLineNumber(), index,
 				min, max);
@@ -104,8 +105,9 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 	}
 
 	@Override
-	public Object compileTimeGet(Object container) throws ParsingException {
-		Object index = value.compileTimeValue();
+	public Object compileTimeGet(Object container, CompileTimeContext context)
+			throws ParsingException {
+		Object index = value.compileTimeValue(context);
 		if (value != null) {
 			try {
 				return get(container, index);

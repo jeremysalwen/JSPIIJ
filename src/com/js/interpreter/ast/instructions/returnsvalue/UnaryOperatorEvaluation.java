@@ -2,6 +2,7 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 
 import javax.naming.OperationNotSupportedException;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
@@ -59,8 +60,9 @@ public class UnaryOperatorEvaluation extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue() throws ParsingException {
-		Object value = operon.compileTimeValue();
+	public Object compileTimeValue(CompileTimeContext context)
+			throws ParsingException {
+		Object value = operon.compileTimeValue(context);
 		if (value == null) {
 			return null;
 		}

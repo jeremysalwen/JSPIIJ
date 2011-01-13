@@ -23,7 +23,7 @@ public class SubrangeType {
 		if (low == null) {
 			throw new NonIntegerIndexException(l);
 		}
-		Object min = low.compileTimeValue();
+		Object min = low.compileTimeValue(context);
 		if (min == null) {
 			throw new NonConstantExpressionException(low);
 		}
@@ -42,7 +42,7 @@ public class SubrangeType {
 		if (high == null) {
 			throw new NonIntegerIndexException(h);
 		}
-		Object max = high.compileTimeValue();
+		Object max = high.compileTimeValue(context);
 		if (max == null) {
 			throw new NonConstantExpressionException(high);
 		}

@@ -2,6 +2,7 @@ package com.js.interpreter.pascaltypes.typeconversion;
 
 import java.util.HashMap;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
@@ -107,10 +108,11 @@ public class TypeConverter {
 		}
 
 		@Override
-		public Object compileTimeValue() throws ParsingException {
-			Object o=other.compileTimeValue();
-			if(o!=null) {
-				return ((Number)o).doubleValue();
+		public Object compileTimeValue(CompileTimeContext context)
+				throws ParsingException {
+			Object o = other.compileTimeValue(context);
+			if (o != null) {
+				return ((Number) o).doubleValue();
 			} else {
 				return null;
 			}
@@ -141,11 +143,13 @@ public class TypeConverter {
 		public LineInfo getLineNumber() {
 			return other.getLineNumber();
 		}
+
 		@Override
-		public Object compileTimeValue() throws ParsingException {
-			Object o=other.compileTimeValue();
-			if(o!=null) {
-				return ((Number)o).longValue();
+		public Object compileTimeValue(CompileTimeContext context)
+				throws ParsingException {
+			Object o = other.compileTimeValue(context);
+			if (o != null) {
+				return ((Number) o).longValue();
 			} else {
 				return null;
 			}
@@ -176,11 +180,13 @@ public class TypeConverter {
 		public LineInfo getLineNumber() {
 			return other.getLineNumber();
 		}
+
 		@Override
-		public Object compileTimeValue() throws ParsingException {
-			Object o=other.compileTimeValue();
-			if(o!=null) {
-				return (char)((Number)o).longValue();
+		public Object compileTimeValue(CompileTimeContext context)
+				throws ParsingException {
+			Object o = other.compileTimeValue(context);
+			if (o != null) {
+				return (char) ((Number) o).longValue();
 			} else {
 				return null;
 			}
@@ -211,11 +217,13 @@ public class TypeConverter {
 		public LineInfo getLineNumber() {
 			return other.getLineNumber();
 		}
+
 		@Override
-		public Object compileTimeValue() throws ParsingException {
-			Object o=other.compileTimeValue();
-			if(o!=null) {
-				return ((Number)o).intValue();
+		public Object compileTimeValue(CompileTimeContext context)
+				throws ParsingException {
+			Object o = other.compileTimeValue(context);
+			if (o != null) {
+				return ((Number) o).intValue();
 			} else {
 				return null;
 			}
@@ -246,11 +254,13 @@ public class TypeConverter {
 		public LineInfo getLineNumber() {
 			return other.getLineNumber();
 		}
+
 		@Override
-		public Object compileTimeValue() throws ParsingException {
-			Object o=other.compileTimeValue();
-			if(o!=null) {
-				return (int)((Character)o).charValue();
+		public Object compileTimeValue(CompileTimeContext context)
+				throws ParsingException {
+			Object o = other.compileTimeValue(context);
+			if (o != null) {
+				return (int) ((Character) o).charValue();
 			} else {
 				return null;
 			}

@@ -2,6 +2,7 @@ package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
 import java.lang.reflect.Array;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -48,11 +49,11 @@ public class ArrayBoxer extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue() throws ParsingException {
+	public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
 		Object[] result = (Object[]) Array.newInstance(type.getRuntimeClass(),
 				values.length);
 		for (int i = 0; i < values.length; i++) {
-			Object val = values[i].compileTimeValue();
+			Object val = values[i].compileTimeValue(context);
 			if (val == null) {
 				return null;
 			} else {

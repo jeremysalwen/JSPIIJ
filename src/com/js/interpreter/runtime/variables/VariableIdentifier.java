@@ -2,6 +2,7 @@ package com.js.interpreter.runtime.variables;
 
 import java.util.ArrayList;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
 import com.js.interpreter.exceptions.ParsingException;
@@ -94,6 +95,7 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 		}
 		return builder.toString();
 	}
+
 
 	/**
 	 * 

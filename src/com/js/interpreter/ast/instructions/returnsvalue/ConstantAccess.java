@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
@@ -38,7 +39,7 @@ public class ConstantAccess extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue() {
+	public Object compileTimeValue(CompileTimeContext context) {
 		return constant_value;
 	}
 }

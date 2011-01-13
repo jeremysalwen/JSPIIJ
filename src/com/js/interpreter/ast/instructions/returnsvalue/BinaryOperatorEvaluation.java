@@ -2,6 +2,7 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 
 import javax.naming.OperationNotSupportedException;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
@@ -136,9 +137,9 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue() throws ParsingException {
-		Object value1 = operon1.compileTimeValue();
-		Object value2 = operon2.compileTimeValue();
+	public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
+		Object value1 = operon1.compileTimeValue(context);
+		Object value2 = operon2.compileTimeValue(context);
 		if (value1 != null && value2 != null) {
 			try {
 				return operate(value1, value2);

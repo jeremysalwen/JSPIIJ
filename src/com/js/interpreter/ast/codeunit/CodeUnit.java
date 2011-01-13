@@ -166,7 +166,7 @@ public abstract class CodeUnit implements ExpressionContext {
 				throw new ExpectedTokenException("=", constname);
 			}
 			ReturnsValue value = i.getNextExpression(this);
-			Object comptimeval = value.compileTimeValue();
+			Object comptimeval = value.compileTimeValue(this);
 			if (comptimeval == null) {
 				throw new NonConstantExpressionException(value);
 			}
