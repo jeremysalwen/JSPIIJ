@@ -33,9 +33,9 @@ public class ReturnsValue_SubvarIdentifier implements SubvarIdentifier {
 
 	Object get(Object container, Object indexvalue) {
 		int index = ((Number) indexvalue).intValue();
-
 		if (container instanceof StringBuilder) {
-			return ((StringBuilder) container).charAt(index);
+			/* pascal strings start indexing at 1 */
+			return ((StringBuilder) container).charAt(index - 1);
 		} else {
 			return Array.get(container, index);
 		}
