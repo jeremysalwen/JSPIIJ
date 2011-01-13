@@ -96,7 +96,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 		}
 		if (!is_procedure && next instanceof ColonToken) {
 			i.take();
-			result_definition = new VariableDeclaration("resiult", i
+			result_definition = new VariableDeclaration("result", i
 					.get_next_pascal_type(this), line);
 		}
 		i.assert_next_semicolon();
