@@ -4,6 +4,7 @@ import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
+import com.js.interpreter.exceptions.NonIntegerIndexException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.basic.PeriodToken;
@@ -17,8 +18,11 @@ public class SubrangeType {
 
 	public SubrangeType(GrouperToken i, ExpressionContext context)
 			throws ParsingException {
-		ReturnsValue low = JavaClassBasedType.Integer.convert(i
-				.getNextExpression(context), context);
+		ReturnsValue l = i.getNextExpression(context);
+		ReturnsValue low = JavaClassBasedType.Integer.convert(l, context);
+		if (low == null) {
+			throw new NonIntegerIndexException(l);
+		}
 		Object min = low.compileTimeValue();
 		if (min == null) {
 			throw new NonConstantExpressionException(low);
@@ -29,17 +33,23 @@ public class SubrangeType {
 		if (!(t instanceof PeriodToken)) {
 			throw new ExpectedTokenException("..", t);
 		}
-		t = i.take();
-		if (!(t instanceof PeriodToken)) {
-			throw new ExpectedTokenException("..", t);
+		t = i.peek_no_EOF();
+		if ((t instanceof PeriodToken)) {
+			t = i.take();
 		}
-		ReturnsValue high = JavaClassBasedType.Integer.convert(i
-				.getNextExpression(context), context);
+		ReturnsValue h = i.getNextExpression(context);
+		ReturnsValue high = JavaClassBasedType.Integer.convert(h, context);
+		if (high == null) {
+			throw new NonIntegerIndexException(h);
+		}
 		Object max = high.compileTimeValue();
 		if (max == null) {
 			throw new NonConstantExpressionException(high);
 		}
 		size = (((Integer) max) - lower) + 1;
+		if (i.hasNext()) {
+			throw new ExpectedTokenException("]", i.take());
+		}
 	}
 
 	public SubrangeType(int lower, int size) {
