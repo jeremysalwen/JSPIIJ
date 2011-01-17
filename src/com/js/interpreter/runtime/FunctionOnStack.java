@@ -25,10 +25,8 @@ public class FunctionOnStack extends VariableContext {
 		this.prototype = declaration;
 		this.parentContext = parentContext;
 		this.main = main;
-		if (prototype.local_variables != null) {
-			for (VariableDeclaration v : prototype.local_variables) {
-				v.initialize(local_variables);
-			}
+		for (VariableDeclaration v : prototype.local_variables) {
+			v.initialize(local_variables);
 		}
 		reference_variables = new HashMap<String, VariableBoxer>();
 		for (int i = 0; i < arguments.length; i++) {

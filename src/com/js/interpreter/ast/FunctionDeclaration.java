@@ -64,7 +64,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 	ExpressionContext parentContext;
 	public String name;
 
-	public List<VariableDeclaration> local_variables;
+	public List<VariableDeclaration> local_variables = new ArrayList<VariableDeclaration>();
 
 	public Executable instructions;
 
@@ -96,14 +96,14 @@ public class FunctionDeclaration extends AbstractFunction implements
 		}
 		if (!is_procedure && next instanceof ColonToken) {
 			i.take();
-			result_definition = new VariableDeclaration("result", i
-					.get_next_pascal_type(this), line);
+			result_definition = new VariableDeclaration("result",
+					i.get_next_pascal_type(this), line);
 		}
 		i.assert_next_semicolon();
 		next = i.peek();
 		if (next instanceof VarToken) {
 			i.take();
-			local_variables = i.get_variable_declarations(this);
+			local_variables.addAll(i.get_variable_declarations(this));
 		} else {
 			local_variables = new ArrayList<VariableDeclaration>();
 		}
@@ -138,7 +138,6 @@ public class FunctionDeclaration extends AbstractFunction implements
 	public FunctionDeclaration(ExpressionContext p) {
 		this.parentContext = p;
 		this.root = p.root();
-		this.local_variables = new ArrayList<VariableDeclaration>();
 		this.are_varargs = new boolean[0];
 		this.argument_names = new String[0];
 		this.argument_types = new RuntimeType[0];
