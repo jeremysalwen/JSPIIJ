@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -26,12 +27,15 @@ public class VariableIdentifier extends ArrayList<SubvarIdentifier> {
 
 	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
 		String ident = get(0).toString();
-		DeclaredType type = f.getVariableDefinition(ident).type;
-		if (type == null) {
+		VariableDeclaration d = f.getVariableDefinition(ident);
+		DeclaredType type=null;
+		if (d == null) {
 			Object value = f.getConstantDefinition(ident);
 			if (value != null) {
 				type = JavaClassBasedType.anew(value.getClass());
 			}
+		} else {
+			type=d.type;
 		}
 		if (type == null) {
 			throw new NoSuchFunctionOrVariableException(lineinfo, ident);
