@@ -64,11 +64,4 @@ public class PascalProgram extends ExecutableCodeUnit {
 		return new RuntimePascalProgram(this);
 	}
 
-	@Override
-	protected void handleGloablVarDeclaration(
-			List<VariableDeclaration> declarations) {
-		main.local_variables.addAll(declarations);
-	}
-
-
 }
