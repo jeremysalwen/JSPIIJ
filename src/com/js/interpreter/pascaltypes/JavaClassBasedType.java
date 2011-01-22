@@ -9,6 +9,7 @@ import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.CharacterBoxer;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.StringBoxer;
+import com.js.interpreter.ast.instructions.returnsvalue.boxing.StringBuilderBoxer;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
 
@@ -133,16 +134,17 @@ public class JavaClassBasedType extends DeclaredType {
 	}
 
 	@Override
-	public ReturnsValue convert(ReturnsValue value, ExpressionContext f) throws ParsingException {
+	public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
+			throws ParsingException {
 
 		RuntimeType other_type = value.get_type(f);
-		
+
 		if (other_type.declType instanceof JavaClassBasedType) {
-			
+
 			if (this.equals(other_type.declType)) {
 				return value;
 			}
-			if (this==StringBuilder
+			if (this == StringBuilder
 					&& other_type.declType == JavaClassBasedType.Character) {
 				return new CharacterBoxer(value);
 			}
@@ -150,7 +152,12 @@ public class JavaClassBasedType extends DeclaredType {
 					&& ((JavaClassBasedType) other_type.declType).c == String.class) {
 				return new StringBoxer(value);
 			}
-			return TypeConverter.autoConvert(this, value, (JavaClassBasedType) other_type.declType);
+			if (this.c == String.class
+					&& other_type.declType == JavaClassBasedType.StringBuilder) {
+				return new StringBuilderBoxer(value);
+			}
+			return TypeConverter.autoConvert(this, value,
+					(JavaClassBasedType) other_type.declType);
 		}
 		return null;
 	}
@@ -158,7 +165,7 @@ public class JavaClassBasedType extends DeclaredType {
 	@Override
 	public void pushDefaultValue(Code constructor_code) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
