@@ -7,27 +7,11 @@ import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.runtime.VariableContext;
 
 public class RuntimeLibrary extends RuntimeCodeUnit<Library> {
-	Library l;
-	Map<String, Object> UnitVariables = new HashMap<String, Object>();
 
 	public RuntimeLibrary(Library l) {
-		this.l = l;
+		super(l);
 	}
 
-	@Override
-	public Library getDefinition() {
-		return l;
-	}
-
-	@Override
-	public Object getLocalVar(String name) {
-		return UnitVariables.get(name);
-	}
-
-	@Override
-	public boolean setLocalVar(String name, Object val) {
-		return UnitVariables.put(name, val) != null;
-	}
 
 	@Override
 	public VariableContext getParentContext() {

@@ -9,6 +9,11 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public abstract class RuntimeExecutable<parent extends ExecutableCodeUnit>
 		extends RuntimeCodeUnit<parent> {
+			
+	public RuntimeExecutable(parent definition) {
+		super(definition);
+	}
+
 	Map<Library, RuntimeLibrary> RuntimeLibs = new HashMap<Library, RuntimeLibrary>();
 
 	public RuntimeLibrary getLibrary(Library l) {

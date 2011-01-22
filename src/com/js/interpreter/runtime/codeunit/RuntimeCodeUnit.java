@@ -1,5 +1,9 @@
 package com.js.interpreter.runtime.codeunit;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.codeunit.RunMode;
 import com.js.interpreter.runtime.VariableContext;
@@ -7,14 +11,31 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public abstract class RuntimeCodeUnit<parent extends CodeUnit> extends
 		VariableContext {
-	
+	Map<String, Object> UnitVariables = new HashMap<String, Object>();
+
+	parent definition;
+
+	public RuntimeCodeUnit(parent definition) {
+		this.definition = definition;
+		for (VariableDeclaration v : definition.UnitVarDefs) {
+			v.initialize(UnitVariables);
+		}
+	}
+
 	public volatile RunMode mode;
 
-	public abstract parent getDefinition();
+	public parent getDefinition() {
+		return definition;
+	}
 
 	@Override
-	protected Object getLocalVar(String name) throws RuntimePascalException {
-		return getDefinition().constants.get(name);
+	public Object getLocalVar(String name) {
+		return UnitVariables.get(name);
+	}
+
+	@Override
+	protected boolean setLocalVar(String name, Object val) {
+		return UnitVariables.put(name, val) != null;
 	}
 
 }

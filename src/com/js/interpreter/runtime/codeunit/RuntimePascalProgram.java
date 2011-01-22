@@ -8,37 +8,16 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class RuntimePascalProgram extends RuntimeExecutable<PascalProgram> {
 
-	PascalProgram program;
-
 	FunctionOnStack main;
 
 	public RuntimePascalProgram(PascalProgram p) {
-		this.program = p;
+		super(p);
 	}
 
 	@Override
-	public PascalProgram getDefinition() {
-		return program;
-	}
-
-	@Override
-	public Object getLocalVar(String name) throws RuntimePascalException {
-		Object result = super.getLocalVar(name);
-		if (result != null) {
-			return result;
-		}
-		return main.getLocalVar(name);
-	}
-
-	@Override
-	public boolean setLocalVar(String name, Object value) {
-		return main.setLocalVar(name, value);
-	}
-
-	@Override
-	public void run() throws RuntimePascalException{
+	public void run() throws RuntimePascalException {
 		this.mode = RunMode.running;
-		main = new FunctionOnStack(this, this, program.main, new Object[0]);
+		main = new FunctionOnStack(this, this, definition.main, new Object[0]);
 		main.execute();
 	}
 
