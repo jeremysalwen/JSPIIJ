@@ -52,7 +52,7 @@ public class PascalProgram extends ExecutableCodeUnit {
 			throw new ParsingException(i.peek().lineInfo,
 					"Multiple definitions of main.");
 		}
-		main.instructions = main.get_next_command(i);
+		main.instructions = i.get_next_command(main);
 		if (!(i.peek() instanceof PeriodToken)) {
 			throw new ExpectedTokenException(".", i.peek());
 		}

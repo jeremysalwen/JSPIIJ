@@ -10,20 +10,28 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.tokens.OperatorTypes;
 
 public class SingleValue implements CaseCondition {
-	ReturnsValue value;
-	LineInfo line;
+	ReturnsValue values;
 
-	public SingleValue(ReturnsValue value, LineInfo line) {
-		this.value = value;
-		this.line = line;
+	public SingleValue(ReturnsValue values) {
+		this.values = values;
 	}
 
 	@Override
 	public boolean fits(RuntimeExecutable<?> main, VariableContext f,
 			Object value) throws RuntimePascalException {
-		return (Boolean) new BinaryOperatorEvaluation(new ConstantAccess(value,
-				line), this.value, OperatorTypes.EQUALS, line).getValueImpl(f,
-				main);
+		ConstantAccess access = new ConstantAccess(value,
+				values.getLineNumber());
+		if ((Boolean) new BinaryOperatorEvaluation(values, access,
+				OperatorTypes.EQUALS, values.getLineNumber()).getValueImpl(f,
+				main)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public LineInfo getLineNumber() {
+		return values.getLineNumber();
 	}
 
 }

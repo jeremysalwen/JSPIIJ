@@ -12,16 +12,13 @@ public class CasePossibility extends DebuggableExecutable {
 	/**
 	 * This class represents a line in a case statement.
 	 */
-	CaseCondition condition;
+	CaseCondition[] conditions;
 
-	Executable[] commands;
-	LineInfo line;
+	Executable commands;
 
-	public CasePossibility(CaseCondition condition, Executable[] commands,
-			LineInfo line) {
-		this.condition = condition;
+	public CasePossibility(CaseCondition[] conditions, Executable commands) {
+		this.conditions = conditions;
 		this.commands = commands;
-		this.line = line;
 	}
 
 	/**
@@ -32,21 +29,13 @@ public class CasePossibility extends DebuggableExecutable {
 	 * @return Whether or not it has broken.
 	 */
 	@Override
-	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
-			throws RuntimePascalException {
-		for_loop: for (Executable e : commands) {
-			switch (e.execute(f, main)) {
-			case RETURN:
-				return ExecutionResult.RETURN;
-			case BREAK:
-				break for_loop;
-			}
-		}
-		return ExecutionResult.NONE;
+	public ExecutionResult executeImpl(VariableContext f,
+			RuntimeExecutable<?> main) throws RuntimePascalException {
+		return commands.execute(f, main);
 	}
 
 	@Override
 	public LineInfo getLineNumber() {
-		return line;
+		return conditions[0].getLineNumber();
 	}
 }

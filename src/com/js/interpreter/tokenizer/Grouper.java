@@ -149,7 +149,8 @@ public class Grouper implements Runnable {
 						continue do_loop_break;
 					} else if (tokenizer.sval == "end") {
 						if (groupers.peek() instanceof BeginEndToken
-								|| groupers.peek() instanceof RecordToken) {
+								|| groupers.peek() instanceof RecordToken
+								|| groupers.peek() instanceof CaseToken) {
 							top_of_stack.put(new EOF_Token(line));
 							groupers.pop();
 							continue do_loop_break;
@@ -206,7 +207,10 @@ public class Grouper implements Runnable {
 					} else if (tokenizer.sval == "until") {
 						next_token = new UntilToken(line);
 					} else if (tokenizer.sval == "case") {
-						next_token = new CaseToken(line);
+						CaseToken tmp = new CaseToken(line);
+						top_of_stack.put(tmp);
+						groupers.push(tmp);
+						continue do_loop_break;
 					} else if (tokenizer.sval == "of") {
 						next_token = new OfToken(line);
 					} else if (tokenizer.sval == "const") {
@@ -239,8 +243,8 @@ public class Grouper implements Runnable {
 					break;
 				case '\'':
 					if (tokenizer.sval.length() == 1) {
-						next_token = new CharacterToken(line, tokenizer.sval
-								.charAt(0));
+						next_token = new CharacterToken(line,
+								tokenizer.sval.charAt(0));
 					} else {
 						next_token = new StringToken(line, tokenizer.sval);
 					}

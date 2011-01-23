@@ -6,6 +6,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.VariableDeclaration;
+import com.js.interpreter.ast.instructions.Executable;
+import com.js.interpreter.ast.instructions.InstructionGrouper;
+import com.js.interpreter.ast.instructions.NopInstruction;
+import com.js.interpreter.ast.instructions.VariableSet;
+import com.js.interpreter.ast.instructions.case_statement.CaseInstruction;
+import com.js.interpreter.ast.instructions.conditional.DowntoForStatement;
+import com.js.interpreter.ast.instructions.conditional.ForStatement;
+import com.js.interpreter.ast.instructions.conditional.IfStatement;
+import com.js.interpreter.ast.instructions.conditional.RepeatInstruction;
+import com.js.interpreter.ast.instructions.conditional.WhileStatement;
 import com.js.interpreter.ast.instructions.returnsvalue.BinaryOperatorEvaluation;
 import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.instructions.returnsvalue.FunctionCall;
@@ -19,6 +29,7 @@ import com.js.interpreter.exceptions.GroupingException;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.SameNameException;
+import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
@@ -36,11 +47,22 @@ import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.WordToken;
 import com.js.interpreter.tokens.OperatorTypes.precedence;
 import com.js.interpreter.tokens.basic.ArrayToken;
+import com.js.interpreter.tokens.basic.AssignmentToken;
 import com.js.interpreter.tokens.basic.ColonToken;
 import com.js.interpreter.tokens.basic.CommaToken;
+import com.js.interpreter.tokens.basic.DoToken;
+import com.js.interpreter.tokens.basic.DowntoToken;
+import com.js.interpreter.tokens.basic.ElseToken;
+import com.js.interpreter.tokens.basic.ForToken;
+import com.js.interpreter.tokens.basic.IfToken;
 import com.js.interpreter.tokens.basic.OfToken;
 import com.js.interpreter.tokens.basic.PeriodToken;
+import com.js.interpreter.tokens.basic.RepeatToken;
 import com.js.interpreter.tokens.basic.SemicolonToken;
+import com.js.interpreter.tokens.basic.ThenToken;
+import com.js.interpreter.tokens.basic.ToToken;
+import com.js.interpreter.tokens.basic.UntilToken;
+import com.js.interpreter.tokens.basic.WhileToken;
 import com.js.interpreter.tokens.value.ValueToken;
 
 public abstract class GrouperToken extends Token {
@@ -300,8 +322,9 @@ public abstract class GrouperToken extends Token {
 				if (type instanceof ArrayType) {
 					offset = ((ArrayType) type).bounds.lower;
 				}
-				s = new ReturnsValue_SubvarIdentifier(((BracketedToken) take())
-						.getNextExpression(context), offset);
+				s = new ReturnsValue_SubvarIdentifier(
+						((BracketedToken) take()).getNextExpression(context),
+						offset);
 			} else {
 				break;
 			}
@@ -352,11 +375,11 @@ public abstract class GrouperToken extends Token {
 					throw new SameNameException(s.lineInfo, context
 							.getCallableFunctions(n).get(0), v, n);
 				} else if (context.getVariableDefinition(n) != null) {
-					throw new SameNameException(s.lineInfo, context
-							.getVariableDefinition(n), v, s.name);
+					throw new SameNameException(s.lineInfo,
+							context.getVariableDefinition(n), v, s.name);
 				} else if (context.getConstantDefinition(s.name) != null) {
-					throw new SameNameException(s.lineInfo, context
-							.getConstantDefinition(n), v, s.name);
+					throw new SameNameException(s.lineInfo,
+							context.getConstantDefinition(n), v, s.name);
 				} else {
 					result.add(v);
 				}
@@ -375,6 +398,127 @@ public abstract class GrouperToken extends Token {
 			throw new ExpectedTokenException(getClosingText(), next);
 		}
 		return result;
+	}
+
+	public Executable get_next_command(ExpressionContext context)
+			throws ParsingException {
+		Token next = take();
+		LineInfo initialline = next.lineInfo;
+		if (next instanceof IfToken) {
+			ReturnsValue condition = getNextExpression(context);
+			next = take();
+			assert (next instanceof ThenToken);
+			Executable command = get_next_command(context);
+			Executable else_command = null;
+			next = peek();
+			if (next instanceof ElseToken) {
+				take();
+				else_command = get_next_command(context);
+			}
+			return new IfStatement(condition, command, else_command,
+					initialline);
+		} else if (next instanceof WhileToken) {
+			ReturnsValue condition = getNextExpression(context);
+			next = take();
+			assert (next instanceof DoToken);
+			Executable command = get_next_command(context);
+			return new WhileStatement(condition, command, initialline);
+		} else if (next instanceof BeginEndToken) {
+			InstructionGrouper begin_end_preprocessed = new InstructionGrouper(
+					initialline);
+			BeginEndToken cast_token = (BeginEndToken) next;
+			if (cast_token.hasNext()) {
+
+			}
+			while (cast_token.hasNext()) {
+				begin_end_preprocessed.add_command(cast_token
+						.get_next_command(context));
+				if (cast_token.hasNext()) {
+					cast_token.assert_next_semicolon();
+				}
+			}
+			return begin_end_preprocessed;
+		} else if (next instanceof ForToken) {
+			VariableIdentifier tmp_var = get_next_var_identifier(context);
+			next = take();
+			assert (next instanceof AssignmentToken);
+			ReturnsValue first_value = getNextExpression(context);
+			next = take();
+			boolean downto = false;
+			if (next instanceof DowntoToken) {
+				downto = true;
+			} else if (!(next instanceof ToToken)) {
+				throw new ExpectedTokenException("[To] or [Downto]", next);
+			}
+			ReturnsValue last_value = getNextExpression(context);
+			next = take();
+			assert (next instanceof DoToken);
+			Executable result;
+			if (downto) { // TODO probably should merge these two types
+				result = new DowntoForStatement(tmp_var, first_value,
+						last_value, get_next_command(context), initialline);
+			} else {
+				result = new ForStatement(tmp_var, first_value, last_value,
+						get_next_command(context), initialline);
+			}
+			return result;
+		} else if (next instanceof RepeatToken) {
+			InstructionGrouper command = new InstructionGrouper(initialline);
+
+			while (!(peek_no_EOF() instanceof UntilToken)) {
+				command.add_command(get_next_command(context));
+				if (!(peek_no_EOF() instanceof UntilToken)) {
+					assert_next_semicolon();
+				}
+			}
+			next = take();
+			if (!(next instanceof UntilToken)) {
+				throw new ExpectedTokenException("until", next);
+			}
+			ReturnsValue condition = getNextExpression(context);
+			return new RepeatInstruction(command, condition, initialline);
+		} else if (next instanceof WordToken) {
+
+			WordToken nametoken = (WordToken) next;
+			next = peek();
+			if (next instanceof ParenthesizedToken) {
+				next = take();
+				List<ReturnsValue> arguments = ((ParenthesizedToken) next)
+						.get_arguments_for_call(context);
+				return FunctionCall.generate_function_call(nametoken,
+						arguments, context);
+			} else if (next instanceof SemicolonToken
+					|| next instanceof EOF_Token) {
+				List<ReturnsValue> arguments = new ArrayList<ReturnsValue>();
+				return FunctionCall.generate_function_call(nametoken,
+						arguments, context);
+			} else {
+				// at this point assuming it is a variable identifier.
+				VariableIdentifier identifier = get_next_var_identifier(
+						context, nametoken);
+				next = take();
+				if (!(next instanceof AssignmentToken)) {
+					throw new ExpectedTokenException(":=", next);
+				}
+				ReturnsValue value_to_assign = getNextExpression(context);
+				DeclaredType output_type = identifier.get_type(context).declType;
+				DeclaredType input_type = value_to_assign.get_type(context).declType;
+				/*
+				 * Does not have to be writable to assign value to variable.
+				 */
+				value_to_assign = output_type.convert(value_to_assign, context);
+				if (value_to_assign == null) {
+					throw new UnconvertableTypeException(next.lineInfo,
+							input_type, output_type);
+				}
+				return new VariableSet(identifier, value_to_assign, initialline);
+			}
+		} else if (next instanceof CaseToken) {
+			return new CaseInstruction((CaseToken) next, context);
+		} else if (next instanceof SemicolonToken) {
+			return new NopInstruction(next.lineInfo);
+		}
+		return context.root().handleUnrecognizedToken(next, this);
 	}
 
 	protected abstract String getClosingText();
