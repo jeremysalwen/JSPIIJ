@@ -69,7 +69,7 @@ public enum OperatorTypes {
 		@Override
 		public Object operate(long l1, long l2)
 				throws OperationNotSupportedException {
-			return l1 / l2;
+			return (double) l1 / (double) l2;
 		}
 
 		@Override

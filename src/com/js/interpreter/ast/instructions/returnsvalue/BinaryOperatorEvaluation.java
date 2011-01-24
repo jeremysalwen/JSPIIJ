@@ -75,7 +75,7 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 				long l1 = ((Number) value1).longValue();
 				long l2 = ((Number) value2).longValue();
 				Object result = operator_type.operate(l1, l2);
-				if (result instanceof Number) {
+				if (result instanceof Long) {
 					result = ((Number) result).intValue();
 				}
 				return result;
@@ -108,6 +108,7 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
 		DeclaredType type1 = operon1.get_type(f).declType;
 		DeclaredType type2 = operon2.get_type(f).declType;
+		DeclaredType gcf = OperatorTypes.get_GCF(type1, type2);
 		switch (operator_type) {
 		case AND:
 		case EQUALS:
@@ -119,25 +120,33 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 		case NOTEQUAL:
 		case OR:
 			return new RuntimeType(JavaClassBasedType.Boolean, false);
-		case DIV:
+
 		case MOD:
 		case SHIFTLEFT:
 		case SHIFTRIGHT:
-		case DIVIDE:
 		case MULTIPLY:
 		case PLUS:
 		case XOR:
-			return new RuntimeType(OperatorTypes.get_GCF(type1, type2), false);
-		case MINUS:
-			DeclaredType gcf = OperatorTypes.get_GCF(type1, type2);
 			return new RuntimeType(gcf, false);
+		case MINUS:
+
+			return new RuntimeType(gcf, false);
+		case DIVIDE:
+			return new RuntimeType(JavaClassBasedType.Double, false);
+		case DIV:
+			if (gcf == JavaClassBasedType.Integer) {
+				return new RuntimeType(JavaClassBasedType.Integer, false);
+			} else {
+				return new RuntimeType(JavaClassBasedType.Long, false);
+			}
 		default:
 			return null;
 		}
 	}
 
 	@Override
-	public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
+	public Object compileTimeValue(CompileTimeContext context)
+			throws ParsingException {
 		Object value1 = operon1.compileTimeValue(context);
 		Object value2 = operon2.compileTimeValue(context);
 		if (value1 != null && value2 != null) {
