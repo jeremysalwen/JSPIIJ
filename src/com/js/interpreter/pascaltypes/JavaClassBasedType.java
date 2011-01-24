@@ -156,6 +156,10 @@ public class JavaClassBasedType extends DeclaredType {
 					&& other_type.declType == JavaClassBasedType.StringBuilder) {
 				return new StringBuilderBoxer(value);
 			}
+			if (this.c == String.class
+					&& other_type.declType == JavaClassBasedType.Character) {
+				return new StringBuilderBoxer(new CharacterBoxer(value));
+			}
 			return TypeConverter.autoConvert(this, value,
 					(JavaClassBasedType) other_type.declType);
 		}
