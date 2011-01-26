@@ -63,12 +63,18 @@ public enum OperatorTypes {
 		@Override
 		public Object operate(double d1, double d2)
 				throws OperationNotSupportedException {
+			if(d2==0) {
+				throw new ArithmeticException("/ by zero");
+			}
 			return d1 / d2;
 		}
 
 		@Override
 		public Object operate(long l1, long l2)
 				throws OperationNotSupportedException {
+			if(l2==0) {
+				throw new ArithmeticException("/ by zero");
+			}
 			return (double) l1 / (double) l2;
 		}
 
