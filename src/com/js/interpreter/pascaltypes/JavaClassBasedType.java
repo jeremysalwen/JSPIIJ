@@ -168,8 +168,10 @@ public class JavaClassBasedType extends DeclaredType {
 
 	@Override
 	public void pushDefaultValue(Code constructor_code) {
-		// TODO Auto-generated method stub
-
+		Object value = default_values.get(this);
+		if (value != null) {
+			constructor_code.constant().setValue(value);
+		}
 	}
 
 }
