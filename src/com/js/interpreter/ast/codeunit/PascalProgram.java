@@ -6,11 +6,8 @@ import java.util.List;
 import com.google.common.collect.ListMultimap;
 import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.FunctionDeclaration;
-import com.js.interpreter.ast.VariableDeclaration;
-import com.js.interpreter.classgeneration.CustomTypeGenerator;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.FunctionOnStack;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -24,17 +21,15 @@ public class PascalProgram extends ExecutableCodeUnit {
 
 	public FunctionOnStack main_running;
 
-	public PascalProgram(ListMultimap<String, AbstractFunction> functionTable,
-			CustomTypeGenerator type_generator) {
-		super(functionTable, type_generator);
+	public PascalProgram(ListMultimap<String, AbstractFunction> functionTable) {
+		super(functionTable);
 	}
 
 	public PascalProgram(Reader program,
 			ListMultimap<String, AbstractFunction> functionTable,
-			String sourcename, List<ScriptSource> includeDirectories,
-			CustomTypeGenerator type_generator) throws ParsingException {
-		super(program, functionTable, sourcename, includeDirectories,
-				type_generator);
+			String sourcename, List<ScriptSource> includeDirectories)
+			throws ParsingException {
+		super(program, functionTable, sourcename, includeDirectories);
 	}
 
 	@Override

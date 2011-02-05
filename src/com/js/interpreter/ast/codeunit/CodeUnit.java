@@ -14,7 +14,6 @@ import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
-import com.js.interpreter.classgeneration.CustomTypeGenerator;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
@@ -55,13 +54,9 @@ public abstract class CodeUnit implements ExpressionContext {
 	/*
 	 * both plugins and functions
 	 */
-	private ListMultimap<String, AbstractFunction> callable_functions;
+	private final ListMultimap<String, AbstractFunction> callable_functions;
 
-	private CustomTypeGenerator type_generator;
-
-	public CodeUnit(ListMultimap<String, AbstractFunction> functionTable,
-			CustomTypeGenerator type_generator) {
-		this.type_generator = type_generator;
+	public CodeUnit(ListMultimap<String, AbstractFunction> functionTable) {
 		constants = new HashMap<String, ConstantDefinition>();
 		callable_functions = functionTable;
 		custom_types = new HashMap<String, CustomType>();
@@ -71,9 +66,9 @@ public abstract class CodeUnit implements ExpressionContext {
 
 	public CodeUnit(Reader program,
 			ListMultimap<String, AbstractFunction> functionTable,
-			String sourcename, List<ScriptSource> includeDirectories,
-			CustomTypeGenerator type_generator) throws ParsingException {
-		this(functionTable, type_generator);
+			String sourcename, List<ScriptSource> includeDirectories)
+			throws ParsingException {
+		this(functionTable);
 		Grouper grouper = new Grouper(program, sourcename, includeDirectories);
 		new Thread(grouper).start();
 		parse_tree(grouper.token_queue);
@@ -191,6 +186,7 @@ public abstract class CodeUnit implements ExpressionContext {
 		}
 	}
 
+	@Override
 	public boolean functionExists(String name) {
 		return callable_functions.containsKey(name);
 	}
@@ -217,7 +213,6 @@ public abstract class CodeUnit implements ExpressionContext {
 		result.variable_types = ((RecordToken) next)
 				.get_variable_declarations(this);
 		custom_types.put(result.name, result);
-		type_generator.output_class(result);
 	}
 
 	@Override
