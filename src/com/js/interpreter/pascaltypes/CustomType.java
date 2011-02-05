@@ -86,7 +86,6 @@ public class CustomType extends DeclaredType {
 				+ Integer.toHexString(hashCode()));
 		c.setDeclaredInterfaces(new Class[] { ContainsVariables.class });
 		for (VariableDeclaration v : variable_types) {
-			System.out.println(v.name + " " + v.type.toclass());
 			c.declareField(v.name, TypeUtils.getTypeForClass(v.type.toclass()));
 		}
 		add_constructor(c);
