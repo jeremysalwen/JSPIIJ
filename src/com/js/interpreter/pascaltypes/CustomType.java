@@ -23,7 +23,6 @@ public class CustomType extends DeclaredType {
 	 * This class represents a declaration of a new type in pascal.
 	 */
 
-
 	/**
 	 * This is a list of the defined variables in the custom type.
 	 */
@@ -81,9 +80,15 @@ public class CustomType extends DeclaredType {
 		if (cachedClass != null) {
 			return cachedClass;
 		}
+		String name = "com.js.interpreter.custom_types."
+				+ Integer.toHexString(hashCode());
+		try {
+			cachedClass = bcl.loadClass(name);
+			return cachedClass;
+		} catch (ClassNotFoundException e) {
+		}
 		Project p = new Project();
-		BCClass c = p.loadClass("edu.js.interpreter.custom_types."
-				+ Integer.toHexString(hashCode()));
+		BCClass c = p.loadClass(name);
 		c.setDeclaredInterfaces(new Class[] { ContainsVariables.class });
 		for (VariableDeclaration v : variable_types) {
 			c.declareField(v.name, TypeUtils.getTypeForClass(v.type.toclass()));
