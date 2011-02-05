@@ -33,6 +33,7 @@ import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
+import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.SubrangeType;
 import com.js.interpreter.runtime.variables.ReturnsValue_SubvarIdentifier;
@@ -43,9 +44,9 @@ import com.js.interpreter.tokens.EOF_Token;
 import com.js.interpreter.tokens.GroupingExceptionToken;
 import com.js.interpreter.tokens.OperatorToken;
 import com.js.interpreter.tokens.OperatorTypes;
+import com.js.interpreter.tokens.OperatorTypes.precedence;
 import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.WordToken;
-import com.js.interpreter.tokens.OperatorTypes.precedence;
 import com.js.interpreter.tokens.basic.ArrayToken;
 import com.js.interpreter.tokens.basic.AssignmentToken;
 import com.js.interpreter.tokens.basic.ColonToken;
@@ -166,12 +167,16 @@ public abstract class GrouperToken extends Token {
 
 	public DeclaredType get_next_pascal_type(ExpressionContext context)
 			throws ParsingException {
-		Token n = peek_no_EOF();
+		Token n = take();
 		if (n instanceof ArrayToken) {
-			take();
 			return getArrayType(context);
 		}
-		take();
+		if (n instanceof RecordToken) {
+			RecordToken r = (RecordToken) n;
+			CustomType result = new CustomType();
+			result.variable_types = r.get_variable_declarations(context);
+			return result;
+		}
 		if (!(n instanceof WordToken)) {
 			throw new ExpectedTokenException("[Type Identifier]", n);
 		}
@@ -186,15 +191,7 @@ public abstract class GrouperToken extends Token {
 			return getArrayType(bracket, context);
 		} else if (n instanceof OfToken) {
 			take();
-			DeclaredType elementType;
-			n = take();
-			if (n instanceof ArrayToken) {
-				elementType = getArrayType(context);
-			} else if (n instanceof WordToken) {
-				elementType = ((WordToken) n).to_basic_type(context);
-			} else {
-				throw new ExpectedTokenException("[Type Identifier]", n);
-			}
+			DeclaredType elementType = get_next_pascal_type(context);
 			return new ArrayType<DeclaredType>(elementType, new SubrangeType());
 		} else {
 			throw new ExpectedTokenException("of", n);

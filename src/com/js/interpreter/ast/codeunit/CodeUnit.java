@@ -38,7 +38,6 @@ import com.js.interpreter.tokens.basic.VarToken;
 import com.js.interpreter.tokens.grouping.BaseGrouperToken;
 import com.js.interpreter.tokens.grouping.BeginEndToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
-import com.js.interpreter.tokens.grouping.RecordToken;
 
 public abstract class CodeUnit implements ExpressionContext {
 
@@ -109,10 +108,7 @@ public abstract class CodeUnit implements ExpressionContext {
 					is_procedure);
 			declaration = get_function_declaration(declaration);
 			declaration.parse_function_body(i);
-		} else if (next instanceof TypeToken) {
-			i.take();
-			add_custom_type_declaration(i);
-		} else if (next instanceof BeginEndToken) {
+		}else if (next instanceof BeginEndToken) {
 			handleBeginEnd(i);
 		} else if (next instanceof VarToken) {
 			i.take();
@@ -198,22 +194,6 @@ public abstract class CodeUnit implements ExpressionContext {
 		UnitVarDefs.addAll(declarations);
 	}
 
-	private void add_custom_type_declaration(GrouperToken i)
-			throws ParsingException {
-		CustomType result = new CustomType();
-		result.name = i.next_word_value();
-		Token next = i.take();
-		if (!((next instanceof OperatorToken) && ((OperatorToken) next).type == OperatorTypes.EQUALS)) {
-			throw new ExpectedTokenException("=", next);
-		}
-		next = i.take();
-		if (!(next instanceof RecordToken)) {
-			throw new ExpectedTokenException("record", next);
-		}
-		result.variable_types = ((RecordToken) next)
-				.get_variable_declarations(this);
-		custom_types.put(result.name, result);
-	}
 
 	@Override
 	public VariableDeclaration getVariableDefinition(String ident) {
