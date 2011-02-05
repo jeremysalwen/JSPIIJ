@@ -310,7 +310,7 @@ public abstract class GrouperToken extends Token {
 				take();
 
 				if (peek() instanceof WordToken) {
-					s = new String_SubvarIdentifier(get_word_value().name);
+					s = new String_SubvarIdentifier(next_word_value());
 				} else {
 					break;
 				}
