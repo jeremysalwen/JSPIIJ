@@ -25,20 +25,32 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class Interface {
 	public static void main(String[] args) {
+		if (args.length == 0) {
+			System.out
+					.println("Arguments:\n<Script Filename> [<Libraries Folder>] [<Includes Folder>]");
+			return;
+		}
 		try {
-			List<ClassLoader> classloaders = new ArrayList<ClassLoader>();
-			classloaders.add(Thread.currentThread().getContextClassLoader());
-			executeScript("tmp", new FileReader("test.pas"), classloaders,
-					new ArrayList<ScriptSource>(0),
-					new ArrayList<ScriptSource>(0),
-					new HashMap<String, Object>());
+			List<ClassLoader> plugins = new ArrayList<ClassLoader>();
+			List<ScriptSource> libraries = new ArrayList<ScriptSource>();
+			List<ScriptSource> includes = new ArrayList<ScriptSource>();
+			HashMap<String, Object> pluginargs = new HashMap<String, Object>();
+			plugins.add(Thread.currentThread().getContextClassLoader());
+			if (args.length > 1) {
+				libraries.add(new FileScriptSource(args[1]));
+				if (args.length > 2) {
+					includes.add(new FileScriptSource(args[2]));
+				}
+			}
+
+			executeScript(args[0], new FileReader(args[0]), plugins, includes,
+					libraries, pluginargs);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ParsingException e) {
 			System.err.println(e.line + ":" + e.getMessage());
 		} catch (RuntimePascalException e) {
-			System.err.println(e.line + ":" + e.getMessage());
+			System.err.println(e.line + ":runtime error:" + e.getMessage());
 		}
 	}
 
