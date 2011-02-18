@@ -27,7 +27,7 @@ public class Interface {
 	public static void main(String[] args) {
 		try {
 			List<ClassLoader> classloaders = new ArrayList<ClassLoader>();
-			classloaders.add(ClassLoader.getSystemClassLoader());
+			classloaders.add(Thread.currentThread().getContextClassLoader());
 			executeScript("tmp", new FileReader("test.pas"), classloaders,
 					new ArrayList<ScriptSource>(0),
 					new ArrayList<ScriptSource>(0),
