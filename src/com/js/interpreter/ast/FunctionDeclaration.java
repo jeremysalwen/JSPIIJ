@@ -7,22 +7,10 @@ import java.util.List;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.ast.instructions.Executable;
-import com.js.interpreter.ast.instructions.InstructionGrouper;
-import com.js.interpreter.ast.instructions.NopInstruction;
-import com.js.interpreter.ast.instructions.VariableSet;
-import com.js.interpreter.ast.instructions.case_statement.CaseInstruction;
-import com.js.interpreter.ast.instructions.conditional.DowntoForStatement;
-import com.js.interpreter.ast.instructions.conditional.ForStatement;
-import com.js.interpreter.ast.instructions.conditional.IfStatement;
-import com.js.interpreter.ast.instructions.conditional.RepeatInstruction;
-import com.js.interpreter.ast.instructions.conditional.WhileStatement;
-import com.js.interpreter.ast.instructions.returnsvalue.FunctionCall;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.SameNameException;
-import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -31,29 +19,13 @@ import com.js.interpreter.runtime.FunctionOnStack;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
-import com.js.interpreter.runtime.variables.VariableIdentifier;
-import com.js.interpreter.tokens.EOF_Token;
 import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.WordToken;
-import com.js.interpreter.tokens.basic.AssignmentToken;
 import com.js.interpreter.tokens.basic.ColonToken;
 import com.js.interpreter.tokens.basic.CommaToken;
-import com.js.interpreter.tokens.basic.DoToken;
-import com.js.interpreter.tokens.basic.DowntoToken;
-import com.js.interpreter.tokens.basic.ElseToken;
-import com.js.interpreter.tokens.basic.ForToken;
 import com.js.interpreter.tokens.basic.ForwardToken;
-import com.js.interpreter.tokens.basic.IfToken;
-import com.js.interpreter.tokens.basic.OfToken;
-import com.js.interpreter.tokens.basic.RepeatToken;
 import com.js.interpreter.tokens.basic.SemicolonToken;
-import com.js.interpreter.tokens.basic.ThenToken;
-import com.js.interpreter.tokens.basic.ToToken;
-import com.js.interpreter.tokens.basic.UntilToken;
 import com.js.interpreter.tokens.basic.VarToken;
-import com.js.interpreter.tokens.basic.WhileToken;
-import com.js.interpreter.tokens.grouping.BeginEndToken;
-import com.js.interpreter.tokens.grouping.CaseToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 import com.js.interpreter.tokens.grouping.ParenthesizedToken;
 
@@ -76,8 +48,6 @@ public class FunctionDeclaration extends AbstractFunction implements
 	public String[] argument_names;
 
 	public RuntimeType[] argument_types;
-
-	public boolean[] are_varargs;
 
 	/* <----- */
 
@@ -138,7 +108,6 @@ public class FunctionDeclaration extends AbstractFunction implements
 	public FunctionDeclaration(ExpressionContext p) {
 		this.parentContext = p;
 		this.root = p.root();
-		this.are_varargs = new boolean[0];
 		this.argument_names = new String[0];
 		this.argument_types = new RuntimeType[0];
 	}
@@ -159,6 +128,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 				.execute();
 	}
 
+	@Override
 	public VariableDeclaration getVariableDefinition(String name) {
 		if (name.equalsIgnoreCase("result")) {
 			return this.result_definition;
@@ -177,10 +147,6 @@ public class FunctionDeclaration extends AbstractFunction implements
 		return parentContext.getVariableDefinition(name);
 	}
 
-	@Override
-	public boolean isByReference(int i) {
-		return are_varargs[i];
-	}
 
 	@Override
 	public String toString() {
@@ -189,7 +155,6 @@ public class FunctionDeclaration extends AbstractFunction implements
 
 	private void get_arguments_for_declaration(GrouperToken i,
 			boolean is_procedure) throws ParsingException { // need
-		List<Boolean> are_varargs_list = new ArrayList<Boolean>();
 		List<String> names_list = new ArrayList<String>();
 		List<RuntimeType> types_list = new ArrayList<RuntimeType>();
 		Token next = i.peek();
@@ -204,7 +169,6 @@ public class FunctionDeclaration extends AbstractFunction implements
 					next = arguments_token.take();
 				}
 				while (true) {
-					are_varargs_list.add(is_varargs);
 					names_list.add(((WordToken) next).name);
 					j++;
 					next = arguments_token.take();
@@ -235,10 +199,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 		}
 		argument_types = types_list.toArray(new RuntimeType[types_list.size()]);
 		argument_names = names_list.toArray(new String[names_list.size()]);
-		are_varargs = new boolean[are_varargs_list.size()];
-		for (int k = 0; k < are_varargs.length; k++) {
-			are_varargs[k] = are_varargs_list.get(k);
-		}
+
 	}
 
 	@Override

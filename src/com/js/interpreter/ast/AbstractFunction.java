@@ -8,7 +8,6 @@ import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
@@ -20,8 +19,6 @@ public abstract class AbstractFunction implements NamedEntity {
 	public abstract ArgumentType[] argumentTypes();
 
 	public abstract DeclaredType return_type();
-
-	public abstract boolean isByReference(int i);
 
 	@Override
 	public String toString() {

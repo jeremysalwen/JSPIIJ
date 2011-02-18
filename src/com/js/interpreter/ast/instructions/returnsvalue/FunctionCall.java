@@ -1,7 +1,6 @@
 package com.js.interpreter.ast.instructions.returnsvalue;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import com.js.interpreter.exceptions.AmbiguousFunctionCallException;
 import com.js.interpreter.exceptions.BadFunctionCallException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -47,11 +47,10 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		Object[] values = new Object[arguments.length];
+		ArgumentType[] argtypes = function.argumentTypes();
 		for (int i = 0; i < values.length; i++) {
 			values[i] = arguments[i].getValue(f, main);
-			if (function.isByReference(i)) {
-				continue;
-			}
+
 			if (values[i] instanceof Object[]) {
 				values[i] = ((Object[]) values[i]).clone();
 			}

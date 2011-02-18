@@ -3,8 +3,8 @@ package com.js.interpreter.runtime.variables;
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.ObjectType;
 import com.js.interpreter.runtime.ContainsVariablesPointer;
 import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.VariableContext;
@@ -37,11 +37,11 @@ public class String_SubvarIdentifier implements SubvarIdentifier {
 
 	@Override
 	public DeclaredType getType(DeclaredType containerType) {
-		if (!(containerType instanceof CustomType)) {
+		if (!(containerType instanceof ObjectType)) {
 			System.err
 					.println("Error! Tried to find subitem's class of container object with a string index, when that's not applicable");
 		}
-		return ((CustomType) containerType).getMemberType(this.s);
+		return ((ObjectType) containerType).getMemberType(this.s);
 	}
 
 	@Override

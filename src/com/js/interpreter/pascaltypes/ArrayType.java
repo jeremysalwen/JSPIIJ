@@ -4,9 +4,14 @@ import java.lang.reflect.Array;
 
 import serp.bytecode.Code;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.runtime.VariableContext;
+import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 //This class gets the version 1.0 stamp of approval.  Hopefully I won't have to change it any more.
 public class ArrayType<T extends DeclaredType> extends DeclaredType {
@@ -111,8 +116,7 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
 			throws ParsingException {
 		RuntimeType other = value.get_type(f);
-
-		return this.superset(other.declType) ? value : null;
+		return this.superset(other.declType) ? cloneValue(value) : null;
 	}
 
 	@Override
@@ -120,4 +124,36 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public ReturnsValue cloneValue(final ReturnsValue r) {
+		return new ReturnsValue() {
+
+			@Override
+			public RuntimeType get_type(ExpressionContext f)
+					throws ParsingException {
+				return r.get_type(f);
+			}
+
+			@Override
+			public Object getValue(VariableContext f, RuntimeExecutable<?> main)
+					throws RuntimePascalException {
+				Object[] value = (Object[]) r.getValue(f, main);
+				return value.clone();
+			}
+
+			@Override
+			public LineInfo getLineNumber() {
+				return r.getLineNumber();
+			}
+
+			@Override
+			public Object compileTimeValue(CompileTimeContext context)
+					throws ParsingException {
+				Object[] value = (Object[]) r.compileTimeValue(context);
+				return value.clone();
+			}
+		};
+	}
+
 }

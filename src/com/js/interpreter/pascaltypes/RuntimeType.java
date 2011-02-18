@@ -1,7 +1,6 @@
 package com.js.interpreter.pascaltypes;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -33,6 +32,7 @@ public class RuntimeType implements ArgumentType {
 		return declType.convert(value, f);
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof RuntimeType) {
 			RuntimeType other = (RuntimeType) obj;
@@ -69,13 +69,16 @@ public class RuntimeType implements ArgumentType {
 	@Override
 	public ReturnsValue perfectFit(Iterator<ReturnsValue> args,
 			ExpressionContext e) throws ParsingException {
+		if (!args.hasNext()) {
+			return null;
+		}
 		ReturnsValue val = args.next();
 		RuntimeType other = val.get_type(e);
 		if (this.declType.equals(other.declType)) {
 			if (writable) {
 				return new CreatePointer((VariableAccess) val);
 			} else {
-				return val;
+				return declType.cloneValue(val);
 			}
 		} else {
 			return null;

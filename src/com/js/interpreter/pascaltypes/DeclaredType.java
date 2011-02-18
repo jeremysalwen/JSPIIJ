@@ -24,4 +24,6 @@ public abstract class DeclaredType {
 	public abstract boolean equals(DeclaredType other);
 
 	public abstract void pushDefaultValue(Code constructor_code);
+
+	public abstract ReturnsValue cloneValue(ReturnsValue r);
 }

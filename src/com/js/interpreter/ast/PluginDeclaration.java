@@ -30,6 +30,8 @@ public class PluginDeclaration extends AbstractFunction {
 
 	Method method;
 
+	ArgumentType[] argCache = null;
+
 	public PluginDeclaration(Object owner, Method m) {
 		this.owner = owner;
 		method = m;
@@ -119,6 +121,9 @@ public class PluginDeclaration extends AbstractFunction {
 
 	@Override
 	public ArgumentType[] argumentTypes() {
+		if (argCache != null) {
+			return argCache;
+		}
 		Type[] types = method.getGenericParameterTypes();
 		ArgumentType[] result = new ArgumentType[types.length];
 		MethodTypeData tmp = method.getAnnotation(MethodTypeData.class);
@@ -134,6 +139,7 @@ public class PluginDeclaration extends AbstractFunction {
 				result[i] = argtype;
 			}
 		}
+		argCache = result;
 		return result;
 	}
 
@@ -153,11 +159,6 @@ public class PluginDeclaration extends AbstractFunction {
 			result = TypeUtils.getClassForType(result);
 		}
 		return JavaClassBasedType.anew(result);
-	}
-
-	@Override
-	public boolean isByReference(int i) {
-		return method.getParameterTypes()[i] == VariableBoxer.class;
 	}
 
 	@Override

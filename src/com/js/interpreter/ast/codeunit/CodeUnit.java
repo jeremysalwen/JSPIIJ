@@ -20,8 +20,8 @@ import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
-import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.ObjectType;
 import com.js.interpreter.runtime.codeunit.RuntimeCodeUnit;
 import com.js.interpreter.startup.ScriptSource;
 import com.js.interpreter.tokenizer.Grouper;
@@ -41,8 +41,6 @@ import com.js.interpreter.tokens.grouping.GrouperToken;
 
 public abstract class CodeUnit implements ExpressionContext {
 
-	Map<String, CustomType> custom_types;
-
 	Map<String, DeclaredType> typedefs;
 
 	String program_name;
@@ -58,7 +56,6 @@ public abstract class CodeUnit implements ExpressionContext {
 	public CodeUnit(ListMultimap<String, AbstractFunction> functionTable) {
 		constants = new HashMap<String, ConstantDefinition>();
 		callable_functions = functionTable;
-		custom_types = new HashMap<String, CustomType>();
 		typedefs = new HashMap<String, DeclaredType>();
 		prepareForParsing();
 	}
@@ -67,7 +64,16 @@ public abstract class CodeUnit implements ExpressionContext {
 			ListMultimap<String, AbstractFunction> functionTable,
 			String sourcename, List<ScriptSource> includeDirectories)
 			throws ParsingException {
+		this(program, functionTable, sourcename, includeDirectories,
+				new ArrayList<ObjectType>(0));
+	}
+
+	public CodeUnit(Reader program,
+			ListMultimap<String, AbstractFunction> functionTable,
+			String sourcename, List<ScriptSource> includeDirectories,
+			List<ObjectType> systemTypes) throws ParsingException {
 		this(functionTable);
+		
 		Grouper grouper = new Grouper(program, sourcename, includeDirectories);
 		new Thread(grouper).start();
 		parse_tree(grouper.token_queue);
@@ -108,7 +114,7 @@ public abstract class CodeUnit implements ExpressionContext {
 					is_procedure);
 			declaration = get_function_declaration(declaration);
 			declaration.parse_function_body(i);
-		}else if (next instanceof BeginEndToken) {
+		} else if (next instanceof BeginEndToken) {
 			handleBeginEnd(i);
 		} else if (next instanceof VarToken) {
 			i.take();
@@ -193,7 +199,6 @@ public abstract class CodeUnit implements ExpressionContext {
 			List<VariableDeclaration> declarations) {
 		UnitVarDefs.addAll(declarations);
 	}
-
 
 	@Override
 	public VariableDeclaration getVariableDefinition(String ident) {

@@ -35,7 +35,6 @@ public class PascalProgram extends ExecutableCodeUnit {
 	@Override
 	protected void prepareForParsing() {
 		main = new FunctionDeclaration(this);
-		main.are_varargs = new boolean[0];
 		main.argument_names = new String[0];
 		main.argument_types = new RuntimeType[0];
 		main.name = "main";

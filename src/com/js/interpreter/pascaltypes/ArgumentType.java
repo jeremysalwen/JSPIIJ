@@ -15,4 +15,5 @@ public interface ArgumentType {
 
 	@SuppressWarnings("rawtypes")
 	public Class getRuntimeClass();
+	
 }

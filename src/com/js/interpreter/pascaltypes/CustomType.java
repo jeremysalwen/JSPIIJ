@@ -12,13 +12,18 @@ import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
 import serp.bytecode.Project;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.runtime.VariableContext;
+import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
-public class CustomType extends DeclaredType {
+public class CustomType extends ObjectType {
 	/**
 	 * This class represents a declaration of a new type in pascal.
 	 */
@@ -117,11 +122,12 @@ public class CustomType extends DeclaredType {
 			throws ParsingException {
 		RuntimeType other_type = value.get_type(f);
 		if (this.equals(other_type)) {
-			return value;
+			return cloneValue(value);
 		}
 		return null;
 	}
 
+	@Override
 	public DeclaredType getMemberType(String name) {
 		for (VariableDeclaration v : variable_types) {
 			if (v.name.equals(name)) {
@@ -312,4 +318,37 @@ public class CustomType extends DeclaredType {
 
 		}
 	}
+
+	@Override
+	public ReturnsValue cloneValue(final ReturnsValue r) {
+		return new ReturnsValue() {
+
+			@Override
+			public RuntimeType get_type(ExpressionContext f)
+					throws ParsingException {
+				return r.get_type(f);
+			}
+
+			@Override
+			public Object getValue(VariableContext f, RuntimeExecutable<?> main)
+					throws RuntimePascalException {
+				ContainsVariables c = (ContainsVariables) r.getValue(f, main);
+				return c.clone();
+			}
+
+			@Override
+			public LineInfo getLineNumber() {
+				return r.getLineNumber();
+			}
+
+			@Override
+			public Object compileTimeValue(CompileTimeContext context)
+					throws ParsingException {
+				ContainsVariables c = (ContainsVariables) r
+						.compileTimeValue(context);
+				return c.clone();
+			}
+		};
+	}
+
 }

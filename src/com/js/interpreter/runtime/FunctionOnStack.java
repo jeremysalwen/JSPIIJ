@@ -30,7 +30,7 @@ public class FunctionOnStack extends VariableContext {
 		}
 		reference_variables = new HashMap<String, VariableBoxer>();
 		for (int i = 0; i < arguments.length; i++) {
-			if (prototype.isByReference(i)) {
+			if (prototype.argument_types[i].writable) {
 				reference_variables.put(prototype.argument_names[i],
 						(VariableBoxer) arguments[i]);
 			} else {
