@@ -260,10 +260,6 @@ public class Grouper implements Runnable {
 								grouping_exception_types.MISMATCHED_PARENS));
 						return;
 
-					} else if (groupers.size() == 0) {
-						TossException(new GroupingExceptionToken(line,
-								grouping_exception_types.EXTRA_END_PARENS));
-						return;
 					}
 					top_of_stack.put(new EOF_Token(line));
 					continue do_loop_break;
@@ -324,13 +320,9 @@ public class Grouper implements Runnable {
 				case ']':
 					if (!(groupers.pop() instanceof BracketedToken)) {
 						TossException(new GroupingExceptionToken(line,
-								grouping_exception_types.MISMATCHED_BEGIN_END));
+								grouping_exception_types.MISMATCHED_BRACKETS));
 						return;
-					} else if (groupers.size() == 0) {
-						TossException(new GroupingExceptionToken(line,
-								grouping_exception_types.EXTRA_END_PARENS));
-						return;
-					}
+					} 
 					top_of_stack.put(new EOF_Token(line));
 					continue do_loop_break;
 				case '{':
