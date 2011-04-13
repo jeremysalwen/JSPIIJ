@@ -254,7 +254,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 		yybegin(STRING);
 	}
 	
-	{Identifier} {groupers.peek().put(new WordToken(getLine(),yytext())); }
+	{Identifier} {groupers.peek().put(new WordToken(getLine(),yytext().toLowerCase())); }
 
 }
 <STRING> {
@@ -274,6 +274,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 	"'" {yybegin(STRING);}
 	"#" {yybegin(STRINGPOUND);}
 	.|\n {
+			yypushback(1);
 			yybegin(YYINITIAL); 
 			if(literal.length()==1) {
 				groupers.peek().put(new CharacterToken(getLine(),literal.toString().charAt(0)));
