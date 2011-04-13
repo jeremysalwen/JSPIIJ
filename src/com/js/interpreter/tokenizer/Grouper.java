@@ -7,8 +7,9 @@ import java.io.StreamTokenizer;
 import java.util.List;
 import java.util.Stack;
 
-import com.js.interpreter.exceptions.GroupingException;
-import com.js.interpreter.exceptions.GroupingException.grouping_exception_types;
+import com.js.interpreter.exceptions.grouping.EnumeratedGroupingException;
+import com.js.interpreter.exceptions.grouping.EnumeratedGroupingException.grouping_exception_types;
+import com.js.interpreter.exceptions.grouping.GroupingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.startup.ScriptSource;
 import com.js.interpreter.tokens.EOF_Token;
@@ -322,7 +323,7 @@ public class Grouper implements Runnable {
 						TossException(new GroupingExceptionToken(line,
 								grouping_exception_types.MISMATCHED_BRACKETS));
 						return;
-					} 
+					}
 					top_of_stack.put(new EOF_Token(line));
 					continue do_loop_break;
 				case '{':
@@ -366,10 +367,9 @@ public class Grouper implements Runnable {
 					top_of_stack.put(next_token);
 				}
 			} catch (IOException e) {
-				GroupingExceptionToken t = new GroupingExceptionToken(line,
-						grouping_exception_types.IO_EXCEPTION);
-				t.exception.caused = e;
-				TossException(t);
+				EnumeratedGroupingException g = new EnumeratedGroupingException(
+						line, grouping_exception_types.IO_EXCEPTION);
+				TossException(new GroupingExceptionToken(g));
 				return;
 			}
 		} while (true);

@@ -11,7 +11,7 @@ public class BracketedToken extends GrouperToken {
 
 	@Override
 	public String toString() {
-		StringBuilder tmp = new StringBuilder('[');
+		StringBuilder tmp = new StringBuilder("[");
 		if (next != null) {
 			tmp.append(next);
 		}

@@ -24,7 +24,7 @@ import com.js.interpreter.tokens.value.*;
 %column
 %ignorecase
 
-%class Lexer
+%class GrouperAlt
 %{
 	String sourcename;
 	public BaseGrouperToken token_queue;
@@ -74,7 +74,7 @@ import com.js.interpreter.tokens.value.*;
 		this.searchDirectories = searchDirectories;
 %init}
 
-%type boolean
+%type void
 
 %eofval{
 	if (!yymoreStreams()) {
@@ -97,7 +97,7 @@ import com.js.interpreter.tokens.value.*;
 		} else {
 			top_of_stack.put(new EOF_Token(getLine()));
 		}
-		return false;
+		return;
 	}
 	sourcenames.pop();
 	yypopStream();
@@ -230,14 +230,14 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 				TossException(new GroupingExceptionToken(
 						line,
 						grouping_exception_types.MISMATCHED_BEGIN_END));
-				return false;
+				return;
 			}
 	}
 	")" {
 		if (!(groupers.peek() instanceof ParenthesizedToken)) {
 			TossException(new GroupingExceptionToken(getLine(),
 					grouping_exception_types.MISMATCHED_PARENS));
-			return false;
+			return;
 		}
 		groupers.pop().put(new EOF_Token(getLine()));
 	}
@@ -245,7 +245,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 		if (!(groupers.peek() instanceof BracketedToken)) {
 			TossException(new GroupingExceptionToken(getLine(),
 				grouping_exception_types.MISMATCHED_BRACKETS));
-			return false;
+			return;
 		}
 		groupers.pop().put(new EOF_Token(getLine()));
 	}
@@ -288,20 +288,50 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 	{WhiteSpace} {} 
 	"'" {literal.setLength(0); yybegin(INCLUDE_SNGL_QUOTE);}
     "\"" {literal.setLength(0); yybegin(INCLUDE_DBL_QUOTE);}
-    [^ \r\n*)}]+ {addInclude(yytext()); yybegin(END_INCLUDE);}
+    [^ \r\n*)}]+ {
+    	try {
+    		addInclude(yytext());
+    	}catch( FileNotFoundException e) {
+    		GroupingExceptionToken t = new GroupingExceptionToken(getLine(),grouping_exception_types.IO_EXCEPTION);
+			t.exception.caused = e;
+			TossException(t);
+			return;
+    	}
+    	yybegin(END_INCLUDE);
+    }
     .|\n {throw new Error("Missing file to include");}
 }
 
 <INCLUDE_SNGL_QUOTE> {
 	"''"	{literal.append('\'');}
-	"'"		{addInclude(literal.toString()); yybegin(END_INCLUDE);}
+	"'"		{
+    	try {
+    		addInclude(yytext());
+    	}catch( FileNotFoundException e) {
+    		GroupingExceptionToken t = new GroupingExceptionToken(getLine(),grouping_exception_types.IO_EXCEPTION);
+			t.exception.caused = e;
+			TossException(t);
+			return;
+    	} 
+    	yybegin(END_INCLUDE);
+    }
 	[^\n\r]+ {literal.append(yytext());}
 	[\n\r]	{throw new Error("You must close your quotes before starting a new line");}
 }
 
 <INCLUDE_DBL_QUOTE> {
 	"\"\""	{literal.append('\"');}
-	"\""		{addInclude(literal.toString()); yybegin(END_INCLUDE);}
+	"\""		{
+    	try {
+    		addInclude(yytext());
+    	}catch( FileNotFoundException e) {
+    		GroupingExceptionToken t = new GroupingExceptionToken(getLine(),grouping_exception_types.IO_EXCEPTION);
+			t.exception.caused = e;
+			TossException(t);
+			return;
+    	} 
+    	yybegin(END_INCLUDE);
+    	}
 	[^\n\r]+ {literal.append(yytext());}
 	[\n\r]	{throw new Error("You must close your quotes before starting a new line");}
 }

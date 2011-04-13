@@ -1,10 +1,12 @@
 package com.js.interpreter.tokenizer;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 
-import com.js.interpreter.exceptions.GroupingException;
+import com.js.interpreter.exceptions.grouping.EnumeratedGroupingException;
+import com.js.interpreter.exceptions.grouping.GroupingException;
 import com.js.interpreter.startup.FileScriptSource;
 import com.js.interpreter.startup.ScriptSource;
 import com.js.interpreter.tokens.EOF_Token;
@@ -19,15 +21,16 @@ public class LexerTest {
 	 */
 	public static void main(String[] args) throws IOException,
 			GroupingException {
+		String file = "scripts/concord.pas";
 		String text = "program pascal;\n var i: integer; b,z:string; begin i:=5; for j:=1 to 10 do begin f(x,y,z); call; end; end.";
-		Lexer l = new Lexer(new StringReader(text), "lol",
+		NewLexer l = new NewLexer(new FileReader(file), "lol",
 				new ArrayList<ScriptSource>() {
 					{
 						add(new FileScriptSource(
 								"/home/jeremy/java/pascalinterpreterinjava/"));
 					}
 				});
-		Grouper g = new Grouper(new StringReader(text), "wtf",
+		Grouper g = new Grouper(new FileReader(file), "wtf",
 				new ArrayList<ScriptSource>() {
 					{
 						add(new FileScriptSource(
@@ -35,7 +38,7 @@ public class LexerTest {
 					}
 				});
 		Token t;
-		l.yylex();
+		l.parse();
 		g.parse();
 		System.out.println(l.token_queue);
 		System.out.println(g.token_queue);

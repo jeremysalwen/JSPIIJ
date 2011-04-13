@@ -25,6 +25,7 @@ import com.js.interpreter.pascaltypes.ObjectType;
 import com.js.interpreter.runtime.codeunit.RuntimeCodeUnit;
 import com.js.interpreter.startup.ScriptSource;
 import com.js.interpreter.tokenizer.Grouper;
+import com.js.interpreter.tokenizer.NewLexer;
 import com.js.interpreter.tokens.OperatorToken;
 import com.js.interpreter.tokens.OperatorTypes;
 import com.js.interpreter.tokens.Token;
@@ -73,8 +74,8 @@ public abstract class CodeUnit implements ExpressionContext {
 			String sourcename, List<ScriptSource> includeDirectories,
 			List<ObjectType> systemTypes) throws ParsingException {
 		this(functionTable);
-		
-		Grouper grouper = new Grouper(program, sourcename, includeDirectories);
+
+		NewLexer grouper = new NewLexer(program, sourcename, includeDirectories);
 		new Thread(grouper).start();
 		parse_tree(grouper.token_queue);
 	}
