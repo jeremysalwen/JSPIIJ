@@ -19,6 +19,6 @@ public abstract class ClosingToken extends Token {
 	 * @param t
 	 * @return
 	 */
-	public abstract grouping_exception_types getClosingException(GrouperToken t);
+	public abstract GroupingException getClosingException(GrouperToken t);
 
 }

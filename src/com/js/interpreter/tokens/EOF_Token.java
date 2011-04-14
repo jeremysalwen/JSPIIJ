@@ -1,6 +1,8 @@
 package com.js.interpreter.tokens;
 
+import com.js.interpreter.exceptions.grouping.EnumeratedGroupingException;
 import com.js.interpreter.exceptions.grouping.EnumeratedGroupingException.grouping_exception_types;
+import com.js.interpreter.exceptions.grouping.GroupingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.tokens.closing.ClosingToken;
 import com.js.interpreter.tokens.grouping.BeginEndToken;
@@ -19,15 +21,19 @@ public class EOF_Token extends ClosingToken {
 	}
 
 	@Override
-	public grouping_exception_types getClosingException(GrouperToken t) {
+	public GroupingException getClosingException(GrouperToken t) {
 		if (t instanceof ParenthesizedToken) {
-			return grouping_exception_types.UNFINISHED_PARENS;
+			return new EnumeratedGroupingException(t.lineInfo,
+					grouping_exception_types.UNFINISHED_PARENS);
 		} else if (t instanceof BeginEndToken) {
-			return grouping_exception_types.UNFINISHED_BEGIN_END;
+			return new EnumeratedGroupingException(t.lineInfo,
+					grouping_exception_types.UNFINISHED_BEGIN_END);
 		} else if (t instanceof BracketedToken) {
-			return grouping_exception_types.UNFINISHED_BRACKETS;
+			return new EnumeratedGroupingException(t.lineInfo,
+					grouping_exception_types.UNFINISHED_BRACKETS);
 		} else {
-			return grouping_exception_types.UNFINISHED_CONSTRUCT;
+			return new EnumeratedGroupingException(t.lineInfo,
+					grouping_exception_types.UNFINISHED_CONSTRUCT);
 		}
 	}
 

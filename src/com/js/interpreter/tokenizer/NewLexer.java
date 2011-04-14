@@ -2,7 +2,6 @@ package com.js.interpreter.tokenizer;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StreamTokenizer;
 import java.util.List;
 import java.util.Stack;
 
@@ -16,17 +15,8 @@ import com.js.interpreter.tokens.GroupingExceptionToken;
 import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.WarningToken;
 import com.js.interpreter.tokens.closing.ClosingToken;
-import com.js.interpreter.tokens.closing.EndBracketToken;
-import com.js.interpreter.tokens.closing.EndParenToken;
-import com.js.interpreter.tokens.closing.EndToken;
 import com.js.interpreter.tokens.grouping.BaseGrouperToken;
-import com.js.interpreter.tokens.grouping.BeginEndToken;
-import com.js.interpreter.tokens.grouping.BracketedToken;
-import com.js.interpreter.tokens.grouping.CaseToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
-import com.js.interpreter.tokens.grouping.ParenthesizedToken;
-import com.js.interpreter.tokens.grouping.RecordToken;
-import com.sun.java.swing.plaf.gtk.GTKConstants.TextDirection;
 
 public class NewLexer implements Runnable {
 	public BaseGrouperToken token_queue;
@@ -60,15 +50,23 @@ public class NewLexer implements Runnable {
 			GrouperToken top_of_stack = groupers.peek();
 			try {
 				Token t = lexer.yylex();
-				if (t instanceof ClosingToken) {
-					grouping_exception_types g = ((ClosingToken) t)
+				if (t instanceof EOF_Token) {
+					if (groupers.size() != 1) {
+						TossException(((EOF_Token) t)
+								.getClosingException(top_of_stack));
+					} else {
+						top_of_stack.put(t);
+					}
+					return;
+				} else if (t instanceof ClosingToken) {
+					GroupingException g = ((ClosingToken) t)
 							.getClosingException(top_of_stack);
 					if (g == null) {
 						top_of_stack.put(new EOF_Token(t.lineInfo));
 						groupers.pop();
 						continue;
 					} else {
-						TossException(t.lineInfo, g);
+						TossException(g);
 						return;
 					}
 				}
@@ -76,16 +74,7 @@ public class NewLexer implements Runnable {
 					// TODO handle warnings...
 					continue;
 				}
-				if (t instanceof EOF_Token) {
-					if (groupers.size() != 1) {
-						TossException(t.lineInfo,
-								((EOF_Token) t)
-										.getClosingException(top_of_stack));
-					} else {
-						top_of_stack.put(t);
-					}
-					return;
-				}
+
 				// Everything else passes through normally.
 				top_of_stack.put(t);
 				if (t instanceof GrouperToken) {

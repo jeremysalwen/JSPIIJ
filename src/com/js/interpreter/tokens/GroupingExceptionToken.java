@@ -13,10 +13,13 @@ public class GroupingExceptionToken extends Token {
 		this.exception = g;
 	}
 
-	public GroupingExceptionToken(LineInfo line,
-			grouping_exception_types type) {
+	public GroupingExceptionToken(LineInfo line, grouping_exception_types type) {
 		super(line);
 		this.exception = new EnumeratedGroupingException(line, type);
 	}
 
+	@Override
+	public String toString() {
+		return exception.toString();
+	}
 }

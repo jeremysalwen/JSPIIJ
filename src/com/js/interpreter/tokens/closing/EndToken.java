@@ -18,12 +18,13 @@ public class EndToken extends ClosingToken {
 	}
 
 	@Override
-	public grouping_exception_types getClosingException(GrouperToken t) {
+	public GroupingException getClosingException(GrouperToken t) {
 		if (t instanceof BeginEndToken || t instanceof CaseToken
 				|| t instanceof RecordToken) {
 			return null;
 		} else {
-			return grouping_exception_types.EXTRA_END;
+			return new EnumeratedGroupingException(lineInfo,
+					grouping_exception_types.EXTRA_END);
 		}
 	}
 }
