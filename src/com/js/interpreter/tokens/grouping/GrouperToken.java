@@ -30,7 +30,6 @@ import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
-import com.js.interpreter.exceptions.grouping.EnumeratedGroupingException;
 import com.js.interpreter.exceptions.grouping.GroupingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;

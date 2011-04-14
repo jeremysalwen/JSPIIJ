@@ -2,14 +2,11 @@ package com.js.interpreter.tokenizer;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 
-import com.js.interpreter.exceptions.grouping.EnumeratedGroupingException;
 import com.js.interpreter.exceptions.grouping.GroupingException;
 import com.js.interpreter.startup.FileScriptSource;
 import com.js.interpreter.startup.ScriptSource;
-import com.js.interpreter.tokens.EOF_Token;
 import com.js.interpreter.tokens.Token;
 
 public class LexerTest {

@@ -22,8 +22,6 @@ import com.js.interpreter.tokens.basic.CommaToken;
 import com.js.interpreter.tokens.basic.DotDotToken;
 import com.js.interpreter.tokens.basic.ElseToken;
 import com.js.interpreter.tokens.basic.OfToken;
-import com.js.interpreter.tokens.basic.PeriodToken;
-import com.js.interpreter.tokens.basic.SemicolonToken;
 import com.js.interpreter.tokens.grouping.CaseToken;
 
 public class CaseInstruction extends DebuggableExecutable {

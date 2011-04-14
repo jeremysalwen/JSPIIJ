@@ -1,7 +1,6 @@
 package com.js.interpreter.ast;
 
 import com.js.interpreter.linenumber.LineInfo;
-import com.sun.org.apache.bcel.internal.classfile.LineNumber;
 
 public class ConstantDefinition implements NamedEntity {
 	Object value;

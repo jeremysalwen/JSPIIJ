@@ -8,7 +8,6 @@ import com.js.interpreter.exceptions.NonIntegerIndexException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.basic.DotDotToken;
-import com.js.interpreter.tokens.basic.PeriodToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 
 public class SubrangeType {

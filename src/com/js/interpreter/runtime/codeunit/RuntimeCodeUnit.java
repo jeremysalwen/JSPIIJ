@@ -7,7 +7,6 @@ import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.codeunit.RunMode;
 import com.js.interpreter.runtime.VariableContext;
-import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public abstract class RuntimeCodeUnit<parent extends CodeUnit> extends
 		VariableContext {

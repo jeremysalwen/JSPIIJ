@@ -1,8 +1,5 @@
 package com.js.interpreter.runtime.codeunit;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.runtime.VariableContext;
 

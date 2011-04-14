@@ -2,7 +2,6 @@ package com.js.interpreter.runtime.variables;
 
 import java.util.ArrayList;
 
-import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
@@ -14,7 +13,6 @@ import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
-import com.js.interpreter.runtime.exception.internal.InternalInterpreterException;
 import com.js.interpreter.runtime.exception.internal.ZeroLengthVariableException;
 
 public class VariableIdentifier extends ArrayList<SubvarIdentifier> {

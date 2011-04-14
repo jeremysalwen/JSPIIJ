@@ -24,7 +24,6 @@ import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.ObjectType;
 import com.js.interpreter.runtime.codeunit.RuntimeCodeUnit;
 import com.js.interpreter.startup.ScriptSource;
-import com.js.interpreter.tokenizer.Grouper;
 import com.js.interpreter.tokenizer.NewLexer;
 import com.js.interpreter.tokens.OperatorToken;
 import com.js.interpreter.tokens.OperatorTypes;
