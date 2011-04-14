@@ -3,15 +3,15 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/tmp/JSPIIJ0.9.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="JSPIIJ.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.js.interpreter.startup.Interface"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="/home/jeremy/java/pascalinterpreterinjava/classes"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/jeremy/java/pascalinterpreterinjava/lib/commons-httpclient-3.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/jeremy/java/pascalinterpreterinjava/lib/google-collect-1.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/jeremy/java/pascalinterpreterinjava/lib/serp-1.14.2.jar"/>
+            <fileset dir="classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/commons-httpclient-3.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/google-collect-1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/serp-1.14.2.jar"/>
         </jar>
     </target>
 </project>
