@@ -1,6 +1,7 @@
 package com.js.interpreter.tokens;
 
 import com.js.interpreter.exceptions.grouping.EnumeratedGroupingException;
+import com.js.interpreter.exceptions.grouping.EnumeratedGroupingException.grouping_exception_types;
 import com.js.interpreter.exceptions.grouping.GroupingException;
 import com.js.interpreter.linenumber.LineInfo;
 
@@ -13,7 +14,7 @@ public class GroupingExceptionToken extends Token {
 	}
 
 	public GroupingExceptionToken(LineInfo line,
-			EnumeratedGroupingException.grouping_exception_types type) {
+			grouping_exception_types type) {
 		super(line);
 		this.exception = new EnumeratedGroupingException(line, type);
 	}
