@@ -159,6 +159,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 	":=" {return new AssignmentToken(getLine()); }
 	"," {return new CommaToken(getLine()); }
 	":" {return new ColonToken(getLine()); }
+	".." {return new DotDotToken(getLine());}
 	"." {return new PeriodToken(getLine()); }
 	";" {return new SemicolonToken(getLine()); }
 	"begin" {return new BeginEndToken(getLine());}
@@ -260,5 +261,5 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 }
 
 /* error fallback */
-.|\n                             { return new GroupingExceptionToken(new StrayCharacterException(getLine(),yytext().charAt(0))); }
+.|\n  { return new GroupingExceptionToken(new StrayCharacterException(getLine(),yytext().charAt(0))); }
 

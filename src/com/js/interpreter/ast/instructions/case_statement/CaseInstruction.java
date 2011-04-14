@@ -19,6 +19,7 @@ import com.js.interpreter.tokens.EOF_Token;
 import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.basic.ColonToken;
 import com.js.interpreter.tokens.basic.CommaToken;
+import com.js.interpreter.tokens.basic.DotDotToken;
 import com.js.interpreter.tokens.basic.ElseToken;
 import com.js.interpreter.tokens.basic.OfToken;
 import com.js.interpreter.tokens.basic.PeriodToken;
@@ -45,11 +46,8 @@ public class CaseInstruction extends DebuggableExecutable {
 			List<CaseCondition> conditions = new ArrayList<CaseCondition>();
 			while (true) {
 				ReturnsValue val = i.getNextExpression(context);
-				if (i.peek() instanceof PeriodToken) {
+				if (i.peek() instanceof DotDotToken) {
 					i.take();
-					if (i.peek() instanceof PeriodToken) {
-						i.take();
-					}
 					ReturnsValue upper = i.getNextExpression(context);
 					conditions.add(new RangeOfValues(val, upper));
 				} else {

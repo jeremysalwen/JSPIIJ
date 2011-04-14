@@ -7,6 +7,7 @@ import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.NonIntegerIndexException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.tokens.Token;
+import com.js.interpreter.tokens.basic.DotDotToken;
 import com.js.interpreter.tokens.basic.PeriodToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 
@@ -30,12 +31,8 @@ public class SubrangeType {
 		lower = (Integer) min;
 
 		Token t = i.take();
-		if (!(t instanceof PeriodToken)) {
+		if (!(t instanceof DotDotToken)) {
 			throw new ExpectedTokenException("..", t);
-		}
-		t = i.peek_no_EOF();
-		if ((t instanceof PeriodToken)) {
-			t = i.take();
 		}
 		ReturnsValue h = i.getNextExpression(context);
 		ReturnsValue high = JavaClassBasedType.Integer.convert(h, context);
