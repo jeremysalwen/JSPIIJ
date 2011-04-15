@@ -18,4 +18,9 @@ public class ParsingException extends Exception {
 		super();
 		this.line = line;
 	}
+
+	@Override
+	public String toString() {
+		return line + ":" + getMessage();
+	}
 }

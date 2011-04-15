@@ -42,8 +42,5 @@ public class EnumeratedGroupingException extends GroupingException {
 				+ ((caused == null) ? ("") : (": " + caused.getMessage()));
 	}
 
-	@Override
-	public String toString() {
-		return line + ":" + grouping_exception_type.message;
-	}
+
 }
