@@ -37,6 +37,7 @@ import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
 import com.js.interpreter.runtime.variables.ReturnsValue_SubvarIdentifier;
 import com.js.interpreter.runtime.variables.String_SubvarIdentifier;
@@ -370,14 +371,20 @@ public abstract class GrouperToken extends Token {
 			if (peek() instanceof OperatorToken) {
 				if (((OperatorToken) peek()).type == OperatorTypes.EQUALS) {
 					take();
-					ReturnsValue val = getNextExpression(context);
-					defaultValue = val.compileTimeValue(context);
+					ReturnsValue unconverted = getNextExpression(context);
+					ReturnsValue converted = type.convert(unconverted, context);
+					if (converted == null) {
+						throw new UnconvertableTypeException(
+								unconverted.getLineNumber(),
+								unconverted.get_type(context).declType, type);
+					}
+					defaultValue = converted.compileTimeValue(context);
 					if (defaultValue == null) {
-						throw new NonConstantExpressionException(val);
+						throw new NonConstantExpressionException(converted);
 					}
 					if (names.size() != 1) {
 						throw new MultipleDefaultValuesException(
-								val.getLineNumber());
+								converted.getLineNumber());
 					}
 				}
 			}
