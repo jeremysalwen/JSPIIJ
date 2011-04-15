@@ -6,4 +6,6 @@ public interface NamedEntity {
 	public LineInfo getLineNumber();
 
 	public String getEntityType();
+
+	public String name();
 }

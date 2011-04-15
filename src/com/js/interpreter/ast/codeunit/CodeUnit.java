@@ -11,6 +11,7 @@ import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.ConstantDefinition;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.ast.NamedEntity;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
@@ -170,20 +171,10 @@ public abstract class CodeUnit implements ExpressionContext {
 			if (comptimeval == null) {
 				throw new NonConstantExpressionException(value);
 			}
-			ConstantDefinition newdef = new ConstantDefinition(comptimeval,
-					constname.lineInfo);
-			if (functionExists(n)) {
-				throw new SameNameException(constname.lineInfo,
-						getCallableFunctions(n).get(0), newdef, n);
-			} else if (getVariableDefinition(n) != null) {
-				throw new SameNameException(constname.lineInfo,
-						getVariableDefinition(n), newdef, n);
-			} else if (getConstantDefinition(n) != null) {
-				throw new SameNameException(constname.lineInfo,
-						getConstantDefinition(n), newdef, n);
-			} else {
-				this.constants.put(constname.name, newdef);
-			}
+			ConstantDefinition newdef = new ConstantDefinition(constname.name,
+					comptimeval, constname.lineInfo);
+			verifyNonConflictingSymbol(newdef);
+			this.constants.put(constname.name, newdef);
 			i.assert_next_semicolon();
 		}
 	}
@@ -228,5 +219,18 @@ public abstract class CodeUnit implements ExpressionContext {
 	@Override
 	public CodeUnit root() {
 		return this;
+	}
+
+	@Override
+	public void verifyNonConflictingSymbol(NamedEntity ne)
+			throws SameNameException {
+		String n = ne.name();
+		if (functionExists(n)) {
+			throw new SameNameException(getCallableFunctions(n).get(0), ne);
+		} else if (getVariableDefinition(n) != null) {
+			throw new SameNameException(getVariableDefinition(n), ne);
+		} else if (getConstantDefinition(n) != null) {
+			throw new SameNameException(getConstantDefinition(n), ne);
+		}
 	}
 }

@@ -367,19 +367,8 @@ public abstract class GrouperToken extends Token {
 			for (WordToken s : names) {
 				VariableDeclaration v = new VariableDeclaration(s.name, type,
 						s.lineInfo);
-				String n = s.name;
-				if (context.functionExists(n)) {
-					throw new SameNameException(s.lineInfo, context
-							.getCallableFunctions(n).get(0), v, n);
-				} else if (context.getVariableDefinition(n) != null) {
-					throw new SameNameException(s.lineInfo,
-							context.getVariableDefinition(n), v, s.name);
-				} else if (context.getConstantDefinition(s.name) != null) {
-					throw new SameNameException(s.lineInfo,
-							context.getConstantDefinition(n), v, s.name);
-				} else {
-					result.add(v);
-				}
+				context.verifyNonConflictingSymbol(v);
+				result.add(v);
 			}
 			names.clear(); // reusing the list object
 			next = peek();

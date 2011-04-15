@@ -78,13 +78,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 			local_variables = new ArrayList<VariableDeclaration>();
 		}
 		instructions = null;
-		if (parent.getVariableDefinition(name) != null) {
-			throw new SameNameException(line, getVariableDefinition(name),
-					this, name);
-		} else if (parent.getConstantDefinition(name) != null) {
-			throw new SameNameException(line, getConstantDefinition(name),
-					this, name);
-		}
+		parent.verifyNonConflictingSymbol(this);
 	}
 
 	public void parse_function_body(GrouperToken i) throws ParsingException {
@@ -128,8 +122,7 @@ public class FunctionDeclaration extends AbstractFunction implements
 				.execute();
 	}
 
-	@Override
-	public VariableDeclaration getVariableDefinition(String name) {
+	VariableDeclaration getLocalVariableDefinition(String name) {
 		if (name.equalsIgnoreCase("result")) {
 			return this.result_definition;
 		}
@@ -144,9 +137,17 @@ public class FunctionDeclaration extends AbstractFunction implements
 				}
 			}
 		}
-		return parentContext.getVariableDefinition(name);
+		return null;
 	}
 
+	@Override
+	public VariableDeclaration getVariableDefinition(String name) {
+		VariableDeclaration v = getLocalVariableDefinition(name);
+		if (v != null) {
+			return v;
+		}
+		return parentContext.getVariableDefinition(name);
+	}
 
 	@Override
 	public String toString() {
@@ -263,5 +264,14 @@ public class FunctionDeclaration extends AbstractFunction implements
 	@Override
 	public LineInfo getLineNumber() {
 		return line;
+	}
+
+	@Override
+	public void verifyNonConflictingSymbol(NamedEntity n)
+			throws SameNameException {
+		VariableDeclaration v = getLocalVariableDefinition(n.name());
+		if (v != null) {
+			throw new SameNameException(v, n);
+		}
 	}
 }

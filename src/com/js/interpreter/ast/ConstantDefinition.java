@@ -3,10 +3,12 @@ package com.js.interpreter.ast;
 import com.js.interpreter.linenumber.LineInfo;
 
 public class ConstantDefinition implements NamedEntity {
+	String name;
 	Object value;
 	LineInfo line;
 
-	public ConstantDefinition(Object value, LineInfo line) {
+	public ConstantDefinition(String name, Object value, LineInfo line) {
+		this.name = name;
 		this.value = value;
 		this.line = line;
 	}
@@ -22,5 +24,10 @@ public class ConstantDefinition implements NamedEntity {
 	@Override
 	public String getEntityType() {
 		return "constant";
+	}
+
+	@Override
+	public String name() {
+		return name;
 	}
 }

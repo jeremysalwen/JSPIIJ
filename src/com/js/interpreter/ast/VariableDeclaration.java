@@ -40,4 +40,9 @@ public class VariableDeclaration implements NamedEntity {
 	public LineInfo getLineNumber() {
 		return line;
 	}
+
+	@Override
+	public String name() {
+		return name;
+	}
 }
