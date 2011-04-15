@@ -25,7 +25,9 @@ import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
+import com.js.interpreter.exceptions.MultipleDefaultValuesException;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
+import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
@@ -363,10 +365,26 @@ public abstract class GrouperToken extends Token {
 			}
 			DeclaredType type;
 			type = get_next_pascal_type(context);
+
+			Object defaultValue = null;
+			if (peek() instanceof OperatorToken) {
+				if (((OperatorToken) peek()).type == OperatorTypes.EQUALS) {
+					take();
+					ReturnsValue val = getNextExpression(context);
+					defaultValue = val.compileTimeValue(context);
+					if (defaultValue == null) {
+						throw new NonConstantExpressionException(val);
+					}
+					if (names.size() != 1) {
+						throw new MultipleDefaultValuesException(
+								val.getLineNumber());
+					}
+				}
+			}
 			assert_next_semicolon();
 			for (WordToken s : names) {
 				VariableDeclaration v = new VariableDeclaration(s.name, type,
-						s.lineInfo);
+						defaultValue, s.lineInfo);
 				context.verifyNonConflictingSymbol(v);
 				result.add(v);
 			}

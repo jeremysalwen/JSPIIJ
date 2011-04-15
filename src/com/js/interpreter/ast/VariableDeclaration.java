@@ -10,10 +10,19 @@ public class VariableDeclaration implements NamedEntity {
 
 	public DeclaredType type;
 
+	public Object initialValue;
 	LineInfo line;
 
 	public String get_name() {
 		return name;
+	}
+
+	public VariableDeclaration(String name, DeclaredType type,
+			Object initialValue, LineInfo line) {
+		this.name = name;
+		this.type = type;
+		this.line = line;
+		this.initialValue = initialValue;
 	}
 
 	public VariableDeclaration(String name, DeclaredType type, LineInfo line) {
@@ -23,7 +32,7 @@ public class VariableDeclaration implements NamedEntity {
 	}
 
 	public void initialize(Map<String, Object> map) {
-		map.put(name, type.initialize());
+		map.put(name, initialValue == null ? type.initialize() : initialValue);
 	}
 
 	@Override
