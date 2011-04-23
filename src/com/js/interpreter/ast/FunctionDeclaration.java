@@ -80,7 +80,14 @@ public class FunctionDeclaration extends AbstractFunction implements
 			local_variables = new ArrayList<VariableDeclaration>();
 		}
 		instructions = null;
-		parent.verifyNonConflictingSymbol(this);
+		NamedEntity n = parent.getConstantDefinition(name);
+		if (n != null) {
+			throw new SameNameException(n, this);
+		}
+		n = parent.getVariableDefinition(name);
+		if (n != null) {
+			throw new SameNameException(n, this);
+		}
 	}
 
 	public void parse_function_body(GrouperToken i) throws ParsingException {

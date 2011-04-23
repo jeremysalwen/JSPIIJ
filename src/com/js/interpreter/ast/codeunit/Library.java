@@ -10,13 +10,15 @@ import com.js.interpreter.runtime.codeunit.RuntimeLibrary;
 import com.js.interpreter.startup.ScriptSource;
 
 public class Library extends CodeUnit {
-	public Library(ListMultimap<String, AbstractFunction> functionTable) throws ParsingException {
+	public Library(ListMultimap<String, AbstractFunction> functionTable)
+			throws ParsingException {
 		super(functionTable);
 	}
 
 	public Library(Reader program,
 			ListMultimap<String, AbstractFunction> functionTable,
-			String sourcename, List<ScriptSource> includeDirectories) throws ParsingException {
+			String sourcename, List<ScriptSource> includeDirectories)
+			throws ParsingException {
 		super(program, functionTable, sourcename, includeDirectories);
 	}
 
