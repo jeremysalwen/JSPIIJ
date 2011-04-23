@@ -4,8 +4,10 @@ import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
@@ -72,4 +74,10 @@ public class UnaryOperatorEvaluation extends DebuggableReturnsValue {
 			throw new ConstantCalculationException(e);
 		}
 	}
+
+		@Override
+		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+				throws UnassignableTypeException {
+			throw new UnassignableTypeException(this);
+		}
 }

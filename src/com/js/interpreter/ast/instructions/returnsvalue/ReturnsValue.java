@@ -2,7 +2,10 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.Executable;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
@@ -21,5 +24,13 @@ public interface ReturnsValue {
 	/*
 	 * returns null if not a compile-time constant.
 	 */
-	public Object compileTimeValue(CompileTimeContext context) throws ParsingException;
+	public Object compileTimeValue(CompileTimeContext context)
+			throws ParsingException;
+
+	/*
+	 * returns null if not a writable value.
+	 */
+	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+			throws UnassignableTypeException;
+
 }

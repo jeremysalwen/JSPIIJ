@@ -4,9 +4,11 @@ import java.lang.reflect.Array;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -32,8 +34,9 @@ public class ArrayBoxer extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public RuntimeType get_type(ExpressionContext f) {
-		throw new RuntimeException(
+	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
+		throw new ParsingException(
+				line,
 				"Attempted to get type of varargs boxer. This should not happen as we are only supposed to pass varargs to plugins");
 	}
 
@@ -49,7 +52,8 @@ public class ArrayBoxer extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
+	public Object compileTimeValue(CompileTimeContext context)
+			throws ParsingException {
 		Object[] result = (Object[]) Array.newInstance(type.getRuntimeClass(),
 				values.length);
 		for (int i = 0; i < values.length; i++) {
@@ -61,6 +65,12 @@ public class ArrayBoxer extends DebuggableReturnsValue {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+			throws UnassignableTypeException {
+		throw new UnassignableTypeException(this);
 	}
 
 }

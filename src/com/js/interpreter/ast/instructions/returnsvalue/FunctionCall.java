@@ -8,9 +8,11 @@ import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.ExecutionResult;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.AmbiguousFunctionCallException;
 import com.js.interpreter.exceptions.BadFunctionCallException;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -139,5 +141,12 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 			return result;
 		}
 
+	}
+
+	@Override
+	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+			throws UnassignableTypeException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

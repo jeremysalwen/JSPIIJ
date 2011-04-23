@@ -7,6 +7,8 @@ import java.util.List;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.ast.instructions.Executable;
+import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
@@ -273,5 +275,14 @@ public class FunctionDeclaration extends AbstractFunction implements
 		if (v != null) {
 			throw new SameNameException(v, n);
 		}
+	}
+
+	@Override
+	public ReturnsValue getIdentifierValue(WordToken name)
+			throws ParsingException {
+		if (getLocalVariableDefinition(name.name) != null) {
+			return new VariableAccess(name);
+		}
+		return parentContext.getIdentifierValue(name);
 	}
 }

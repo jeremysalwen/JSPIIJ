@@ -4,8 +4,10 @@ import java.util.HashMap;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -117,6 +119,12 @@ public class TypeConverter {
 				return null;
 			}
 		}
+
+		@Override
+		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+				throws UnassignableTypeException {
+			throw new UnassignableTypeException(this);
+		}
 	}
 
 	static class NumberToLong implements ReturnsValue {
@@ -153,6 +161,12 @@ public class TypeConverter {
 			} else {
 				return null;
 			}
+		}
+
+		@Override
+		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+				throws UnassignableTypeException {
+			throw new UnassignableTypeException(this);
 		}
 	}
 
@@ -191,6 +205,12 @@ public class TypeConverter {
 				return null;
 			}
 		}
+
+		@Override
+		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+				throws UnassignableTypeException {
+			throw new UnassignableTypeException(this);
+		}
 	}
 
 	static class NumberToInt implements ReturnsValue {
@@ -228,6 +248,12 @@ public class TypeConverter {
 				return null;
 			}
 		}
+
+		@Override
+		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+				throws UnassignableTypeException {
+			throw new UnassignableTypeException(this);
+		}
 	}
 
 	static class CharToInt implements ReturnsValue {
@@ -264,6 +290,12 @@ public class TypeConverter {
 			} else {
 				return null;
 			}
+		}
+
+		@Override
+		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+				throws UnassignableTypeException {
+			throw new UnassignableTypeException(this);
 		}
 	}
 }

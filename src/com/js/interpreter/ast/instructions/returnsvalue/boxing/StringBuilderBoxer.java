@@ -2,9 +2,11 @@ package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -46,4 +48,9 @@ public class StringBuilderBoxer extends DebuggableReturnsValue {
 		return ((StringBuilder) other).toString();
 	}
 
+	@Override
+	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+			throws UnassignableTypeException {
+		throw new UnassignableTypeException(this);
+	}
 }

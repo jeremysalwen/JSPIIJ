@@ -4,8 +4,7 @@ import java.util.Iterator;
 
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
-import com.js.interpreter.ast.instructions.returnsvalue.boxing.CreatePointer;
+import com.js.interpreter.ast.instructions.returnsvalue.boxing.GetAddress;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.runtime.VariableBoxer;
 
@@ -24,7 +23,7 @@ public class RuntimeType implements ArgumentType {
 		RuntimeType other = value.get_type(f);
 		if (writable) {
 			if (this.equals(other)) {
-				return new CreatePointer((VariableAccess) value);
+				return new GetAddress(value);
 			} else {
 				return null;
 			}
@@ -76,7 +75,7 @@ public class RuntimeType implements ArgumentType {
 		RuntimeType other = val.get_type(e);
 		if (this.declType.equals(other.declType)) {
 			if (writable) {
-				return new CreatePointer((VariableAccess) val);
+				return new GetAddress( val);
 			} else {
 				return declType.cloneValue(val);
 			}

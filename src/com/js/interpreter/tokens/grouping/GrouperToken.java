@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.Executable;
+import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.InstructionGrouper;
 import com.js.interpreter.ast.instructions.NopInstruction;
 import com.js.interpreter.ast.instructions.VariableSet;
@@ -28,6 +29,7 @@ import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.MultipleDefaultValuesException;
 import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
+import com.js.interpreter.exceptions.NotAStatementException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
@@ -39,6 +41,9 @@ import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
+import com.js.interpreter.runtime.VariableContext;
+import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ReturnsValue_SubvarIdentifier;
 import com.js.interpreter.runtime.variables.String_SubvarIdentifier;
 import com.js.interpreter.runtime.variables.SubvarIdentifier;
@@ -218,11 +223,10 @@ public abstract class GrouperToken extends Token {
 	}
 
 	public ReturnsValue getNextExpression(ExpressionContext context,
-			OperatorTypes.precedence precedence) throws ParsingException {
+			OperatorTypes.precedence precedence, Token next)
+			throws ParsingException {
 		ReturnsValue nextTerm;
-		Token next = peek();
 		if (next instanceof OperatorToken) {
-			take();
 			OperatorToken nextOperator = (OperatorToken) next;
 			if (!nextOperator.can_be_unary()) {
 				throw new BadOperationTypeException(next.lineInfo,
@@ -232,9 +236,8 @@ public abstract class GrouperToken extends Token {
 					nextOperator.type.getPrecedence()), nextOperator.type,
 					nextOperator.lineInfo);
 		} else {
-			nextTerm = getNextTerm(context);
+			nextTerm = getNextTerm(context, next);
 		}
-
 		while ((next = peek()) instanceof OperatorToken) {
 			OperatorToken nextOperator = (OperatorToken) next;
 			if (nextOperator.type.getPrecedence().compareTo(precedence) >= 0) {
@@ -259,9 +262,13 @@ public abstract class GrouperToken extends Token {
 		return nextTerm;
 	}
 
-	public ReturnsValue getNextTerm(ExpressionContext context)
+	public ReturnsValue getNextExpression(ExpressionContext context,
+			OperatorTypes.precedence precedence) throws ParsingException {
+		return getNextExpression(context, precedence, take());
+	}
+
+	public ReturnsValue getNextTerm(ExpressionContext context, Token next)
 			throws ParsingException {
-		Token next = take();
 		if (next instanceof ParenthesizedToken) {
 			return ((ParenthesizedToken) next).get_single_value(context);
 		} else if (next instanceof ValueToken) {
@@ -276,24 +283,17 @@ public abstract class GrouperToken extends Token {
 						.get_arguments_for_call(context);
 				return FunctionCall.generate_function_call(name, arguments,
 						context);
-			} else if (context.functionExists(name.name)) {
-				return FunctionCall.generate_function_call(name,
-						new ArrayList<ReturnsValue>(0), context);
-			} else if (context.getConstantDefinition(name.name) != null) {
-				return new ConstantAccess(context.getConstantDefinition(
-						name.name).getValue(), name.lineInfo);
+			} else {
+				return context.getIdentifierValue(name);
 			}
-			VariableAccess result = new VariableAccess(get_next_var_identifier(
-					context, name), name.lineInfo);
-			if (result.get_type(context) == null) {
-				throw new NoSuchFunctionOrVariableException(name.lineInfo,
-						name.name);
-			}
-			return result;
-
 		} else {
 			throw new UnrecognizedTokenException(next);
 		}
+	}
+
+	public ReturnsValue getNextTerm(ExpressionContext context)
+			throws ParsingException {
+		return getNextTerm(context, take());
 	}
 
 	public ReturnsValue getNextExpression(ExpressionContext context)
@@ -301,47 +301,53 @@ public abstract class GrouperToken extends Token {
 		return getNextExpression(context, precedence.NoPrecedence);
 	}
 
-	public VariableIdentifier get_next_var_identifier(
-			ExpressionContext context, WordToken initial)
+	public ReturnsValue getNextExpression(ExpressionContext context, Token first)
 			throws ParsingException {
-		VariableIdentifier identifier = new VariableIdentifier(initial.lineInfo);
-		identifier.add(new String_SubvarIdentifier(initial.name));
-		DeclaredType type = identifier.get_type(context).declType;
-		while (true) {
-			SubvarIdentifier s;
-			if (peek() instanceof PeriodToken) {
-				take();
-
-				if (peek() instanceof WordToken) {
-					s = new String_SubvarIdentifier(next_word_value());
-				} else {
-					break;
-				}
-			} else if (peek() instanceof BracketedToken) {
-				int offset = 0;
-				if (type instanceof ArrayType) {
-					offset = ((ArrayType) type).bounds.lower;
-				}
-				s = new ReturnsValue_SubvarIdentifier(
-						((BracketedToken) take()).getNextExpression(context),
-						offset);
-			} else {
-				break;
-			}
-			type = s.getType(type);
-			identifier.add(s);
-		}
-		return identifier;
+		return getNextExpression(context, precedence.NoPrecedence, first);
 	}
 
-	public VariableIdentifier get_next_var_identifier(ExpressionContext context)
-			throws ParsingException {
-		Token initial = take();
-		if (!(initial instanceof WordToken)) {
-			throw new ExpectedTokenException("[Variable name]", initial);
-		}
-		return get_next_var_identifier(context, (WordToken) initial);
-	}
+	// public VariableIdentifier get_next_var_identifier(
+	// ExpressionContext context, WordToken initial)
+	// throws ParsingException {
+	// VariableIdentifier identifier = new VariableIdentifier(initial.lineInfo);
+	// identifier.add(new String_SubvarIdentifier(initial.name));
+	// DeclaredType type = identifier.get_type(context).declType;
+	// while (true) {
+	// SubvarIdentifier s;
+	// if (peek() instanceof PeriodToken) {
+	// take();
+	//
+	// if (peek() instanceof WordToken) {
+	// s = new String_SubvarIdentifier(next_word_value());
+	// } else {
+	// break;
+	// }
+	// } else if (peek() instanceof BracketedToken) {
+	// int offset = 0;
+	// if (type instanceof ArrayType) {
+	// offset = ((ArrayType) type).bounds.lower;
+	// }
+	// s = new ReturnsValue_SubvarIdentifier(
+	// ((BracketedToken) take()).getNextExpression(context),
+	// offset);
+	// } else {
+	// break;
+	// }
+	// type = s.getType(type);
+	// identifier.add(s);
+	// }
+	// return identifier;
+	// }
+	//
+	// public VariableIdentifier get_next_var_identifier(ExpressionContext
+	// context)
+	// throws ParsingException {
+	// Token initial = take();
+	// if (!(initial instanceof WordToken)) {
+	// throw new ExpectedTokenException("[Variable name]", initial);
+	// }
+	// return get_next_var_identifier(context, (WordToken) initial);
+	// }
 
 	public List<VariableDeclaration> get_variable_declarations(
 			ExpressionContext context) throws ParsingException {
@@ -438,9 +444,7 @@ public abstract class GrouperToken extends Token {
 			InstructionGrouper begin_end_preprocessed = new InstructionGrouper(
 					initialline);
 			BeginEndToken cast_token = (BeginEndToken) next;
-			if (cast_token.hasNext()) {
 
-			}
 			while (cast_token.hasNext()) {
 				begin_end_preprocessed.add_command(cast_token
 						.get_next_command(context));
@@ -450,7 +454,7 @@ public abstract class GrouperToken extends Token {
 			}
 			return begin_end_preprocessed;
 		} else if (next instanceof ForToken) {
-			VariableIdentifier tmp_var = get_next_var_identifier(context);
+			ReturnsValue tmp_var = getNextExpression(context);
 			next = take();
 			assert (next instanceof AssignmentToken);
 			ReturnsValue first_value = getNextExpression(context);
@@ -488,31 +492,17 @@ public abstract class GrouperToken extends Token {
 			}
 			ReturnsValue condition = getNextExpression(context);
 			return new RepeatInstruction(command, condition, initialline);
-		} else if (next instanceof WordToken) {
-
-			WordToken nametoken = (WordToken) next;
+		} else if (next instanceof CaseToken) {
+			return new CaseInstruction((CaseToken) next, context);
+		} else if (next instanceof SemicolonToken) {
+			return new NopInstruction(next.lineInfo);
+		} else {
+			ReturnsValue r = getNextExpression(context, next);
 			next = peek();
-			if (next instanceof ParenthesizedToken) {
-				next = take();
-				List<ReturnsValue> arguments = ((ParenthesizedToken) next)
-						.get_arguments_for_call(context);
-				return FunctionCall.generate_function_call(nametoken,
-						arguments, context);
-			} else if (next instanceof SemicolonToken
-					|| next instanceof EOF_Token) {
-				List<ReturnsValue> arguments = new ArrayList<ReturnsValue>();
-				return FunctionCall.generate_function_call(nametoken,
-						arguments, context);
-			} else {
-				// at this point assuming it is a variable identifier.
-				VariableIdentifier identifier = get_next_var_identifier(
-						context, nametoken);
-				next = take();
-				if (!(next instanceof AssignmentToken)) {
-					throw new ExpectedTokenException(":=", next);
-				}
+			if (next instanceof AssignmentToken) {
+				take();
 				ReturnsValue value_to_assign = getNextExpression(context);
-				DeclaredType output_type = identifier.get_type(context).declType;
+				DeclaredType output_type = r.get_type(context).declType;
 				DeclaredType input_type = value_to_assign.get_type(context).declType;
 				/*
 				 * Does not have to be writable to assign value to variable.
@@ -522,14 +512,13 @@ public abstract class GrouperToken extends Token {
 					throw new UnconvertableTypeException(next.lineInfo,
 							input_type, output_type);
 				}
-				return new VariableSet(identifier, value_to_assign, initialline);
+				return r.createSetValueInstruction(value_to_assign);
+			} else if (r instanceof Executable) {
+				return (Executable) r;
+			} else {
+				throw new NotAStatementException(r);
 			}
-		} else if (next instanceof CaseToken) {
-			return new CaseInstruction((CaseToken) next, context);
-		} else if (next instanceof SemicolonToken) {
-			return new NopInstruction(next.lineInfo);
 		}
-		return context.root().handleUnrecognizedToken(next, this);
 	}
 
 	protected abstract String getClosingText();

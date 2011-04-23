@@ -6,8 +6,10 @@ import serp.bytecode.Code;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -152,6 +154,12 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 					throws ParsingException {
 				Object[] value = (Object[]) r.compileTimeValue(context);
 				return value.clone();
+			}
+
+			@Override
+			public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+					throws UnassignableTypeException {
+				throw new UnassignableTypeException(this);
 			}
 		};
 	}

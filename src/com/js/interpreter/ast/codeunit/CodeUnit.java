@@ -14,7 +14,10 @@ import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.NamedEntity;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.Executable;
+import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;
+import com.js.interpreter.ast.instructions.returnsvalue.FunctionCall;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
@@ -24,6 +27,7 @@ import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.ObjectType;
 import com.js.interpreter.runtime.codeunit.RuntimeCodeUnit;
+import com.js.interpreter.runtime.variables.VariableIdentifier;
 import com.js.interpreter.startup.ScriptSource;
 import com.js.interpreter.tokenizer.NewLexer;
 import com.js.interpreter.tokens.OperatorToken;
@@ -232,5 +236,20 @@ public abstract class CodeUnit implements ExpressionContext {
 		} else if (getConstantDefinition(n) != null) {
 			throw new SameNameException(getConstantDefinition(n), ne);
 		}
+	}
+
+	@Override
+	public ReturnsValue getIdentifierValue(WordToken name)
+			throws ParsingException {
+		if (functionExists(name.name)) {
+			return FunctionCall.generate_function_call(name,
+					new ArrayList<ReturnsValue>(0), this);
+		} else if (getConstantDefinition(name.name) != null) {
+			return new ConstantAccess(getConstantDefinition(name.name)
+					.getValue(), name.lineInfo);
+		} else if(getVariableDefinition(name.name)!=null) {
+			return new VariableAccess(name.name, name.lineInfo);
+		}
+		return null;
 	}
 }

@@ -2,9 +2,11 @@ package com.js.interpreter.ast.instructions.returnsvalue.boxing;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -36,7 +38,8 @@ public class CharacterBoxer extends DebuggableReturnsValue {
 	}
 
 	@Override
-	public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
+	public Object compileTimeValue(CompileTimeContext context)
+			throws ParsingException {
 		Object val = c.compileTimeValue(context);
 		if (val != null) {
 			return new StringBuilder(val.toString());
@@ -44,5 +47,12 @@ public class CharacterBoxer extends DebuggableReturnsValue {
 			return null;
 		}
 	}
+
+	@Override
+	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+			throws UnassignableTypeException {
+		throw new UnassignableTypeException(this);
+	}
+
 
 }

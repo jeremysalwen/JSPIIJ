@@ -59,35 +59,9 @@ public class PointerType extends DeclaredType {
 
 	}
 
+	// The pointer itself contains no mutable information.
 	@Override
 	public ReturnsValue cloneValue(final ReturnsValue r) {
-		return new ReturnsValue() {
-
-			@Override
-			public RuntimeType get_type(ExpressionContext f)
-					throws ParsingException {
-				return r.get_type(f);
-			}
-
-			@Override
-			public Object getValue(VariableContext f, RuntimeExecutable<?> main)
-					throws RuntimePascalException {
-				PascalPointer<?> value = (PascalPointer<?>) r.getValue(f, main);
-				return value.clone();
-			}
-
-			@Override
-			public LineInfo getLineNumber() {
-				return r.getLineNumber();
-			}
-
-			@Override
-			public Object compileTimeValue(CompileTimeContext context)
-					throws ParsingException {
-				PascalPointer<?> value = (PascalPointer<?>) r
-						.compileTimeValue(context);
-				return value.clone();
-			}
-		};
+		return r;
 	}
 }

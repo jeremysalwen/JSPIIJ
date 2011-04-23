@@ -7,30 +7,38 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.VariableIdentifier;
 
-public class VariableSet extends DebuggableExecutable {
-	VariableIdentifier name;
+public class VariableSet extends DebuggableExecutable implements
+		SetValueExecutable {
+	String name;
 
 	ReturnsValue value;
 	LineInfo line;
-	public VariableSet(VariableIdentifier name, ReturnsValue value,LineInfo line) {
+
+	public VariableSet(String name, ReturnsValue value, LineInfo line) {
 		this.name = name;
 		this.value = value;
-		this.line=line;
+		this.line = line;
 	}
 
 	@Override
-	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
-		name.set_value(f,main,value.getValue(f, main));
+	public ExecutionResult executeImpl(VariableContext f,
+			RuntimeExecutable<?> main) throws RuntimePascalException {
+		f.set_var(name, value.getValue(f, main));
 		return ExecutionResult.NONE;
 	}
 
 	@Override
 	public String toString() {
-		return "set [" + name + "] to [" + value + "]\n";
+		return name + " := " + value;
 	}
 
 	@Override
 	public LineInfo getLineNumber() {
 		return this.line;
+	}
+
+	@Override
+	public void setAssignedValue(ReturnsValue value) {
+		this.value = value;
 	}
 }

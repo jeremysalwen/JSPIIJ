@@ -4,8 +4,10 @@ import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
@@ -159,4 +161,12 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 			return null;
 		}
 	}
+
+	@Override
+	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+			throws UnassignableTypeException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

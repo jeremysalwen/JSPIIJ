@@ -2,6 +2,8 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.SetValueExecutable;
+import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
@@ -9,7 +11,7 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 
 public class ConstantAccess extends DebuggableReturnsValue {
-	final Object constant_value;
+	public Object constant_value;
 	final LineInfo line;
 
 	public ConstantAccess(Object o, LineInfo line) {
@@ -42,4 +44,11 @@ public class ConstantAccess extends DebuggableReturnsValue {
 	public Object compileTimeValue(CompileTimeContext context) {
 		return constant_value;
 	}
+
+	@Override
+	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+			throws UnassignableTypeException {
+		throw new UnassignableTypeException(this);
+	}
+
 }
