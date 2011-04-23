@@ -4,17 +4,14 @@ import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.VariableSet;
 import com.js.interpreter.ast.instructions.returnsvalue.BinaryOperatorEvaluation;
 import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
-import com.js.interpreter.runtime.variables.VariableIdentifier;
 import com.js.interpreter.tokens.OperatorTypes;
 
 public class DowntoForStatement extends DebuggableExecutable {

@@ -11,4 +11,9 @@ public class PeriodToken extends BasicToken {
 	public String toString() {
 		return ".";
 	}
+
+	@Override
+	public precedence getOperatorPrecedence() {
+		return precedence.Dereferencing;
+	}
 }

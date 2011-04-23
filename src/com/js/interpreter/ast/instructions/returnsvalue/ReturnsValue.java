@@ -2,7 +2,6 @@ package com.js.interpreter.ast.instructions.returnsvalue;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;

@@ -5,6 +5,7 @@ import javax.naming.OperationNotSupportedException;
 import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.tokens.Token.precedence;
 
 public enum OperatorTypes {
 	NOT(true) {
@@ -63,7 +64,7 @@ public enum OperatorTypes {
 		@Override
 		public Object operate(double d1, double d2)
 				throws OperationNotSupportedException {
-			if(d2==0) {
+			if (d2 == 0) {
 				throw new ArithmeticException("/ by zero");
 			}
 			return d1 / d2;
@@ -72,7 +73,7 @@ public enum OperatorTypes {
 		@Override
 		public Object operate(long l1, long l2)
 				throws OperationNotSupportedException {
-			if(l2==0) {
+			if (l2 == 0) {
 				throw new ArithmeticException("/ by zero");
 			}
 			return (double) l1 / (double) l2;
@@ -643,7 +644,4 @@ public enum OperatorTypes {
 		return null;
 	}
 
-	public enum precedence {
-		Negation, Multiplicative, Additive, Relational, NoPrecedence
-	};
 }

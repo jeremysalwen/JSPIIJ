@@ -5,7 +5,6 @@ import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
-import com.js.interpreter.runtime.variables.VariableIdentifier;
 
 public class VariableSet extends DebuggableExecutable implements
 		SetValueExecutable {

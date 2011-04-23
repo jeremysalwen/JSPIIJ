@@ -26,4 +26,9 @@ public class BracketedToken extends GrouperToken {
 	protected String getClosingText() {
 		return "]";
 	}
+
+	@Override
+	public precedence getOperatorPrecedence() {
+		return precedence.Dereferencing;
+	}
 }

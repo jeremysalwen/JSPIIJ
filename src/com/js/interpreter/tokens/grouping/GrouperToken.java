@@ -7,31 +7,30 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.Executable;
-import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.InstructionGrouper;
 import com.js.interpreter.ast.instructions.NopInstruction;
-import com.js.interpreter.ast.instructions.VariableSet;
 import com.js.interpreter.ast.instructions.case_statement.CaseInstruction;
 import com.js.interpreter.ast.instructions.conditional.DowntoForStatement;
 import com.js.interpreter.ast.instructions.conditional.ForStatement;
 import com.js.interpreter.ast.instructions.conditional.IfStatement;
 import com.js.interpreter.ast.instructions.conditional.RepeatInstruction;
 import com.js.interpreter.ast.instructions.conditional.WhileStatement;
+import com.js.interpreter.ast.instructions.returnsvalue.ArrayAccess;
 import com.js.interpreter.ast.instructions.returnsvalue.BinaryOperatorEvaluation;
 import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;
+import com.js.interpreter.ast.instructions.returnsvalue.FieldAccess;
 import com.js.interpreter.ast.instructions.returnsvalue.FunctionCall;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.instructions.returnsvalue.UnaryOperatorEvaluation;
-import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.MultipleDefaultValuesException;
-import com.js.interpreter.exceptions.NoSuchFunctionOrVariableException;
+import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
+import com.js.interpreter.exceptions.NonIntegerIndexException;
 import com.js.interpreter.exceptions.NotAStatementException;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.exceptions.grouping.GroupingException;
@@ -39,20 +38,13 @@ import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
-import com.js.interpreter.runtime.VariableContext;
-import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
-import com.js.interpreter.runtime.exception.RuntimePascalException;
-import com.js.interpreter.runtime.variables.ReturnsValue_SubvarIdentifier;
-import com.js.interpreter.runtime.variables.String_SubvarIdentifier;
-import com.js.interpreter.runtime.variables.SubvarIdentifier;
-import com.js.interpreter.runtime.variables.VariableIdentifier;
 import com.js.interpreter.tokens.EOF_Token;
 import com.js.interpreter.tokens.GroupingExceptionToken;
 import com.js.interpreter.tokens.OperatorToken;
 import com.js.interpreter.tokens.OperatorTypes;
-import com.js.interpreter.tokens.OperatorTypes.precedence;
 import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.WordToken;
 import com.js.interpreter.tokens.basic.ArrayToken;
@@ -223,8 +215,7 @@ public abstract class GrouperToken extends Token {
 	}
 
 	public ReturnsValue getNextExpression(ExpressionContext context,
-			OperatorTypes.precedence precedence, Token next)
-			throws ParsingException {
+			precedence precedence, Token next) throws ParsingException {
 		ReturnsValue nextTerm;
 		if (next instanceof OperatorToken) {
 			OperatorToken nextOperator = (OperatorToken) next;
@@ -238,32 +229,58 @@ public abstract class GrouperToken extends Token {
 		} else {
 			nextTerm = getNextTerm(context, next);
 		}
-		while ((next = peek()) instanceof OperatorToken) {
-			OperatorToken nextOperator = (OperatorToken) next;
-			if (nextOperator.type.getPrecedence().compareTo(precedence) >= 0) {
-				break;
+		while ((next = peek()).getOperatorPrecedence() != null) {
+			if (next instanceof OperatorToken) {
+				OperatorToken nextOperator = (OperatorToken) next;
+				if (nextOperator.type.getPrecedence().compareTo(precedence) >= 0) {
+					break;
+				}
+				take();
+				ReturnsValue nextvalue = getNextExpression(context,
+						nextOperator.type.getPrecedence());
+				OperatorTypes operationtype = ((OperatorToken) next).type;
+				DeclaredType type1 = nextTerm.get_type(context).declType;
+				DeclaredType type2 = nextvalue.get_type(context).declType;
+				try {
+					operationtype.verifyOperation(type1, type2);
+				} catch (BadOperationTypeException e) {
+					throw new BadOperationTypeException(next.lineInfo, type1,
+							type2, nextTerm, nextvalue, operationtype);
+				}
+				nextTerm = new BinaryOperatorEvaluation(nextTerm, nextvalue,
+						operationtype, nextOperator.lineInfo);
+			} else if (next instanceof PeriodToken) {
+				take();
+				next = take();
+				if (!(next instanceof WordToken)) {
+					throw new ExpectedTokenException("[Element Name]", next);
+				}
+				nextTerm = new FieldAccess(nextTerm, (WordToken) next);
+			} else if (next instanceof BracketedToken) {
+				take();
+				BracketedToken b = (BracketedToken) next;
+				RuntimeType t = nextTerm.get_type(context);
+				if (!t.declType.isarray()) {
+					throw new NonArrayIndexed(nextTerm.getLineNumber(),
+							t.declType);
+				}
+				ReturnsValue v = b.getNextExpression(context);
+				ReturnsValue converted = JavaClassBasedType.Integer.convert(v,
+						context);
+				if (converted == null) {
+					throw new NonIntegerIndexException(v);
+				}
+				if (b.hasNext()) {
+					throw new ExpectedTokenException("]", b.take());
+				}
+				nextTerm = new ArrayAccess(nextTerm, converted);
 			}
-			take();
-			ReturnsValue nextvalue = getNextExpression(context,
-					nextOperator.type.getPrecedence());
-			OperatorTypes operationtype = ((OperatorToken) next).type;
-			DeclaredType type1 = nextTerm.get_type(context).declType;
-			DeclaredType type2 = nextvalue.get_type(context).declType;
-			try {
-				operationtype.verifyOperation(type1, type2);
-			} catch (BadOperationTypeException e) {
-				throw new BadOperationTypeException(next.lineInfo, type1,
-						type2, nextTerm, nextvalue, operationtype);
-			}
-			nextTerm = new BinaryOperatorEvaluation(nextTerm, nextvalue,
-					operationtype, nextOperator.lineInfo);
-
 		}
 		return nextTerm;
 	}
 
 	public ReturnsValue getNextExpression(ExpressionContext context,
-			OperatorTypes.precedence precedence) throws ParsingException {
+			precedence precedence) throws ParsingException {
 		return getNextExpression(context, precedence, take());
 	}
 
@@ -522,4 +539,5 @@ public abstract class GrouperToken extends Token {
 	}
 
 	protected abstract String getClosingText();
+
 }

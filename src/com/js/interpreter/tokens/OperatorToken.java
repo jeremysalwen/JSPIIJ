@@ -25,4 +25,9 @@ public class OperatorToken extends Token {
 	public String toString() {
 		return type.toString();
 	}
+
+	@Override
+	public precedence getOperatorPrecedence() {
+		return type.getPrecedence();
+	}
 }

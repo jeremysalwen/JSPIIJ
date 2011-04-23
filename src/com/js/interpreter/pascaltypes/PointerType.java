@@ -2,16 +2,10 @@ package com.js.interpreter.pascaltypes;
 
 import serp.bytecode.Code;
 
-import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.ObjectBasedPointer;
-import com.js.interpreter.runtime.PascalPointer;
-import com.js.interpreter.runtime.VariableContext;
-import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
-import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class PointerType extends DeclaredType {
 	DeclaredType pointedToType;

@@ -14,4 +14,17 @@ public abstract class Token {
 	public WordToken get_word_value() throws ParsingException {
 		throw new ExpectedTokenException("[Identifier]", this);
 	}
+
+	/**
+	 * Null means not an operator
+	 * 
+	 * @return
+	 */
+	public precedence getOperatorPrecedence() {
+		return null;
+	}
+
+	public enum precedence {
+		Dereferencing, Negation, Multiplicative, Additive, Relational, NoPrecedence
+	};
 }
