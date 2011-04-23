@@ -1,5 +1,8 @@
 package com.js.interpreter.pascaltypes;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,12 +101,26 @@ public class CustomType extends ObjectType {
 		BCClass c = p.loadClass(name);
 		c.setDeclaredInterfaces(new Class[] { ContainsVariables.class });
 		for (VariableDeclaration v : variable_types) {
-			c.declareField(v.name, TypeUtils.getTypeForClass(v.type.toclass()));
+			Class type = v.type.toclass();
+			if (TypeUtils.isPrimitiveAssignable(type)) {
+				type = TypeUtils.getTypeForClass(v.type.toclass());
+			}
+			c.declareField(v.name, type);
 		}
 		add_constructor(c);
 		add_get_var(c);
 		add_set_var(c);
 		add_clone(c);
+		try {
+			new FileOutputStream("/tmp/" + c.getClassName() + ".class").write(c
+					.toByteArray());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		cachedClass = bcl.loadThisClass(c.toByteArray());
 		return cachedClass;
 	}
@@ -276,6 +293,8 @@ public class CustomType extends ObjectType {
 				set_var_code.checkcast().setType(Character.class);
 				set_var_code.invokevirtual().setMethod(Character.class,
 						"charValue", char.class, new Class[] {});
+			} else {
+				set_var_code.checkcast().setType(field_class);
 			}
 			set_var_code.putfield().setField(f);
 		}
@@ -298,13 +317,28 @@ public class CustomType extends ObjectType {
 			clone_code.aload().setLocal(1);
 			clone_code.invokespecial().setMethod(b.addDefaultConstructor());
 			for (BCField f : b.getFields()) {
+
 				clone_code.aload().setLocal(1);
-				clone_code.aload().setThis();
-				clone_code.getfield().setField(f);
-				if (!f.getType().isPrimitive() && f.getType() != String.class) {
+				if (f.getType() == StringBuilder.class) {
+					clone_code.anew().setType(StringBuilder.class);
+					clone_code.dup();
+
+					clone_code.aload().setThis();
+					clone_code.getfield().setField(f);
+
+					clone_code.invokespecial().setMethod(
+							StringBuilder.class
+									.getConstructor(CharSequence.class));
+				} else if (f.getType().isPrimitive()) {
+					clone_code.aload().setThis();
+					clone_code.getfield().setField(f);
+				} else {
+					clone_code.aload().setThis();
+					clone_code.getfield().setField(f);
 					clone_code.invokevirtual().setMethod(
 							f.getType().getMethod("clone", new Class[0]));
 				}
+
 				clone_code.putfield().setField(f);
 			}
 

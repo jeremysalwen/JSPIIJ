@@ -41,7 +41,6 @@ public class JavaClassBasedType extends DeclaredType {
 
 	static {
 		default_values.put(JavaClassBasedType.Integer, 0);
-		default_values.put(JavaClassBasedType.StringBuilder, "");
 		default_values.put(JavaClassBasedType.Double, 0.0D);
 		default_values.put(JavaClassBasedType.Long, 0L);
 		default_values.put(JavaClassBasedType.Character, '\0');
@@ -175,9 +174,24 @@ public class JavaClassBasedType extends DeclaredType {
 
 	@Override
 	public void pushDefaultValue(Code constructor_code) {
-		Object value = default_values.get(this);
-		if (value != null) {
-			constructor_code.constant().setValue(value);
+		if (this == StringBuilder) {
+			constructor_code.anew().setType(StringBuilder.class);
+			constructor_code.dup();
+			try {
+				constructor_code.invokespecial().setMethod(
+						StringBuilder.class.getConstructor());
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			Object value = default_values.get(this);
+			if (value != null) {
+				constructor_code.constant().setValue(value);
+			}
 		}
 	}
 
