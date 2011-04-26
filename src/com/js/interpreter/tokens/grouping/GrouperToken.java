@@ -260,10 +260,6 @@ public abstract class GrouperToken extends Token {
 				take();
 				BracketedToken b = (BracketedToken) next;
 				RuntimeType t = nextTerm.get_type(context);
-				if (!t.declType.isarray()) {
-					throw new NonArrayIndexed(nextTerm.getLineNumber(),
-							t.declType);
-				}
 				ReturnsValue v = b.getNextExpression(context);
 				ReturnsValue converted = JavaClassBasedType.Integer.convert(v,
 						context);
@@ -273,7 +269,7 @@ public abstract class GrouperToken extends Token {
 				if (b.hasNext()) {
 					throw new ExpectedTokenException("]", b.take());
 				}
-				nextTerm = new ArrayAccess(nextTerm, converted);
+				nextTerm = t.declType.generateArrayAccess(nextTerm, converted);
 			}
 		}
 		return nextTerm;

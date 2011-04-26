@@ -9,7 +9,8 @@ import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.tokens.WordToken;
 
 public interface ExpressionContext extends CompileTimeContext {
-	public ReturnsValue getIdentifierValue(WordToken name) throws ParsingException;
+	public ReturnsValue getIdentifierValue(WordToken name)
+			throws ParsingException;
 
 	void verifyNonConflictingSymbol(NamedEntity n) throws SameNameException;
 

@@ -4,7 +4,9 @@ import serp.bytecode.Code;
 
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.runtime.ObjectBasedPointer;
 
 public class PointerType extends DeclaredType {
@@ -57,5 +59,17 @@ public class PointerType extends DeclaredType {
 	@Override
 	public ReturnsValue cloneValue(final ReturnsValue r) {
 		return r;
+	}
+
+	@Override
+	public void cloneValueOnStack(TransformationInput t) {
+		t.pushInputOnStack();
+		return;
+	}
+
+	@Override
+	public ReturnsValue generateArrayAccess(ReturnsValue array,
+			ReturnsValue index) throws NonArrayIndexed {
+		throw new NonArrayIndexed(array.getLineNumber(), this);
 	}
 }

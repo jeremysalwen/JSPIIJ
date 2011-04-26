@@ -20,9 +20,11 @@ import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
@@ -332,6 +334,10 @@ public class CustomType extends ObjectType {
 				} else if (f.getType().isPrimitive()) {
 					clone_code.aload().setThis();
 					clone_code.getfield().setField(f);
+				} else if (f.getType().isArray()) {
+					clone_code.aload().setThis();
+					clone_code.getfield().setField(f);
+
 				} else {
 					clone_code.aload().setThis();
 					clone_code.getfield().setField(f);
@@ -391,6 +397,24 @@ public class CustomType extends ObjectType {
 				throw new UnassignableTypeException(this);
 			}
 		};
+	}
+
+	@Override
+	public void cloneValueOnStack(TransformationInput t) {
+		t.pushInputOnStack();
+		try {
+			t.getCode().invokeinterface()
+					.setMethod("clone", ContainsVariables.class, new Class[0]);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public ReturnsValue generateArrayAccess(ReturnsValue array,
+			ReturnsValue index) throws NonArrayIndexed {
+		throw new NonArrayIndexed(array.getLineNumber(), this);
 	}
 
 }

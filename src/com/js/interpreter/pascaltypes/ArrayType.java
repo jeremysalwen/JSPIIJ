@@ -3,14 +3,17 @@ package com.js.interpreter.pascaltypes;
 import java.lang.reflect.Array;
 
 import serp.bytecode.Code;
+import serp.bytecode.JumpInstruction;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
+import com.js.interpreter.ast.instructions.returnsvalue.ArrayAccess;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
@@ -123,7 +126,6 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 
 	@Override
 	public void pushDefaultValue(Code constructor_code) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -164,4 +166,91 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 		};
 	}
 
+	private void pushLengthOnStack(Code c, int varindex) {
+		if (varindex >= 0) {
+			c.iload().setLocal(varindex);
+		} else {
+			c.constant().setValue(bounds.size);
+		}
+	}
+
+	@Override
+	public void cloneValueOnStack(final TransformationInput t) {
+		final Code c = t.getCode();
+		t.pushInputOnStack();
+		int varindex = -1;
+		if (this.bounds.size == 0) {
+			varindex = t.getFreeRegister();
+			c.dup();
+			c.arraylength();
+			c.istore().setLocal(varindex);
+		}
+		// STACK=OLD
+		final int cloneeindex = t.getFreeRegister();
+		c.astore().setLocal(cloneeindex);
+		pushLengthOnStack(c, varindex);
+		// STACK=LEN
+		c.dup();
+		// STACK=LEN,LEN
+		c.anewarray().setType(this.element_type.toclass());
+		// Stack=LEN,NEW
+		c.dupx1();
+		c.swap();
+		// STACK=NEW,NEW,LEN
+		final int index = t.getFreeRegister();
+		c.constant().setValue(0);
+		c.dup();
+		c.istore().setLocal(index);
+		// STACK= NEW,NEW,LEN,IND
+		c.dupx1();
+		// STACK=NEW,NEW,IND,LEN,IND
+		JumpInstruction jmp = c.ificmple();
+		// STACK=NEW,NEW,IND
+		element_type.cloneValueOnStack(new TransformationInput() {
+
+			@Override
+			public void pushInputOnStack() {
+				c.aload().setLocal(cloneeindex);
+				c.iload().setLocal(index);
+				c.aload();
+			}
+
+			@Override
+			public int getFreeRegister() {
+				return t.getFreeRegister();
+			}
+
+			@Override
+			public Code getCode() {
+				return c;
+			}
+
+			@Override
+			public void freeRegister(int index) {
+				t.freeRegister(index);
+			}
+		});
+		// STACK=NEW,NEW,IND,NEWVALUE
+		c.aastore();
+		// STACK=NEW
+		c.dup();
+		pushLengthOnStack(c, varindex);
+		c.iload().setLocal(index);
+		c.iinc();
+		// STACK=NEW,NEW,LEN,IND
+		c.jsr().setTarget(jmp);
+		jmp.setTarget(c.pop2());
+		c.pop2();
+		t.freeRegister(cloneeindex);
+		t.freeRegister(index);
+		if (varindex != -1) {
+			t.freeRegister(varindex);
+		}
+	}
+
+	@Override
+	public ReturnsValue generateArrayAccess(ReturnsValue array,
+			ReturnsValue index) {
+		return new ArrayAccess(array, index);
+	}
 }

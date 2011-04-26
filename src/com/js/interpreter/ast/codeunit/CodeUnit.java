@@ -9,6 +9,7 @@ import java.util.Map;
 import com.google.common.collect.ListMultimap;
 import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.ConstantDefinition;
+import com.js.interpreter.ast.ExpressionBuildingContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.NamedEntity;
@@ -246,9 +247,10 @@ public abstract class CodeUnit implements ExpressionContext {
 		} else if (getConstantDefinition(name.name) != null) {
 			return new ConstantAccess(getConstantDefinition(name.name)
 					.getValue(), name.lineInfo);
-		} else if(getVariableDefinition(name.name)!=null) {
+		} else if (getVariableDefinition(name.name) != null) {
 			return new VariableAccess(name.name, name.lineInfo);
 		}
 		return null;
 	}
+
 }

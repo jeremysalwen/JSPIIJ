@@ -9,12 +9,15 @@ import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.instructions.returnsvalue.StringIndexAccess;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.CharacterBoxer;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.StringBoxer;
 import com.js.interpreter.ast.instructions.returnsvalue.boxing.StringBuilderBoxer;
+import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -238,5 +241,35 @@ public class JavaClassBasedType extends DeclaredType {
 		} else {
 			return r;
 		}
+	}
+
+	@Override
+	public void cloneValueOnStack(TransformationInput t) {
+		if (this == StringBuilder) {
+			Code c = t.getCode();
+			c.anew().setType(StringBuilder.class);
+			t.pushInputOnStack();
+			try {
+				c.invokespecial().setMethod(
+						StringBuilder.class.getConstructor(CharSequence.class));
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			t.pushInputOnStack();
+		}
+	}
+
+	@Override
+	public ReturnsValue generateArrayAccess(ReturnsValue array,
+			ReturnsValue index) throws NonArrayIndexed {
+		if (this == StringBuilder) {
+			return new StringIndexAccess(array, index);
+		}
+		throw new NonArrayIndexed(array.getLineNumber(), this);
 	}
 }
