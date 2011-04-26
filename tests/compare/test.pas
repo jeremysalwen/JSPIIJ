@@ -19,4 +19,5 @@ begin
 	doobie.s:='hello';
 	doobie.l:=5;
     printdouble(doobie.l);
+   writeln(doobie.s[2]);
 end.
