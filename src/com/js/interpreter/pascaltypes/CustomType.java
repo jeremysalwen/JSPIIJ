@@ -18,7 +18,7 @@ import serp.bytecode.Project;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.returnsvalue.cloning.CustomTypeCloner;
+import com.js.interpreter.ast.returnsvalue.cloning.CloneableObjectCloner;
 import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
@@ -380,7 +380,7 @@ public class CustomType extends ObjectType {
 
 	@Override
 	public ReturnsValue cloneValue(ReturnsValue r) {
-		return new CustomTypeCloner(r);
+		return new CloneableObjectCloner(r);
 	}
 
 	@Override

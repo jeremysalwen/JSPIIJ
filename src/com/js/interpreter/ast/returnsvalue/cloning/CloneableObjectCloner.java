@@ -13,10 +13,10 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
-public class CustomTypeCloner implements ReturnsValue {
+public class CloneableObjectCloner implements ReturnsValue {
 	ReturnsValue r;
 
-	public CustomTypeCloner(ReturnsValue r) {
+	public CloneableObjectCloner(ReturnsValue r) {
 		this.r = r;
 	}
 
@@ -55,6 +55,6 @@ public class CustomTypeCloner implements ReturnsValue {
 	@Override
 	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
 			throws ParsingException {
-		return new CustomTypeCloner(r.compileTimeExpressionFold(context));
+		return new CloneableObjectCloner(r.compileTimeExpressionFold(context));
 	}
 }
