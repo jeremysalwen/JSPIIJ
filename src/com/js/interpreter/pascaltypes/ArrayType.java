@@ -1,24 +1,22 @@
 package com.js.interpreter.pascaltypes;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
+import ncsa.tools.common.util.TypeUtils;
 
 import serp.bytecode.Code;
 import serp.bytecode.JumpInstruction;
 
-import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.returnsvalue.ArrayAccess;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ArrayAccess;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.cloning.ArrayCloner;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.exceptions.UnassignableTypeException;
-import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
-import com.js.interpreter.runtime.VariableContext;
-import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
-import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-//This class gets the version 1.0 stamp of approval.  Hopefully I won't have to change it any more.
 public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	public final T element_type;
 
@@ -79,7 +77,8 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	 */
 	@Override
 	public Object initialize() {
-		Object result = Array.newInstance(element_type.toclass(), bounds.size);
+		Object result = Array.newInstance(element_type.getTransferClass(),
+				bounds.size);
 		for (int i = 0; i < bounds.size; i++) {
 			Array.set(result, i, element_type.initialize());
 		}
@@ -87,8 +86,8 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	}
 
 	@Override
-	public Class<?> toclass() {
-		String s = element_type.toclass().getName();
+	public Class<?> getTransferClass() {
+		String s = element_type.getTransferClass().getName();
 		StringBuilder b = new StringBuilder();
 		b.append('[');
 		b.append('L');
@@ -125,45 +124,15 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	}
 
 	@Override
-	public void pushDefaultValue(Code constructor_code) {
-
+	public void pushDefaultValue(Code code, RegisterAllocator ra) {
+		ArrayList<SubrangeType> ranges = new ArrayList<SubrangeType>();
+		ranges.add(bounds);
+		element_type.pushArrayOfType(code, ra, ranges);
 	}
 
 	@Override
 	public ReturnsValue cloneValue(final ReturnsValue r) {
-		return new ReturnsValue() {
-
-			@Override
-			public RuntimeType get_type(ExpressionContext f)
-					throws ParsingException {
-				return r.get_type(f);
-			}
-
-			@Override
-			public Object getValue(VariableContext f, RuntimeExecutable<?> main)
-					throws RuntimePascalException {
-				Object[] value = (Object[]) r.getValue(f, main);
-				return value.clone();
-			}
-
-			@Override
-			public LineInfo getLineNumber() {
-				return r.getLineNumber();
-			}
-
-			@Override
-			public Object compileTimeValue(CompileTimeContext context)
-					throws ParsingException {
-				Object[] value = (Object[]) r.compileTimeValue(context);
-				return value.clone();
-			}
-
-			@Override
-			public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-					throws UnassignableTypeException {
-				throw new UnassignableTypeException(this);
-			}
-		};
+		return new ArrayCloner<T>(r);
 	}
 
 	private void pushLengthOnStack(Code c, int varindex) {
@@ -192,7 +161,7 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 		// STACK=LEN
 		c.dup();
 		// STACK=LEN,LEN
-		c.anewarray().setType(this.element_type.toclass());
+		c.anewarray().setType(this.element_type.getTransferClass());
 		// Stack=LEN,NEW
 		c.dupx1();
 		c.swap();
@@ -238,7 +207,7 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 		c.iload().setLocal(index);
 		c.iinc();
 		// STACK=NEW,NEW,LEN,IND
-		c.jsr().setTarget(jmp);
+		c.go2().setTarget(jmp);
 		jmp.setTarget(c.pop2());
 		c.pop2();
 		t.freeRegister(cloneeindex);
@@ -252,5 +221,50 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	public ReturnsValue generateArrayAccess(ReturnsValue array,
 			ReturnsValue index) {
 		return new ArrayAccess(array, index);
+	}
+
+	@Override
+	public void pushArrayOfType(Code code, RegisterAllocator ra,
+			List<SubrangeType> ranges) {
+		ranges.add(bounds);
+		element_type.pushArrayOfType(code, ra, ranges);
+	}
+
+	@Override
+	public Class<?> getStorageClass() {
+		Class c = element_type.getStorageClass();
+		if (c.isArray()) {
+			try {
+				return Class.forName("[" + c.getName());
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+		} else if (c.isPrimitive()) {
+			c = TypeUtils.getClassForType(c);
+		}
+		StringBuilder b = new StringBuilder();
+		b.append('[');
+		b.append('L');
+		b.append(c.getName());
+		b.append(';');
+		try {
+			return Class.forName(b.toString());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	@Override
+	public void arrayStoreOperation(Code c) {
+		c.aastore();
+	}
+
+	@Override
+	public void convertStackToStorageType(Code c) {
+		// Do nothing.
 	}
 }

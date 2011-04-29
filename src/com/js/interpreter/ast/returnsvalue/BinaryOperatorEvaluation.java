@@ -1,4 +1,4 @@
-package com.js.interpreter.ast.instructions.returnsvalue;
+package com.js.interpreter.ast.returnsvalue;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -129,7 +129,6 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 		case MULTIPLY:
 		case PLUS:
 		case XOR:
-			return new RuntimeType(gcf, false);
 		case MINUS:
 
 			return new RuntimeType(gcf, false);
@@ -165,8 +164,19 @@ public class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 	@Override
 	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
 			throws UnassignableTypeException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnassignableTypeException(r);
 	}
 
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context) throws ParsingException {
+		Object val = this.compileTimeValue(context);
+		if (val != null) {
+			return new ConstantAccess(val, line);
+		} else {
+			return new BinaryOperatorEvaluation(
+					operon1.compileTimeExpressionFold(context),
+					operon2.compileTimeExpressionFold(context), operator_type,
+					line);
+		}
+	}
 }

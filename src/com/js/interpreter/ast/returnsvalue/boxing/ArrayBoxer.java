@@ -1,12 +1,12 @@
-package com.js.interpreter.ast.instructions.returnsvalue.boxing;
+package com.js.interpreter.ast.returnsvalue.boxing;
 
 import java.lang.reflect.Array;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.DebuggableReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -73,4 +73,12 @@ public class ArrayBoxer extends DebuggableReturnsValue {
 		throw new UnassignableTypeException(this);
 	}
 
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context) throws ParsingException {
+		ReturnsValue[] val = new ReturnsValue[values.length];
+		for (int i = 0; i < values.length; i++) {
+			val[i] = values[i].compileTimeExpressionFold(context);
+		}
+		return new ArrayBoxer(val, type, line);
+	}
 }

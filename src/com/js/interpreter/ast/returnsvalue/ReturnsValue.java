@@ -1,4 +1,4 @@
-package com.js.interpreter.ast.instructions.returnsvalue;
+package com.js.interpreter.ast.returnsvalue;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
@@ -25,6 +25,8 @@ public interface ReturnsValue {
 	 */
 	public Object compileTimeValue(CompileTimeContext context)
 			throws ParsingException;
+
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context) throws ParsingException;
 
 	/*
 	 * returns null if not a writable value.

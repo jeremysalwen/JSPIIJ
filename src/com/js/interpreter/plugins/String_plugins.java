@@ -68,7 +68,7 @@ public class String_plugins implements PascalPlugin {
 				result.append(c);
 			}
 		}
-		return s.toString();
+		return result.toString();
 	}
 
 	public static String getnumbers(String s) {
@@ -79,7 +79,7 @@ public class String_plugins implements PascalPlugin {
 				result.append(c);
 			}
 		}
-		return s.toString();
+		return result.toString();
 	}
 
 	public static String getothers(String s) {
@@ -90,7 +90,7 @@ public class String_plugins implements PascalPlugin {
 				result.append(c);
 			}
 		}
-		return s.toString();
+		return result.toString();
 	}
 
 	public static boolean InStrArr(String Str, String[] Arr,
@@ -265,7 +265,7 @@ public class String_plugins implements PascalPlugin {
 				result.append(c);
 			}
 		}
-		return s.toString();
+		return result.toString();
 	}
 
 	public static String trimnumbers(String s) {
@@ -276,7 +276,7 @@ public class String_plugins implements PascalPlugin {
 				result.append(c);
 			}
 		}
-		return s.toString();
+		return result.toString();
 	}
 
 	public static String trimothers(String s) {
@@ -287,7 +287,7 @@ public class String_plugins implements PascalPlugin {
 				result.append(c);
 			}
 		}
-		return s.toString();
+		return result.toString();
 	}
 
 	public static String uppercase(String s) {

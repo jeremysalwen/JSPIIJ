@@ -2,7 +2,9 @@ package com.js.interpreter.ast.instructions;
 
 import java.lang.reflect.Array;
 
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.CompileTimeContext;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -37,6 +39,12 @@ public class SetArray implements SetValueExecutable {
 	@Override
 	public void setAssignedValue(ReturnsValue value) {
 		this.val = value;
+	}
+
+	@Override
+	public SetValueExecutable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		return this;
 	}
 
 }

@@ -5,42 +5,40 @@ import java.util.HashMap;
 import ncsa.tools.common.util.TypeUtils;
 import serp.bytecode.Code;
 
-import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.StringIndexAccess;
-import com.js.interpreter.ast.instructions.returnsvalue.boxing.CharacterBoxer;
-import com.js.interpreter.ast.instructions.returnsvalue.boxing.StringBoxer;
-import com.js.interpreter.ast.instructions.returnsvalue.boxing.StringBuilderBoxer;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.StringIndexAccess;
+import com.js.interpreter.ast.returnsvalue.boxing.CharacterBoxer;
+import com.js.interpreter.ast.returnsvalue.boxing.StringBoxer;
+import com.js.interpreter.ast.returnsvalue.boxing.StringBuilderBoxer;
+import com.js.interpreter.ast.returnsvalue.cloning.StringBuilderCloner;
 import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.exceptions.UnassignableTypeException;
-import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
-import com.js.interpreter.runtime.VariableContext;
-import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
-import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class JavaClassBasedType extends DeclaredType {
 	Class c;
 
-	protected static HashMap<DeclaredType, Object> default_values = new HashMap<DeclaredType, Object>();
+	protected static final HashMap<DeclaredType, Object> default_values = new HashMap<DeclaredType, Object>();
 
-	public static DeclaredType Boolean = new JavaClassBasedType(Boolean.class);
+	public static final DeclaredType Boolean = new JavaClassBasedType(
+			Boolean.class);
 
-	public static DeclaredType Character = new JavaClassBasedType(
+	public static final DeclaredType Character = new JavaClassBasedType(
 			Character.class);
 
-	public static DeclaredType StringBuilder = new JavaClassBasedType(
+	public static final DeclaredType StringBuilder = new JavaClassBasedType(
 			StringBuilder.class);
 
-	public static DeclaredType Long = new JavaClassBasedType(Long.class);
+	public static final DeclaredType Long = new JavaClassBasedType(Long.class);
 
-	public static DeclaredType Double = new JavaClassBasedType(Double.class);
+	public static final DeclaredType Double = new JavaClassBasedType(
+			Double.class);
 
-	public static DeclaredType Integer = new JavaClassBasedType(Integer.class);
+	public static final DeclaredType Integer = new JavaClassBasedType(
+			Integer.class);
 
 	static {
 		default_values.put(JavaClassBasedType.Integer, 0);
@@ -97,7 +95,7 @@ public class JavaClassBasedType extends DeclaredType {
 	}
 
 	@Override
-	public Class toclass() {
+	public Class getTransferClass() {
 		return c;
 	}
 
@@ -176,7 +174,7 @@ public class JavaClassBasedType extends DeclaredType {
 	}
 
 	@Override
-	public void pushDefaultValue(Code constructor_code) {
+	public void pushDefaultValue(Code constructor_code, RegisterAllocator ra) {
 		if (this == StringBuilder) {
 			constructor_code.anew().setType(StringBuilder.class);
 			constructor_code.dup();
@@ -201,43 +199,7 @@ public class JavaClassBasedType extends DeclaredType {
 	@Override
 	public ReturnsValue cloneValue(final ReturnsValue r) {
 		if (this == StringBuilder) {
-			return new ReturnsValue() {
-
-				@Override
-				public RuntimeType get_type(ExpressionContext f)
-						throws ParsingException {
-					return r.get_type(f);
-				}
-
-				@Override
-				public Object getValue(VariableContext f,
-						RuntimeExecutable<?> main)
-						throws RuntimePascalException {
-					StringBuilder other = (StringBuilder) r.getValue(f, main);
-					return new StringBuilder(other);
-				}
-
-				@Override
-				public LineInfo getLineNumber() {
-					return r.getLineNumber();
-				}
-
-				@Override
-				public SetValueExecutable createSetValueInstruction(
-						ReturnsValue r) throws UnassignableTypeException {
-					throw new UnassignableTypeException(this);
-				}
-
-				@Override
-				public Object compileTimeValue(CompileTimeContext context)
-						throws ParsingException {
-					Object val = r.compileTimeValue(context);
-					if (val != null) {
-						return new java.lang.StringBuilder((StringBuilder) val);
-					}
-					return null;
-				}
-			};
+			return new StringBuilderCloner(r);
 		} else {
 			return r;
 		}
@@ -271,5 +233,44 @@ public class JavaClassBasedType extends DeclaredType {
 			return new StringIndexAccess(array, index);
 		}
 		throw new NonArrayIndexed(array.getLineNumber(), this);
+	}
+
+	@Override
+	public Class<?> getStorageClass() {
+		Class c2 = TypeUtils.getTypeForClass(c);
+		return c2 == null ? c : c2;
+	}
+
+	@Override
+	public void arrayStoreOperation(Code c) {
+		if (this == Boolean) {
+			c.bastore();
+		} else if (this == Character) {
+			c.castore();
+		} else if (this == Double) {
+			c.dastore();
+		} else if (this == Integer) {
+			c.iastore();
+		} else {
+			c.aastore();
+		}
+	}
+
+	@Override
+	public void convertStackToStorageType(Code c) {
+		if (this == Integer) {
+			c.invokestatic().setMethod(Integer.class, "valueOf", Integer.class,
+					new Class[] { int.class });
+		} else if (this == Double) {
+			c.invokestatic().setMethod(Double.class, "valueOf", Double.class,
+					new Class[] { double.class });
+		} else if (this == Character) {
+			c.invokestatic().setMethod(Character.class, "valueOf",
+					Character.class, new Class[] { char.class });
+		} else if (this == Boolean) {
+			c.invokestatic().setMethod(Boolean.class, "valueOf", Boolean.class,
+					new Class[] { boolean.class });
+		}
+		// Otherwise, do nothing.
 	}
 }

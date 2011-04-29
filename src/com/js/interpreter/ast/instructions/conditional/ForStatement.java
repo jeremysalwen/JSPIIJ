@@ -1,12 +1,14 @@
 package com.js.interpreter.ast.instructions.conditional;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.returnsvalue.BinaryOperatorEvaluation;
-import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.BinaryOperatorEvaluation;
+import com.js.interpreter.ast.returnsvalue.ConstantAccess;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
@@ -24,6 +26,7 @@ public class ForStatement extends DebuggableExecutable {
 	public ForStatement(ReturnsValue temp_var, ReturnsValue first,
 			ReturnsValue last, Executable command, LineInfo line)
 			throws UnassignableTypeException {
+		this.line = line;
 		setfirst = temp_var.createSetValueInstruction(first);
 		lessthanlast = new BinaryOperatorEvaluation(temp_var, last,
 				OperatorTypes.LESSEQ, this.line);
@@ -33,7 +36,7 @@ public class ForStatement extends DebuggableExecutable {
 						OperatorTypes.PLUS, this.line));
 
 		this.command = command;
-		this.line = line;
+
 	}
 
 	@Override
@@ -56,5 +59,23 @@ public class ForStatement extends DebuggableExecutable {
 	@Override
 	public LineInfo getLineNumber() {
 		return line;
+	}
+
+	@Override
+	public Executable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		SetValueExecutable first = setfirst.compileTimeConstantTransform(c);
+		SetValueExecutable inc = increment_temp.compileTimeConstantTransform(c);
+		Executable comm = command.compileTimeConstantTransform(c);
+		ReturnsValue comp = lessthanlast;
+		Object val = lessthanlast.compileTimeValue(c);
+		if (val != null) {
+			if (((Boolean) val)) {
+				return first;
+			} else {
+				comp = new ConstantAccess(val, lessthanlast.getLineNumber());
+			}
+		}
+		return new DowntoForStatement(first, comp, inc, comm, line);
 	}
 }

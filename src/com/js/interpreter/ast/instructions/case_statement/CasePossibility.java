@@ -1,8 +1,13 @@
 package com.js.interpreter.ast.instructions.case_statement;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -14,7 +19,7 @@ public class CasePossibility extends DebuggableExecutable {
 	 */
 	CaseCondition[] conditions;
 
-	Executable commands;
+	final Executable commands;
 
 	public CasePossibility(CaseCondition[] conditions, Executable commands) {
 		this.conditions = conditions;
@@ -37,5 +42,12 @@ public class CasePossibility extends DebuggableExecutable {
 	@Override
 	public LineInfo getLineNumber() {
 		return conditions[0].getLineNumber();
+	}
+
+	@Override
+	public Executable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		return new CasePossibility(conditions,
+				commands.compileTimeConstantTransform(c));
 	}
 }

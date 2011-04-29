@@ -1,6 +1,8 @@
 package com.js.interpreter.ast.instructions;
 
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.CompileTimeContext;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -37,6 +39,12 @@ public class SetField implements SetValueExecutable {
 	@Override
 	public void setAssignedValue(ReturnsValue value) {
 		this.toset = value;
+	}
+
+	@Override
+	public SetValueExecutable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		return this;
 	}
 
 }

@@ -15,19 +15,16 @@ import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
 import serp.bytecode.Project;
 
-import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.VariableDeclaration;
-import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.cloning.CustomTypeCloner;
 import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.exceptions.UnassignableTypeException;
-import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
+import com.js.interpreter.pascaltypes.bytecode.ScopedRegisterAllocator;
+import com.js.interpreter.pascaltypes.bytecode.SimpleRegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
-import com.js.interpreter.runtime.VariableContext;
-import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
-import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
 public class CustomType extends ObjectType {
@@ -59,7 +56,7 @@ public class CustomType extends ObjectType {
 	@Override
 	public Object initialize() {
 		try {
-			return toclass().newInstance();
+			return getTransferClass().newInstance();
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -88,7 +85,7 @@ public class CustomType extends ObjectType {
 	}
 
 	@Override
-	public Class toclass() {
+	public Class getTransferClass() {
 		if (cachedClass != null) {
 			return cachedClass;
 		}
@@ -103,10 +100,7 @@ public class CustomType extends ObjectType {
 		BCClass c = p.loadClass(name);
 		c.setDeclaredInterfaces(new Class[] { ContainsVariables.class });
 		for (VariableDeclaration v : variable_types) {
-			Class type = v.type.toclass();
-			if (TypeUtils.isPrimitiveAssignable(type)) {
-				type = TypeUtils.getTypeForClass(v.type.toclass());
-			}
+			Class type = v.type.getStorageClass();
 			c.declareField(v.name, type);
 		}
 		add_constructor(c);
@@ -160,33 +154,43 @@ public class CustomType extends ObjectType {
 	}
 
 	@Override
-	public void pushDefaultValue(Code constructor_code) {
-		// TODO Auto-generated method stub
+	public void pushDefaultValue(Code constructor_code, RegisterAllocator ra) {
+		constructor_code.anew().setType(this.getTransferClass());
+		try {
+			constructor_code.invokespecial().setMethod(
+					this.getTransferClass().getConstructor());
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void add_constructor(BCClass b) {
 		BCMethod constructor = b.addDefaultConstructor();
 		constructor.removeCode();
 		Code constructor_code = constructor.getCode(true);
+		// "this" takes up one local slot.
+		RegisterAllocator ra = new SimpleRegisterAllocator(1);
 		constructor_code.aload().setThis();
 		try {
 			constructor_code.invokespecial().setMethod(
 					Object.class.getDeclaredConstructor());
-			for (VariableDeclaration v : variable_types) {
-				constructor_code.aload().setThis();
-				v.type.pushDefaultValue(constructor_code);
-				constructor_code
-						.putfield()
-						.setField(
-								b.getName(),
-								v.get_name(),
-								TypeUtils.isPrimitiveWrapper(v.type.toclass()) ? TypeUtils
-										.getTypeForClass(v.type.toclass())
-										.getCanonicalName() : v.type.toclass()
-										.getCanonicalName());
-			}
-		} catch (Exception e) {
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (VariableDeclaration v : variable_types) {
+			constructor_code.aload().setThis();
+			v.type.pushDefaultValue(constructor_code,
+					new ScopedRegisterAllocator(ra));
+			constructor_code.putfield().setField(v.get_name(),
+					v.type.getStorageClass());
 		}
 		constructor_code.vreturn();
 		constructor_code.calculateMaxLocals();
@@ -226,13 +230,9 @@ public class CustomType extends ObjectType {
 				get_var_code.invokestatic().setMethod(Integer.class, "valueOf",
 						Integer.class, new Class[] { int.class });
 			} else if (return_type == double.class) {
-				try {
 					get_var_code.invokestatic().setMethod(Double.class,
 							"valueOf", Double.class,
 							new Class[] { double.class });
-
-				} catch (Exception e) {
-				}
 			} else if (return_type == char.class) {
 				get_var_code.invokestatic().setMethod(Character.class,
 						"valueOf", Character.class, new Class[] { char.class });
@@ -315,9 +315,9 @@ public class CustomType extends ObjectType {
 		Code clone_code = clone_method.getCode(true);
 		try {
 			clone_code.anew().setType(b);
-			clone_code.astore().setLocal(1);
-			clone_code.aload().setLocal(1);
+			clone_code.dup();
 			clone_code.invokespecial().setMethod(b.addDefaultConstructor());
+			clone_code.astore().setLocal(1);
 			for (BCField f : b.getFields()) {
 
 				clone_code.aload().setLocal(1);
@@ -337,7 +337,6 @@ public class CustomType extends ObjectType {
 				} else if (f.getType().isArray()) {
 					clone_code.aload().setThis();
 					clone_code.getfield().setField(f);
-
 				} else {
 					clone_code.aload().setThis();
 					clone_code.getfield().setField(f);
@@ -362,44 +361,6 @@ public class CustomType extends ObjectType {
 	}
 
 	@Override
-	public ReturnsValue cloneValue(final ReturnsValue r) {
-		return new ReturnsValue() {
-
-			@Override
-			public RuntimeType get_type(ExpressionContext f)
-					throws ParsingException {
-				return r.get_type(f);
-			}
-
-			@Override
-			public Object getValue(VariableContext f, RuntimeExecutable<?> main)
-					throws RuntimePascalException {
-				ContainsVariables c = (ContainsVariables) r.getValue(f, main);
-				return c.clone();
-			}
-
-			@Override
-			public LineInfo getLineNumber() {
-				return r.getLineNumber();
-			}
-
-			@Override
-			public Object compileTimeValue(CompileTimeContext context)
-					throws ParsingException {
-				ContainsVariables c = (ContainsVariables) r
-						.compileTimeValue(context);
-				return c.clone();
-			}
-
-			@Override
-			public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-					throws UnassignableTypeException {
-				throw new UnassignableTypeException(this);
-			}
-		};
-	}
-
-	@Override
 	public void cloneValueOnStack(TransformationInput t) {
 		t.pushInputOnStack();
 		try {
@@ -417,4 +378,34 @@ public class CustomType extends ObjectType {
 		throw new NonArrayIndexed(array.getLineNumber(), this);
 	}
 
+	@Override
+	public ReturnsValue cloneValue(ReturnsValue r) {
+		return new CustomTypeCloner(r);
+	}
+
+	@Override
+	public Class<?> getStorageClass() {
+		return getTransferClass();
+	}
+
+	public void lol() {
+		int[][][] l = new int[5][6][7];
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 6; j++) {
+				for (int k = 0; k < 7; k++) {
+					l[i][k][j] = 0;
+				}
+			}
+		}
+	}
+
+	@Override
+	public void arrayStoreOperation(Code c) {
+		c.aastore();
+	}
+
+	@Override
+	public void convertStackToStorageType(Code c) {
+		// do nothing.
+	}
 }

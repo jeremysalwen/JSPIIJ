@@ -1,4 +1,4 @@
-package com.js.interpreter.ast.instructions.returnsvalue;
+package com.js.interpreter.ast.returnsvalue;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -75,9 +75,21 @@ public class UnaryOperatorEvaluation extends DebuggableReturnsValue {
 		}
 	}
 
-		@Override
-		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-				throws UnassignableTypeException {
-			throw new UnassignableTypeException(this);
+	@Override
+	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+			throws UnassignableTypeException {
+		throw new UnassignableTypeException(this);
+	}
+
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+			throws ParsingException {
+		Object val = this.compileTimeValue(context);
+		if (val != null) {
+			return new ConstantAccess(val, line);
+		} else {
+			return new UnaryOperatorEvaluation(
+					operon.compileTimeExpressionFold(context), type, line);
 		}
+	}
 }

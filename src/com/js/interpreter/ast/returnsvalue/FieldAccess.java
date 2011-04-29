@@ -1,4 +1,6 @@
-package com.js.interpreter.ast.instructions.returnsvalue;
+package com.js.interpreter.ast.returnsvalue;
+
+import sun.rmi.transport.ObjectTable;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
@@ -9,6 +11,7 @@ import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.CustomType;
+import com.js.interpreter.pascaltypes.ObjectType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -21,16 +24,20 @@ public class FieldAccess extends DebuggableReturnsValue {
 	String name;
 	LineInfo line;
 
-	public FieldAccess(ReturnsValue container, WordToken name) {
+	public FieldAccess(ReturnsValue container, String name, LineInfo line) {
 		this.container = container;
-		this.name = name.name;
-		this.line = name.lineInfo;
+		this.name = name;
+		this.line = line;
+	}
+
+	public FieldAccess(ReturnsValue container, WordToken name) {
+		this(container, name.name, name.lineInfo);
 	}
 
 	@Override
 	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
 		RuntimeType r = container.get_type(f);
-		return new RuntimeType(((CustomType) (r.declType)).getMemberType(name),
+		return new RuntimeType(((ObjectType) (r.declType)).getMemberType(name),
 				r.writable);
 	}
 
@@ -67,4 +74,15 @@ public class FieldAccess extends DebuggableReturnsValue {
 		return ((ContainsVariables) value).get_var(name);
 	}
 
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+			throws ParsingException {
+		Object val = this.compileTimeValue(context);
+		if (val != null) {
+			return new ConstantAccess(val, line);
+		} else {
+			return new FieldAccess(
+					container.compileTimeExpressionFold(context), name, line);
+		}
+	}
 }

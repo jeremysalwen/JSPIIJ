@@ -1,9 +1,13 @@
 package com.js.interpreter.ast.instructions.conditional;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.instructions.NopInstruction;
+import com.js.interpreter.ast.returnsvalue.ConstantAccess;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -23,8 +27,8 @@ public class WhileStatement extends DebuggableExecutable {
 	}
 
 	@Override
-	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
-			throws RuntimePascalException {
+	public ExecutionResult executeImpl(VariableContext f,
+			RuntimeExecutable<?> main) throws RuntimePascalException {
 		while_loop: while ((Boolean) condition.getValue(f, main)) {
 			switch (command.execute(f, main)) {
 			case BREAK:
@@ -44,5 +48,21 @@ public class WhileStatement extends DebuggableExecutable {
 	@Override
 	public LineInfo getLineNumber() {
 		return line;
+	}
+
+	@Override
+	public Executable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		Executable comm = command.compileTimeConstantTransform(c);
+		Object cond = condition.compileTimeValue(c);
+		if (cond != null) {
+			if (!((Boolean) cond)) {
+				return new NopInstruction(line);
+			} else {
+				return new WhileStatement(new ConstantAccess(cond,
+						condition.getLineNumber()), comm, line);
+			}
+		}
+		return new WhileStatement(condition, comm, line);
 	}
 }

@@ -1,9 +1,13 @@
 package com.js.interpreter.ast.instructions.conditional;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.instructions.NopInstruction;
+import com.js.interpreter.ast.returnsvalue.ConstantAccess;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -28,8 +32,8 @@ public class RepeatInstruction extends DebuggableExecutable {
 	}
 
 	@Override
-	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
-			throws RuntimePascalException {
+	public ExecutionResult executeImpl(VariableContext f,
+			RuntimeExecutable<?> main) throws RuntimePascalException {
 		do_loop: do {
 			switch (command.execute(f, main)) {
 			case BREAK:
@@ -39,5 +43,24 @@ public class RepeatInstruction extends DebuggableExecutable {
 			}
 		} while (!((Boolean) condition.getValue(f, main)));
 		return ExecutionResult.NONE;
+	}
+
+	@Override
+	public Executable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		Object o = condition.compileTimeValue(c);
+		if (o != null) {
+			Boolean b = (Boolean) o;
+			if (!b) {
+				return command.compileTimeConstantTransform(c);
+			} else {
+				return new RepeatInstruction(
+						command.compileTimeConstantTransform(c),
+						new ConstantAccess(b, condition.getLineNumber()), line);
+			}
+
+		}
+		return new RepeatInstruction(command.compileTimeConstantTransform(c),
+				condition, line);
 	}
 }

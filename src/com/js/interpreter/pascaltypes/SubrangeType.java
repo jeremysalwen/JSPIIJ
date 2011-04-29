@@ -1,7 +1,7 @@
 package com.js.interpreter.pascaltypes;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.NonIntegerIndexException;

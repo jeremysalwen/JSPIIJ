@@ -1,5 +1,7 @@
 package com.js.interpreter.ast.instructions;
 
+import com.js.interpreter.ast.CompileTimeContext;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -21,6 +23,12 @@ public class NopInstruction extends DebuggableExecutable {
 	@Override
 	public LineInfo getLineNumber() {
 		return line;
+	}
+
+	@Override
+	public Executable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		return this;
 	}
 
 }

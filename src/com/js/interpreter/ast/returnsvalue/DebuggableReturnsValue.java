@@ -1,4 +1,4 @@
-package com.js.interpreter.ast.instructions.returnsvalue;
+package com.js.interpreter.ast.returnsvalue;
 
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;

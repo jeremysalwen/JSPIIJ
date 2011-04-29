@@ -1,4 +1,4 @@
-package com.js.interpreter.ast.instructions.returnsvalue;
+package com.js.interpreter.ast.returnsvalue;
 
 import java.lang.reflect.Array;
 
@@ -60,6 +60,12 @@ public class ArrayAccess extends DebuggableReturnsValue {
 		Object cont = container.getValue(f, main);
 		Object ind = index.getValue(f, main);
 		return Array.get(cont, ((Integer) ind));
+	}
+
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context) throws ParsingException {
+		return new ArrayAccess(container.compileTimeExpressionFold(context),
+				index.compileTimeExpressionFold(context));
 	}
 
 }

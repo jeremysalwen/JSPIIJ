@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.boxing.ArrayBoxer;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.boxing.ArrayBoxer;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 
@@ -24,15 +24,15 @@ public class VarargsType implements ArgumentType {
 		LineInfo line = null;
 		while (args.hasNext()) {
 			ReturnsValue tmp = elementType.convert(args.next(), f);
-			line = tmp.getLineNumber();
 			if (tmp == null) {
 				return null;
 			}
+			line = tmp.getLineNumber();
 			convertedargs.add(tmp);
 		}
-		return new ArrayBoxer(convertedargs
-				.toArray(new ReturnsValue[convertedargs.size()]), elementType,
-				line);
+		return new ArrayBoxer(
+				convertedargs.toArray(new ReturnsValue[convertedargs.size()]),
+				elementType, line);
 	}
 
 	@Override

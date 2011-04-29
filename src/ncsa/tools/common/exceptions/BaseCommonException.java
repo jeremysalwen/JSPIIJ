@@ -2,7 +2,7 @@ package ncsa.tools.common.exceptions;
 
 import java.io.Serializable;
 
-public class BaseCommonException extends Exception implements Serializable
+public class BaseCommonException extends Exception
 {
 	private static final long serialVersionUID = 1031L;
 	

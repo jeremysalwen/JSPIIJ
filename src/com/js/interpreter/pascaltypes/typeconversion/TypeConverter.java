@@ -5,7 +5,7 @@ import java.util.HashMap;
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -29,8 +29,8 @@ public class TypeConverter {
 		if (intype == outtype) {
 			return target;
 		}
-		Integer inprecedence = precedence.get(intype.toclass());
-		Integer outprecedence = precedence.get(outtype.toclass());
+		Integer inprecedence = precedence.get(intype.getTransferClass());
+		Integer outprecedence = precedence.get(outtype.getTransferClass());
 		if (inprecedence != null && outprecedence != null) {
 			if (inprecedence < outprecedence) {
 				return forceConvert(outtype, target, intype);
@@ -125,6 +125,12 @@ public class TypeConverter {
 				throws UnassignableTypeException {
 			throw new UnassignableTypeException(this);
 		}
+
+		@Override
+		public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+				throws ParsingException {
+			return new NumberToReal(other.compileTimeExpressionFold(context));
+		}
 	}
 
 	static class NumberToLong implements ReturnsValue {
@@ -167,6 +173,12 @@ public class TypeConverter {
 		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
 				throws UnassignableTypeException {
 			throw new UnassignableTypeException(this);
+		}
+
+		@Override
+		public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+				throws ParsingException {
+			return new NumberToLong(other.compileTimeExpressionFold(context));
 		}
 	}
 
@@ -211,6 +223,12 @@ public class TypeConverter {
 				throws UnassignableTypeException {
 			throw new UnassignableTypeException(this);
 		}
+
+		@Override
+		public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+				throws ParsingException {
+			return new NumberToChar(other.compileTimeExpressionFold(context));
+		}
 	}
 
 	static class NumberToInt implements ReturnsValue {
@@ -254,6 +272,12 @@ public class TypeConverter {
 				throws UnassignableTypeException {
 			throw new UnassignableTypeException(this);
 		}
+
+		@Override
+		public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+				throws ParsingException {
+			return new NumberToInt(other.compileTimeExpressionFold(context));
+		}
 	}
 
 	static class CharToInt implements ReturnsValue {
@@ -296,6 +320,12 @@ public class TypeConverter {
 		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
 				throws UnassignableTypeException {
 			throw new UnassignableTypeException(this);
+		}
+
+		@Override
+		public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+				throws ParsingException {
+			return new CharToInt(other.compileTimeExpressionFold(context));
 		}
 	}
 }

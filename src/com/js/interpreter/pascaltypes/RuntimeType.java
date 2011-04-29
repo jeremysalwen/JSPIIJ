@@ -3,8 +3,8 @@ package com.js.interpreter.pascaltypes;
 import java.util.Iterator;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.boxing.GetAddress;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.boxing.GetAddress;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.runtime.VariableBoxer;
 
@@ -52,7 +52,7 @@ public class RuntimeType implements ArgumentType {
 		if (writable) {
 			return VariableBoxer.class;
 		} else {
-			return declType.toclass();
+			return declType.getTransferClass();
 		}
 	}
 

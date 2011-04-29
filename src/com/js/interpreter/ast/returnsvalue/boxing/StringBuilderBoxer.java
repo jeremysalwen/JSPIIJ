@@ -1,10 +1,11 @@
-package com.js.interpreter.ast.instructions.returnsvalue.boxing;
+package com.js.interpreter.ast.returnsvalue.boxing;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ConstantAccess;
+import com.js.interpreter.ast.returnsvalue.DebuggableReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -52,5 +53,17 @@ public class StringBuilderBoxer extends DebuggableReturnsValue {
 	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
 			throws UnassignableTypeException {
 		throw new UnassignableTypeException(this);
+	}
+
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+			throws ParsingException {
+		Object val = this.compileTimeValue(context);
+		if (val != null) {
+			return new ConstantAccess(val, value.getLineNumber());
+		} else {
+			return new StringBuilderBoxer(
+					value.compileTimeExpressionFold(context));
+		}
 	}
 }

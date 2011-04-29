@@ -1,17 +1,18 @@
-package com.js.interpreter.ast.instructions.returnsvalue.boxing;
+package com.js.interpreter.ast.returnsvalue.boxing;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.returnsvalue.ConstantAccess;
-import com.js.interpreter.ast.instructions.returnsvalue.DebuggableReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ConstantAccess;
+import com.js.interpreter.ast.returnsvalue.DebuggableReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.PointerType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.Reference;
+import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
@@ -57,7 +58,7 @@ public class GetAddress extends DebuggableReturnsValue {
 		final VariableContext ff = f;
 		final RuntimeExecutable<?> fmain = main;
 		setTarget.setAssignedValue(ca);
-		return new Reference() {
+		return new VariableBoxer() {
 
 			@Override
 			public void set(Object value) {
@@ -79,5 +80,11 @@ public class GetAddress extends DebuggableReturnsValue {
 				return this;
 			}
 		};
+	}
+
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+			throws ParsingException {
+		return new GetAddress(target.compileTimeExpressionFold(context));
 	}
 }

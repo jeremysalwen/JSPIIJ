@@ -3,11 +3,13 @@ package com.js.interpreter.pascaltypes;
 import serp.bytecode.Code;
 
 import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.runtime.ObjectBasedPointer;
+import com.js.interpreter.runtime.VariableBoxer;
 
 public class PointerType extends DeclaredType {
 	DeclaredType pointedToType;
@@ -37,8 +39,8 @@ public class PointerType extends DeclaredType {
 	}
 
 	@Override
-	public Class<?> toclass() {
-		return null;
+	public Class<?> getTransferClass() {
+		return VariableBoxer.class;
 	}
 
 	@Override
@@ -50,9 +52,18 @@ public class PointerType extends DeclaredType {
 	}
 
 	@Override
-	public void pushDefaultValue(Code constructor_code) {
-		// TODO Auto-generated method stub
-
+	public void pushDefaultValue(Code constructor_code, RegisterAllocator ra) {
+		pointedToType.pushDefaultValue(constructor_code, ra);
+		try {
+			constructor_code.invokespecial().setMethod(
+					ObjectBasedPointer.class.getConstructor(Object.class));
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	// The pointer itself contains no mutable information.
@@ -71,5 +82,20 @@ public class PointerType extends DeclaredType {
 	public ReturnsValue generateArrayAccess(ReturnsValue array,
 			ReturnsValue index) throws NonArrayIndexed {
 		throw new NonArrayIndexed(array.getLineNumber(), this);
+	}
+
+	@Override
+	public Class<?> getStorageClass() {
+		return getTransferClass();
+	}
+
+	@Override
+	public void arrayStoreOperation(Code c) {
+		c.aastore();
+	}
+
+	@Override
+	public void convertStackToStorageType(Code c) {
+		// do nothing.
 	}
 }

@@ -1,8 +1,11 @@
 package com.js.interpreter.ast.instructions;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.js.interpreter.ast.CompileTimeContext;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -27,8 +30,8 @@ public class InstructionGrouper extends DebuggableExecutable {
 	}
 
 	@Override
-	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
-			throws RuntimePascalException {
+	public ExecutionResult executeImpl(VariableContext f,
+			RuntimeExecutable<?> main) throws RuntimePascalException {
 		forloop: for (Executable e : instructions) {
 			switch (e.execute(f, main)) {
 			case BREAK:
@@ -48,5 +51,25 @@ public class InstructionGrouper extends DebuggableExecutable {
 		}
 		builder.append("end\n");
 		return builder.toString();
+	}
+
+	@Override
+	public Executable compileTimeConstantTransform(CompileTimeContext c) throws ParsingException {
+		InstructionGrouper nig = new InstructionGrouper(line);
+		for (Executable e : instructions) {
+			Executable transformed = e.compileTimeConstantTransform(c);
+			if (transformed == null) {
+				nig.instructions.add(e);
+			} else if (transformed instanceof NopInstruction) {
+				continue;
+			} else {
+				nig.instructions.add(transformed);
+			}
+		}
+		if (nig.instructions.size() == 0) {
+			return new NopInstruction(line);
+		} else {
+			return nig;
+		}
 	}
 }

@@ -1,6 +1,6 @@
 package com.js.interpreter.exceptions;
 
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 
 public class NotAStatementException extends ParsingException {
 

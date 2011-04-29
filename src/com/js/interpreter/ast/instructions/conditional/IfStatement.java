@@ -1,9 +1,11 @@
 package com.js.interpreter.ast.instructions.conditional;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -31,8 +33,8 @@ public class IfStatement extends DebuggableExecutable {
 	}
 
 	@Override
-	public ExecutionResult executeImpl(VariableContext f, RuntimeExecutable<?> main)
-			throws RuntimePascalException {
+	public ExecutionResult executeImpl(VariableContext f,
+			RuntimeExecutable<?> main) throws RuntimePascalException {
 		if (((Boolean) (condition.getValue(f, null))).booleanValue()) {
 			return instruction.execute(f, main);
 		} else {
@@ -46,5 +48,23 @@ public class IfStatement extends DebuggableExecutable {
 	@Override
 	public String toString() {
 		return "if [" + condition.toString() + "] then [\n" + instruction + ']';
+	}
+
+	@Override
+	public Executable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		Object o = condition.compileTimeValue(c);
+		if (o != null) {
+			Boolean b = (Boolean) o;
+			if (b) {
+				return instruction.compileTimeConstantTransform(c);
+			} else {
+				return else_instruction.compileTimeConstantTransform(c);
+			}
+		} else {
+			return new IfStatement(condition,
+					instruction.compileTimeConstantTransform(c),
+					else_instruction.compileTimeConstantTransform(c), line);
+		}
 	}
 }

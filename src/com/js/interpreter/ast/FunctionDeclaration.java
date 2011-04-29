@@ -7,8 +7,8 @@ import java.util.List;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.ast.instructions.Executable;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.instructions.returnsvalue.VariableAccess;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
@@ -161,12 +161,6 @@ public class FunctionDeclaration extends AbstractFunction implements
 		}
 		return parentContext.getVariableDefinition(name);
 	}
-
-	@Override
-	public String toString() {
-		return super.toString();
-	}
-
 	private void get_arguments_for_declaration(GrouperToken i,
 			boolean is_procedure) throws ParsingException { // need
 		List<String> names_list = new ArrayList<String>();

@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -13,8 +13,6 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public abstract class AbstractFunction implements NamedEntity {
-
-	public abstract String name();
 
 	public abstract ArgumentType[] argumentTypes();
 

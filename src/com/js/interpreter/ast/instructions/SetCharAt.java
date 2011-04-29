@@ -1,6 +1,9 @@
 package com.js.interpreter.ast.instructions;
 
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.CompileTimeContext;
+import com.js.interpreter.ast.returnsvalue.ConstantAccess;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -29,13 +32,21 @@ public class SetCharAt implements SetValueExecutable {
 		StringBuilder s = (StringBuilder) container.getValue(f, main);
 		Integer i = (Integer) index.getValue(f, main);
 		Character c = (Character) value.getValue(f, main);
-		s.setCharAt(i, c);
+		s.setCharAt(i - 1, c);
 		return ExecutionResult.NONE;
 	}
 
 	@Override
 	public void setAssignedValue(ReturnsValue value) {
 		this.value = value;
+	}
+
+	@Override
+	public SetCharAt compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		return new SetCharAt(container.compileTimeExpressionFold(c),
+				index.compileTimeExpressionFold(c),
+				value.compileTimeExpressionFold(c));
 	}
 
 }

@@ -1,9 +1,10 @@
-package com.js.interpreter.ast.instructions.returnsvalue;
+package com.js.interpreter.ast.returnsvalue;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetCharAt;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
+import com.js.interpreter.ast.returnsvalue.boxing.StringBoxer;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -39,7 +40,7 @@ public class StringIndexAccess extends DebuggableReturnsValue {
 		StringBuilder c = (StringBuilder) container.compileTimeValue(context);
 		Integer i = (Integer) index.compileTimeValue(context);
 		if (c != null && i != null) {
-			return c.charAt(i);
+			return c.charAt(i - 1);
 		} else {
 			return null;
 		}
@@ -56,7 +57,20 @@ public class StringIndexAccess extends DebuggableReturnsValue {
 			throws RuntimePascalException {
 		StringBuilder c = (StringBuilder) container.getValue(f, main);
 		Integer i = (Integer) index.getValue(f, main);
-		return c.charAt(i);
+		return c.charAt(i - 1);
+	}
+
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+			throws ParsingException {
+		Object val = this.compileTimeValue(context);
+		if (val != null) {
+			return new ConstantAccess(val, container.getLineNumber());
+		} else {
+			return new StringIndexAccess(
+					container.compileTimeExpressionFold(context),
+					index.compileTimeExpressionFold(context));
+		}
 	}
 
 }

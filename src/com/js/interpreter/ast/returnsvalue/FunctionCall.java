@@ -1,4 +1,4 @@
-package com.js.interpreter.ast.instructions.returnsvalue;
+package com.js.interpreter.ast.returnsvalue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -7,6 +7,7 @@ import java.util.List;
 import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.AmbiguousFunctionCallException;
@@ -52,13 +53,6 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 		ArgumentType[] argtypes = function.argumentTypes();
 		for (int i = 0; i < values.length; i++) {
 			values[i] = arguments[i].getValue(f, main);
-
-			if (values[i] instanceof Object[]) {
-				values[i] = ((Object[]) values[i]).clone();
-			}
-			if (values[i] instanceof ContainsVariables) {
-				values[i] = ((ContainsVariables) values[i]).clone();
-			}
 		}
 		Object result;
 		try {
@@ -146,7 +140,22 @@ public class FunctionCall extends DebuggableExecutableReturnsValue {
 	@Override
 	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
 			throws UnassignableTypeException {
-		// TODO Auto-generated method stub
+		throw new UnassignableTypeException(r);
+	}
+
+	@Override
+	public Executable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
 		return null;
+	}
+
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+			throws ParsingException {
+		ReturnsValue[] args = new ReturnsValue[arguments.length];
+		for (int i = 0; i < arguments.length; i++) {
+			args[i] = arguments[i].compileTimeExpressionFold(context);
+		}
+		return new FunctionCall(function, args, line);
 	}
 }

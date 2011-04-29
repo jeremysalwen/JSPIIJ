@@ -3,13 +3,16 @@ package com.js.interpreter.ast.instructions.case_statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.InstructionGrouper;
-import com.js.interpreter.ast.instructions.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
+import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
@@ -44,12 +47,21 @@ public class CaseInstruction extends DebuggableExecutable {
 			List<CaseCondition> conditions = new ArrayList<CaseCondition>();
 			while (true) {
 				ReturnsValue val = i.getNextExpression(context);
+				Object v = val.compileTimeValue(context);
+				if (v == null) {
+					throw new NonConstantExpressionException(val);
+				}
 				if (i.peek() instanceof DotDotToken) {
 					i.take();
 					ReturnsValue upper = i.getNextExpression(context);
-					conditions.add(new RangeOfValues(val, upper));
+					Object hi = upper.compileTimeValue(context);
+					if (hi == null) {
+						throw new NonConstantExpressionException(upper);
+					}
+					conditions
+							.add(new RangeOfValues(v, hi, val.getLineNumber()));
 				} else {
-					conditions.add(new SingleValue(val));
+					conditions.add(new SingleValue(v, val.getLineNumber()));
 				}
 				if (i.peek() instanceof CommaToken) {
 					i.take();
@@ -85,7 +97,7 @@ public class CaseInstruction extends DebuggableExecutable {
 		Object value = switch_value.getValue(f, main);
 		for (int i = 0; i < possibilies.length; i++) {
 			for (int j = 0; j < possibilies[i].conditions.length; j++) {
-				if (possibilies[i].conditions[j].fits(main, f, value)) {
+				if (possibilies[i].conditions[j].fits(value)) {
 					return possibilies[i].execute(f, main);
 				}
 			}
@@ -96,5 +108,26 @@ public class CaseInstruction extends DebuggableExecutable {
 	@Override
 	public LineInfo getLineNumber() {
 		return line;
+	}
+
+	@Override
+	public Executable compileTimeConstantTransform(CompileTimeContext c)
+			throws ParsingException {
+		Object value = switch_value.compileTimeValue(c);
+		if (value == null) {
+			return this;
+		}
+		try {
+			for (int i = 0; i < possibilies.length; i++) {
+				for (int j = 0; j < possibilies[i].conditions.length; j++) {
+					if (possibilies[i].conditions[j].fits(value)) {
+						return possibilies[i];
+					}
+				}
+			}
+			return otherwise;
+		} catch (RuntimePascalException e) {
+			throw new ConstantCalculationException(e);
+		}
 	}
 }

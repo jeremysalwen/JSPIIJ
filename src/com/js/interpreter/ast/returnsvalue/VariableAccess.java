@@ -1,4 +1,4 @@
-package com.js.interpreter.ast.instructions.returnsvalue;
+package com.js.interpreter.ast.returnsvalue;
 
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
@@ -40,7 +40,7 @@ public class VariableAccess extends DebuggableReturnsValue {
 
 	@Override
 	public String toString() {
-		return name.toString();
+		return name;
 	}
 
 	@Override
@@ -58,5 +58,11 @@ public class VariableAccess extends DebuggableReturnsValue {
 	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
 			throws UnassignableTypeException {
 		return new VariableSet(name, r, line);
+	}
+
+	@Override
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+			throws ParsingException {
+		return this;
 	}
 }
