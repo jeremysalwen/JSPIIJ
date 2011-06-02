@@ -107,16 +107,6 @@ public class CustomType extends ObjectType {
 		add_get_var(c);
 		add_set_var(c);
 		add_clone(c);
-		try {
-			new FileOutputStream("/tmp/" + c.getClassName() + ".class").write(c
-					.toByteArray());
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		cachedClass = bcl.loadThisClass(c.toByteArray());
 		return cachedClass;
 	}
