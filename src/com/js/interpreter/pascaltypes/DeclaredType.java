@@ -5,7 +5,6 @@ import java.util.List;
 import serp.bytecode.Code;
 import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
-import sun.org.mozilla.javascript.Node.Jump;
 
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
