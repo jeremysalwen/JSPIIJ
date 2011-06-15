@@ -15,7 +15,6 @@ import com.js.interpreter.ast.instructions.conditional.ForStatement;
 import com.js.interpreter.ast.instructions.conditional.IfStatement;
 import com.js.interpreter.ast.instructions.conditional.RepeatInstruction;
 import com.js.interpreter.ast.instructions.conditional.WhileStatement;
-import com.js.interpreter.ast.returnsvalue.ArrayAccess;
 import com.js.interpreter.ast.returnsvalue.BinaryOperatorEvaluation;
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.returnsvalue.FieldAccess;
@@ -26,7 +25,6 @@ import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.MultipleDefaultValuesException;
-import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.NonIntegerIndexException;
 import com.js.interpreter.exceptions.NotAStatementException;
@@ -203,6 +201,10 @@ public abstract class GrouperToken extends Token {
 		SubrangeType bound = new SubrangeType(bounds, context);
 		DeclaredType elementType;
 		if (bounds.hasNext()) {
+			Token t=bounds.take();
+			if(!(t instanceof CommaToken)) {
+				throw new ExpectedTokenException("']' or ','", t);
+			}
 			elementType = getArrayType(bounds, context);
 		} else {
 			Token next = take();

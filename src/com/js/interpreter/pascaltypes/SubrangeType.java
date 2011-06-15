@@ -43,9 +43,6 @@ public class SubrangeType {
 			throw new NonConstantExpressionException(high);
 		}
 		size = (((Integer) max) - lower) + 1;
-		if (i.hasNext()) {
-			throw new ExpectedTokenException("]", i.take());
-		}
 	}
 
 	public SubrangeType(int lower, int size) {
