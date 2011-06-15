@@ -1,12 +1,8 @@
 package com.js.interpreter.pascaltypes;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ncsa.tools.common.util.TypeUtils;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
@@ -74,14 +70,17 @@ public class CustomType extends ObjectType {
 	public int hashCode() {
 		return variable_types.hashCode();
 	}
-
 	@Override
-	public boolean equals(DeclaredType obj) {
+	public boolean equals(Object obj) {
 		if (!(obj instanceof CustomType)) {
 			return false;
 		}
 		CustomType other = (CustomType) obj;
 		return variable_types.equals(other.variable_types);
+	}
+	@Override
+	public boolean equals(DeclaredType obj) {
+		return equals((Object)obj);
 	}
 
 	@Override
@@ -126,7 +125,7 @@ public class CustomType extends ObjectType {
 	public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
 			throws ParsingException {
 		RuntimeType other_type = value.get_type(f);
-		if (this.equals(other_type)) {
+		if (this.equals(other_type.declType)) {
 			return cloneValue(value);
 		}
 		return null;
