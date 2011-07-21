@@ -10,15 +10,11 @@ import serp.bytecode.JumpInstruction;
 
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.ArrayAccess;
-import com.js.interpreter.ast.returnsvalue.BinaryOperatorEvaluation;
-import com.js.interpreter.ast.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.returnsvalue.cloning.ArrayCloner;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
-import com.js.interpreter.tokens.OperatorTypes;
 
 public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	public final T element_type;
@@ -223,8 +219,7 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	@Override
 	public ReturnsValue generateArrayAccess(ReturnsValue array,
 			ReturnsValue index) {
-		LineInfo li=index.getLineNumber();
-		return new ArrayAccess(array, new BinaryOperatorEvaluation(index, new ConstantAccess(bounds.lower, li), OperatorTypes.MINUS, li));
+		return new ArrayAccess(array, index, bounds.lower);
 	}
 
 	@Override

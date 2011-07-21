@@ -13,15 +13,18 @@ import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
+import com.js.interpreter.runtime.exception.PascalIndexOutOfBoundsException;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class ArrayAccess extends DebuggableReturnsValue {
 	ReturnsValue container;
 	ReturnsValue index;
+	int offset;
 
-	public ArrayAccess(ReturnsValue container, ReturnsValue index) {
+	public ArrayAccess(ReturnsValue container, ReturnsValue index, int offset) {
 		this.container = container;
 		this.index = index;
+		this.offset = offset;
 	}
 
 	@Override
@@ -44,28 +47,34 @@ public class ArrayAccess extends DebuggableReturnsValue {
 		if (ind == null || cont == null) {
 			return null;
 		} else {
-			return Array.get(cont, ((Integer) ind));
+			return Array.get(cont, ((Integer) ind) - offset);
 		}
 	}
 
 	@Override
 	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
 			throws UnassignableTypeException {
-		return new SetArray(container, index, r);
+		return new SetArray(container, index, offset, r);
 	}
 
 	@Override
 	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		Object cont = container.getValue(f, main);
-		Object ind = index.getValue(f, main);
-		return Array.get(cont, ((Integer) ind));
+		Integer ind = (Integer) index.getValue(f, main);
+		try {
+			return Array.get(cont, ind - offset);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new PascalIndexOutOfBoundsException(this.getLineNumber(),
+					ind, offset, offset + ((Object[]) cont).length - 1);
+		}
 	}
 
 	@Override
-	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context) throws ParsingException {
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+			throws ParsingException {
 		return new ArrayAccess(container.compileTimeExpressionFold(context),
-				index.compileTimeExpressionFold(context));
+				index.compileTimeExpressionFold(context), offset);
 	}
 
 }
