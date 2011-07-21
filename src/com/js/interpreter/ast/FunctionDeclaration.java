@@ -26,14 +26,12 @@ import com.js.interpreter.tokens.WordToken;
 import com.js.interpreter.tokens.basic.ColonToken;
 import com.js.interpreter.tokens.basic.CommaToken;
 import com.js.interpreter.tokens.basic.ForwardToken;
-import com.js.interpreter.tokens.basic.FunctionToken;
-import com.js.interpreter.tokens.basic.ProcedureToken;
 import com.js.interpreter.tokens.basic.SemicolonToken;
 import com.js.interpreter.tokens.basic.VarToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 import com.js.interpreter.tokens.grouping.ParenthesizedToken;
 
-public class FunctionDeclaration extends AbstractFunction implements
+public class FunctionDeclaration extends AbstractCallableFunction implements
 		ExpressionContext {
 
 	CodeUnit root;

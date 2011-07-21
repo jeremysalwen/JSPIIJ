@@ -25,7 +25,7 @@ import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 
-public class PluginDeclaration extends AbstractFunction {
+public class PluginDeclaration extends AbstractCallableFunction {
 	Object owner;
 
 	Method method;

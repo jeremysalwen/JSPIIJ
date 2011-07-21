@@ -12,7 +12,7 @@ import com.js.interpreter.runtime.ObjectBasedPointer;
 import com.js.interpreter.runtime.VariableBoxer;
 
 public class PointerType extends DeclaredType {
-	DeclaredType pointedToType;
+	public DeclaredType pointedToType;
 
 	public PointerType(DeclaredType pointedToType) {
 		this.pointedToType = pointedToType;

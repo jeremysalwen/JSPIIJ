@@ -5,8 +5,8 @@ import com.js.interpreter.linenumber.LineInfo;
 
 public class AmbiguousFunctionCallException extends ParsingException {
 
-	public AmbiguousFunctionCallException(LineInfo line, AbstractFunction possible,
-			AbstractFunction alternative) {
+	public AmbiguousFunctionCallException(LineInfo line,
+			AbstractFunction possible, AbstractFunction alternative) {
 		super(line, "Ambigious function call could be interpreted as "
 				+ possible + " or as " + alternative);
 	}

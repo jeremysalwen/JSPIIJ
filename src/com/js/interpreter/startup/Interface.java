@@ -14,12 +14,14 @@ import java.util.ServiceLoader;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.js.interpreter.ast.AbstractFunction;
-import com.js.interpreter.ast.PascalPlugin;
 import com.js.interpreter.ast.PluginDeclaration;
 import com.js.interpreter.ast.codeunit.ExecutableCodeUnit;
 import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.ast.codeunit.PascalProgram;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.plugins.PascalPlugin;
+import com.js.interpreter.plugins.templated.TemplatedPascalPlugin;
+import com.js.interpreter.plugins.templated.TemplatedPluginDeclaration;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
@@ -130,8 +132,11 @@ public class Interface {
 					}
 				}
 			}
+			ServiceLoader<TemplatedPascalPlugin> templateloader=ServiceLoader.load(TemplatedPascalPlugin.class,cl);
+			for(TemplatedPascalPlugin t:templateloader) {
+				functionTable.put(t.name().toLowerCase(), new TemplatedPluginDeclaration(t));
+			}
 		}
 		return;
 	}
-
 }

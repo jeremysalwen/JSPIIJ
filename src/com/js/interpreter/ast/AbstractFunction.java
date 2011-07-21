@@ -1,18 +1,18 @@
 package com.js.interpreter.ast;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
+import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.runtime.VariableContext;
-import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
-import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public abstract class AbstractFunction implements NamedEntity {
+
+	@Override
+	public abstract String name();
 
 	public abstract ArgumentType[] argumentTypes();
 
@@ -29,23 +29,6 @@ public abstract class AbstractFunction implements NamedEntity {
 		result.append(')');
 		return result.toString();
 	}
-
-	/**
-	 * This invokes a function call of any type.
-	 * 
-	 * @param parentcontext
-	 *            The program context.
-	 * @param arguments
-	 * @return The return value of the called function.
-	 * @throws RuntimePascalException
-	 * @throws InvocationTargetException
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 */
-	public abstract Object call(VariableContext parentcontext,
-			RuntimeExecutable<?> main, Object[] arguments)
-			throws RuntimePascalException, IllegalArgumentException,
-			IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * 
@@ -85,4 +68,13 @@ public abstract class AbstractFunction implements NamedEntity {
 		}
 		return result;
 	}
+
+	public abstract ReturnsValue generatePerfectFitCall(LineInfo line,
+			List<ReturnsValue> values, ExpressionContext f)
+			throws ParsingException;
+
+	public abstract ReturnsValue generateCall(LineInfo line,
+			List<ReturnsValue> values, ExpressionContext f)
+			throws ParsingException;
+
 }
