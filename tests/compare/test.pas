@@ -19,11 +19,12 @@ var doobie:strlen; i:integer;
 begin
     doobie.s:='hello';
     doobie.l:=5;
-    setlength(doobie.a,5);
-    for i:=0 to 4 do begin
+    setlength(doobie.a,doobie.l);
+    for i:=0 to 3 do begin
       doobie.a[i]:=i;
     end;
-    writeln(doobie.a[2]);
+    for i:=0 to 4 do begin
+      writeln(doobie.a[i]);
+    end;
     printdouble(doobie.l);
-   writeln(doobie.s[2]);
 end.
