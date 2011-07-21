@@ -1,4 +1,4 @@
-package com.js.interpreter.plugins;
+package com.js.interpreter.plugins.standard;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.js.interpreter.ast.PascalPlugin;
+import com.js.interpreter.plugins.PascalPlugin;
 import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 

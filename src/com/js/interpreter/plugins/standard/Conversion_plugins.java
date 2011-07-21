@@ -1,8 +1,8 @@
-package com.js.interpreter.plugins;
+package com.js.interpreter.plugins.standard;
 
 import java.util.Map;
 
-import com.js.interpreter.ast.PascalPlugin;
+import com.js.interpreter.plugins.PascalPlugin;
 
 public class Conversion_plugins implements PascalPlugin {
 	public static String BoolToStr(boolean b) {

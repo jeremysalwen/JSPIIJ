@@ -1,9 +1,9 @@
-package com.js.interpreter.plugins;
+package com.js.interpreter.plugins.standard;
 
 import java.util.Map;
 import java.util.Random;
 
-import com.js.interpreter.ast.PascalPlugin;
+import com.js.interpreter.plugins.PascalPlugin;
 
 public class Math_plugins implements PascalPlugin {
 	Random r;

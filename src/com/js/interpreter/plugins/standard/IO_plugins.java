@@ -1,9 +1,9 @@
-package com.js.interpreter.plugins;
+package com.js.interpreter.plugins.standard;
 
 import java.io.PrintStream;
 import java.util.Map;
 
-import com.js.interpreter.ast.PascalPlugin;
+import com.js.interpreter.plugins.PascalPlugin;
 
 public class IO_plugins implements PascalPlugin {
 	PrintStream stdout;

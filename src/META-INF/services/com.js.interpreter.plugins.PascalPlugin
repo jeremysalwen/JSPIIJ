@@ -1,0 +1,6 @@
+com.js.interpreter.plugins.standard.Conversion_plugins
+com.js.interpreter.plugins.standard.IO_plugins
+com.js.interpreter.plugins.standard.Math_plugins
+com.js.interpreter.plugins.standard.Misc_plugins
+com.js.interpreter.plugins.standard.ScriptControl_plugins
+com.js.interpreter.plugins.standard.String_plugins

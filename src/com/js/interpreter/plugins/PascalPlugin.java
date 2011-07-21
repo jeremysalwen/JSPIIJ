@@ -1,4 +1,4 @@
-package com.js.interpreter.ast;
+package com.js.interpreter.plugins;
 
 import java.util.Map;
 
