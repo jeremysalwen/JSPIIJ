@@ -321,49 +321,6 @@ public abstract class GrouperToken extends Token {
 		return getNextExpression(context, precedence.NoPrecedence, first);
 	}
 
-	// public VariableIdentifier get_next_var_identifier(
-	// ExpressionContext context, WordToken initial)
-	// throws ParsingException {
-	// VariableIdentifier identifier = new VariableIdentifier(initial.lineInfo);
-	// identifier.add(new String_SubvarIdentifier(initial.name));
-	// DeclaredType type = identifier.get_type(context).declType;
-	// while (true) {
-	// SubvarIdentifier s;
-	// if (peek() instanceof PeriodToken) {
-	// take();
-	//
-	// if (peek() instanceof WordToken) {
-	// s = new String_SubvarIdentifier(next_word_value());
-	// } else {
-	// break;
-	// }
-	// } else if (peek() instanceof BracketedToken) {
-	// int offset = 0;
-	// if (type instanceof ArrayType) {
-	// offset = ((ArrayType) type).bounds.lower;
-	// }
-	// s = new ReturnsValue_SubvarIdentifier(
-	// ((BracketedToken) take()).getNextExpression(context),
-	// offset);
-	// } else {
-	// break;
-	// }
-	// type = s.getType(type);
-	// identifier.add(s);
-	// }
-	// return identifier;
-	// }
-	//
-	// public VariableIdentifier get_next_var_identifier(ExpressionContext
-	// context)
-	// throws ParsingException {
-	// Token initial = take();
-	// if (!(initial instanceof WordToken)) {
-	// throw new ExpectedTokenException("[Variable name]", initial);
-	// }
-	// return get_next_var_identifier(context, (WordToken) initial);
-	// }
-
 	public List<VariableDeclaration> get_variable_declarations(
 			ExpressionContext context) throws ParsingException {
 		List<VariableDeclaration> result = new ArrayList<VariableDeclaration>();
