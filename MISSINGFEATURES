@@ -1,0 +1,19 @@
+Language features which the interpreter is currently missing, and which I have
+some interest in implementing:
+
+* Ordinal Types-Inc,Ord,Dec,Succ,Pred
+* Short-Cut boolean operation evaluation
+* Enumeration Types
+* Non-Integer subrange types
+* Variant fields of record types
+* Set Types
+* File Types
+* Pointers (including @ operator and ^ operator)
+* Forward Type Declarations
+* Untyped Constant Declarations
+* Variant Type
+* Classes/Object Types
+* for...in...do loops
+* with...do statements
+* "constant" and "out" function parameters
+* Exceptions
