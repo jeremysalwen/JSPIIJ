@@ -15,7 +15,7 @@ public class RuntimePascalProgram extends RuntimeExecutable<PascalProgram> {
 	}
 
 	@Override
-	public void run() throws RuntimePascalException {
+	public void runImpl() throws RuntimePascalException {
 		this.mode = RunMode.running;
 		main = new FunctionOnStack(this, this, definition.main, new Object[0]);
 		main.execute();
