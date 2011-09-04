@@ -22,6 +22,7 @@ import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.returnsvalue.UnaryOperatorEvaluation;
 import com.js.interpreter.ast.returnsvalue.operators.BinaryOperatorEvaluation;
 import com.js.interpreter.exceptions.BadOperationTypeException;
+import com.js.interpreter.exceptions.UnconvertibleTypeException;
 import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.MultipleDefaultValuesException;
@@ -29,7 +30,6 @@ import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.NonIntegerIndexException;
 import com.js.interpreter.exceptions.NotAStatementException;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.exceptions.UnconvertableTypeException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.exceptions.grouping.GroupingException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -353,9 +353,9 @@ public abstract class GrouperToken extends Token {
 					ReturnsValue unconverted = getNextExpression(context);
 					ReturnsValue converted = type.convert(unconverted, context);
 					if (converted == null) {
-						throw new UnconvertableTypeException(
-								unconverted.getLineNumber(),
-								unconverted.get_type(context).declType, type);
+						throw new UnconvertibleTypeException(unconverted,
+								unconverted.get_type(context).declType, type,
+								true);
 					}
 					defaultValue = converted.compileTimeValue(context);
 					if (defaultValue == null) {
@@ -480,12 +480,13 @@ public abstract class GrouperToken extends Token {
 				/*
 				 * Does not have to be writable to assign value to variable.
 				 */
-				value_to_assign = output_type.convert(value_to_assign, context);
-				if (value_to_assign == null) {
-					throw new UnconvertableTypeException(next.lineInfo,
-							input_type, output_type);
+				ReturnsValue converted = output_type.convert(value_to_assign,
+						context);
+				if (converted == null) {
+					throw new UnconvertibleTypeException(converted, input_type,
+							output_type, true);
 				}
-				return r.createSetValueInstruction(value_to_assign);
+				return r.createSetValueInstruction(converted);
 			} else if (r instanceof Executable) {
 				return (Executable) r;
 			} else {

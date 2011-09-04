@@ -6,7 +6,7 @@ import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
-import com.js.interpreter.exceptions.BadTypeConversionException;
+import com.js.interpreter.exceptions.UnconvertibleTypeException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -42,20 +42,20 @@ public class TypeConverter {
 
 	public static ReturnsValue autoConvertRequired(JavaClassBasedType outtype,
 			ReturnsValue target, JavaClassBasedType intype)
-			throws BadTypeConversionException {
+			throws UnconvertibleTypeException {
 		ReturnsValue result = autoConvert(outtype, target, intype);
 		if (result == null) {
-			throw new BadTypeConversionException(target, outtype, intype, true);
+			throw new UnconvertibleTypeException(target, outtype, intype, true);
 		}
 		return result;
 	}
 
 	public static ReturnsValue forceConvertRequired(JavaClassBasedType outtype,
 			ReturnsValue target, JavaClassBasedType intype)
-			throws BadTypeConversionException {
+			throws UnconvertibleTypeException {
 		ReturnsValue result = forceConvert(outtype, target, intype);
 		if (result == null) {
-			throw new BadTypeConversionException(target, outtype, intype, false);
+			throw new UnconvertibleTypeException(target, outtype, intype, false);
 		}
 		return result;
 	}
