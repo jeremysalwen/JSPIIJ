@@ -6,6 +6,7 @@ import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.exceptions.BadTypeConversionException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -37,6 +38,26 @@ public class TypeConverter {
 			}
 		}
 		return null;
+	}
+
+	public static ReturnsValue autoConvertRequired(JavaClassBasedType outtype,
+			ReturnsValue target, JavaClassBasedType intype)
+			throws BadTypeConversionException {
+		ReturnsValue result = autoConvert(outtype, target, intype);
+		if (result == null) {
+			throw new BadTypeConversionException(target, outtype, intype, true);
+		}
+		return result;
+	}
+
+	public static ReturnsValue forceConvertRequired(JavaClassBasedType outtype,
+			ReturnsValue target, JavaClassBasedType intype)
+			throws BadTypeConversionException {
+		ReturnsValue result = forceConvert(outtype, target, intype);
+		if (result == null) {
+			throw new BadTypeConversionException(target, outtype, intype, false);
+		}
+		return result;
 	}
 
 	public static ReturnsValue forceConvert(JavaClassBasedType outtype,
@@ -326,6 +347,53 @@ public class TypeConverter {
 		public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
 				throws ParsingException {
 			return new CharToInt(other.compileTimeExpressionFold(context));
+		}
+	}
+	public static class AnyToString implements ReturnsValue {
+		ReturnsValue other;
+
+		public AnyToString(ReturnsValue other) {
+			this.other = other;
+		}
+
+		@Override
+		public Object getValue(VariableContext f, RuntimeExecutable<?> main)
+				throws RuntimePascalException {
+			return other.getValue(f, main).toString();
+		}
+
+		@Override
+		public RuntimeType get_type(ExpressionContext f)
+				throws ParsingException {
+			return new RuntimeType(JavaClassBasedType.anew(String.class), false);
+		}
+
+		@Override
+		public LineInfo getLineNumber() {
+			return other.getLineNumber();
+		}
+
+		@Override
+		public Object compileTimeValue(CompileTimeContext context)
+				throws ParsingException {
+			Object o = other.compileTimeValue(context);
+			if (o != null) {
+				return o.toString();
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+				throws UnassignableTypeException {
+			throw new UnassignableTypeException(this);
+		}
+
+		@Override
+		public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+				throws ParsingException {
+			return new AnyToString(other.compileTimeExpressionFold(context));
 		}
 	}
 }

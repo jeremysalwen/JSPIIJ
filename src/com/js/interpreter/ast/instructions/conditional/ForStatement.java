@@ -1,13 +1,14 @@
 package com.js.interpreter.ast.instructions.conditional;
 
 import com.js.interpreter.ast.CompileTimeContext;
+import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.returnsvalue.BinaryOperatorEvaluation;
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.operators.BinaryOperatorEvaluation;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -23,16 +24,16 @@ public class ForStatement extends DebuggableExecutable {
 	Executable command;
 	LineInfo line;
 
-	public ForStatement(ReturnsValue temp_var, ReturnsValue first,
-			ReturnsValue last, Executable command, LineInfo line)
-			throws UnassignableTypeException {
+	public ForStatement(ExpressionContext f, ReturnsValue temp_var,
+			ReturnsValue first, ReturnsValue last, Executable command,
+			LineInfo line) throws ParsingException {
 		this.line = line;
 		setfirst = temp_var.createSetValueInstruction(first);
-		lessthanlast = new BinaryOperatorEvaluation(temp_var, last,
+		lessthanlast = BinaryOperatorEvaluation.generateOp(f, temp_var, last,
 				OperatorTypes.LESSEQ, this.line);
 		increment_temp = temp_var
-				.createSetValueInstruction(new BinaryOperatorEvaluation(
-						temp_var, new ConstantAccess(1, this.line),
+				.createSetValueInstruction(BinaryOperatorEvaluation.generateOp(
+						f, temp_var, new ConstantAccess(1, this.line),
 						OperatorTypes.PLUS, this.line));
 
 		this.command = command;

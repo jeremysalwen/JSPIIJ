@@ -9,6 +9,7 @@ import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.InstructionGrouper;
+import com.js.interpreter.ast.returnsvalue.CachedReturnsValue;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
@@ -36,7 +37,7 @@ public class CaseInstruction extends DebuggableExecutable {
 	public CaseInstruction(CaseToken i, ExpressionContext context)
 			throws ParsingException {
 		this.line = i.lineInfo;
-		switch_value = i.getNextExpression(context);
+		switch_value = new CachedReturnsValue(i.getNextExpression(context));
 		Token next = i.take();
 		if (!(next instanceof OfToken)) {
 			throw new ExpectedTokenException("of", next);
@@ -58,8 +59,8 @@ public class CaseInstruction extends DebuggableExecutable {
 					if (hi == null) {
 						throw new NonConstantExpressionException(upper);
 					}
-					conditions
-							.add(new RangeOfValues(v, hi, val.getLineNumber()));
+					conditions.add(new RangeOfValues(switch_value, v, hi, val
+							.getLineNumber()));
 				} else {
 					conditions.add(new SingleValue(v, val.getLineNumber()));
 				}

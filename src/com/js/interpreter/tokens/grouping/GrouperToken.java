@@ -15,12 +15,12 @@ import com.js.interpreter.ast.instructions.conditional.ForStatement;
 import com.js.interpreter.ast.instructions.conditional.IfStatement;
 import com.js.interpreter.ast.instructions.conditional.RepeatInstruction;
 import com.js.interpreter.ast.instructions.conditional.WhileStatement;
-import com.js.interpreter.ast.returnsvalue.BinaryOperatorEvaluation;
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.returnsvalue.FieldAccess;
 import com.js.interpreter.ast.returnsvalue.FunctionCall;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.returnsvalue.UnaryOperatorEvaluation;
+import com.js.interpreter.ast.returnsvalue.operators.BinaryOperatorEvaluation;
 import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.exceptions.ExpectedAnotherTokenException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
@@ -201,8 +201,8 @@ public abstract class GrouperToken extends Token {
 		SubrangeType bound = new SubrangeType(bounds, context);
 		DeclaredType elementType;
 		if (bounds.hasNext()) {
-			Token t=bounds.take();
-			if(!(t instanceof CommaToken)) {
+			Token t = bounds.take();
+			if (!(t instanceof CommaToken)) {
 				throw new ExpectedTokenException("']' or ','", t);
 			}
 			elementType = getArrayType(bounds, context);
@@ -249,8 +249,9 @@ public abstract class GrouperToken extends Token {
 					throw new BadOperationTypeException(next.lineInfo, type1,
 							type2, nextTerm, nextvalue, operationtype);
 				}
-				nextTerm = new BinaryOperatorEvaluation(nextTerm, nextvalue,
-						operationtype, nextOperator.lineInfo);
+				nextTerm = BinaryOperatorEvaluation.generateOp(context,
+						nextTerm, nextvalue, operationtype,
+						nextOperator.lineInfo);
 			} else if (next instanceof PeriodToken) {
 				take();
 				next = take();
@@ -442,11 +443,11 @@ public abstract class GrouperToken extends Token {
 			assert (next instanceof DoToken);
 			Executable result;
 			if (downto) { // TODO probably should merge these two types
-				result = new DowntoForStatement(tmp_var, first_value,
+				result = new DowntoForStatement(context, tmp_var, first_value,
 						last_value, get_next_command(context), initialline);
 			} else {
-				result = new ForStatement(tmp_var, first_value, last_value,
-						get_next_command(context), initialline);
+				result = new ForStatement(context, tmp_var, first_value,
+						last_value, get_next_command(context), initialline);
 			}
 			return result;
 		} else if (next instanceof RepeatToken) {

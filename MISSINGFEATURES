@@ -1,7 +1,6 @@
 Language features which the interpreter is currently missing, and which I have
 some interest in implementing:
 
-* Short-Cut boolean operation evaluation
 * Classes/Object Types
 * Pointers (including @ operator and ^ operator)
 * Exceptions

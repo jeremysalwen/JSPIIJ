@@ -23,21 +23,21 @@ public class JavaClassBasedType extends DeclaredType {
 
 	protected static final HashMap<DeclaredType, Object> default_values = new HashMap<DeclaredType, Object>();
 
-	public static final DeclaredType Boolean = new JavaClassBasedType(
+	public static final JavaClassBasedType Boolean = new JavaClassBasedType(
 			Boolean.class);
-
-	public static final DeclaredType Character = new JavaClassBasedType(
+ 
+	public static final JavaClassBasedType Character = new JavaClassBasedType(
 			Character.class);
 
-	public static final DeclaredType StringBuilder = new JavaClassBasedType(
+	public static final JavaClassBasedType StringBuilder = new JavaClassBasedType(
 			StringBuilder.class);
 
-	public static final DeclaredType Long = new JavaClassBasedType(Long.class);
+	public static final JavaClassBasedType Long = new JavaClassBasedType(Long.class);
 
-	public static final DeclaredType Double = new JavaClassBasedType(
+	public static final JavaClassBasedType Double = new JavaClassBasedType(
 			Double.class);
 
-	public static final DeclaredType Integer = new JavaClassBasedType(
+	public static final JavaClassBasedType Integer = new JavaClassBasedType(
 			Integer.class);
 
 	static {
