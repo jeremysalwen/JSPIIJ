@@ -124,7 +124,10 @@ public class Interface {
 			ServiceLoader<PascalPlugin> loader = ServiceLoader.load(
 					PascalPlugin.class, cl);
 			for (PascalPlugin p : loader) {
-				p.instantiate(pluginContext);
+				if(!p.instantiate(pluginContext)) {
+					System.err.println("Error instantiating plugins: "+p.getClass().getName());
+					continue;
+				}
 				for (Method m : p.getClass().getDeclaredMethods()) {
 					if (Modifier.isPublic(m.getModifiers())) {
 						PluginDeclaration tmp = new PluginDeclaration(p, m);
