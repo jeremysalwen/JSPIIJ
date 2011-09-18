@@ -154,6 +154,7 @@ public abstract class CodeUnit implements ExpressionContext {
 		return;
 	}
 
+	@Override
 	public Executable handleUnrecognizedToken(Token next, GrouperToken container)
 			throws ParsingException {
 		throw new UnrecognizedTokenException(next);
@@ -251,5 +252,4 @@ public abstract class CodeUnit implements ExpressionContext {
 		}
 		return null;
 	}
-
 }

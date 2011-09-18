@@ -288,4 +288,10 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 		}
 		return parentContext.getIdentifierValue(name);
 	}
+
+	@Override
+	public Executable handleUnrecognizedToken(Token next, GrouperToken container)
+			throws ParsingException {
+		return parentContext.handleUnrecognizedToken(next, container);
+	}
 }

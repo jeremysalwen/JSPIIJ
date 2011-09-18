@@ -470,6 +470,10 @@ public abstract class GrouperToken extends Token {
 		} else if (next instanceof SemicolonToken) {
 			return new NopInstruction(next.lineInfo);
 		} else {
+			try {
+				return context.handleUnrecognizedToken(next , this);
+			} catch (ParsingException e) {
+			}
 			ReturnsValue r = getNextExpression(context, next);
 			next = peek();
 			if (next instanceof AssignmentToken) {
@@ -483,8 +487,8 @@ public abstract class GrouperToken extends Token {
 				ReturnsValue converted = output_type.convert(value_to_assign,
 						context);
 				if (converted == null) {
-					throw new UnconvertibleTypeException(converted, input_type,
-							output_type, true);
+					throw new UnconvertibleTypeException(value_to_assign,
+							input_type, output_type, true);
 				}
 				return r.createSetValueInstruction(converted);
 			} else if (r instanceof Executable) {
@@ -492,6 +496,7 @@ public abstract class GrouperToken extends Token {
 			} else {
 				throw new NotAStatementException(r);
 			}
+
 		}
 	}
 
