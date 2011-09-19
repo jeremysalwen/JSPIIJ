@@ -11,12 +11,14 @@ public abstract class DebuggableExecutable implements Executable {
 	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		try {
-			main.scriptControlCheck(getLineNumber());
+			if (main != null) {
+				main.scriptControlCheck(getLineNumber());
+			}
 			return executeImpl(f, main);
 		} catch (RuntimePascalException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnhandledPascalException(this.getLineNumber(),e);
+			throw new UnhandledPascalException(this.getLineNumber(), e);
 		}
 	}
 

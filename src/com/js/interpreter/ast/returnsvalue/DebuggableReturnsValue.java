@@ -11,7 +11,9 @@ public abstract class DebuggableReturnsValue implements ReturnsValue {
 	public Object getValue(VariableContext f, RuntimeExecutable<?> main)
 			throws RuntimePascalException {
 		try {
-			main.scriptControlCheck(getLineNumber());
+			if (main != null) {
+				main.scriptControlCheck(getLineNumber());
+			}
 			return getValueImpl(f, main);
 		} catch (RuntimePascalException e) {
 			throw e;
