@@ -61,10 +61,6 @@ public class CustomType extends ObjectType {
 		return null;
 	}
 
-	@Override
-	public boolean isarray() {
-		return false;
-	}
 
 	@Override
 	public int hashCode() {
@@ -396,5 +392,12 @@ public class CustomType extends ObjectType {
 	@Override
 	public void convertStackToStorageType(Code c) {
 		// do nothing.
+	}
+	@Override
+	public void pushArrayOfType(Code code, RegisterAllocator ra,
+			List<SubrangeType> ranges) {
+		//Because I cannot mix this method into DeclaredType (no multiple inheritance) I have to duplicate it.
+		ArrayType.pushArrayOfNonArrayType(this, code, ra, ranges);
+		
 	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import ncsa.tools.common.util.TypeUtils;
 import serp.bytecode.Code;
+import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
 
 import com.js.interpreter.ast.ExpressionContext;
@@ -14,9 +15,10 @@ import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.returnsvalue.cloning.ArrayCloner;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
+import com.js.interpreter.pascaltypes.bytecode.ScopedRegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 
-public class ArrayType<T extends DeclaredType> extends DeclaredType {
+public class ArrayType< T extends DeclaredType> implements DeclaredType {
 	public final T element_type;
 
 	public SubrangeType bounds;
@@ -24,11 +26,6 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	public ArrayType(T element_class, SubrangeType bounds) {
 		this.element_type = element_class;
 		this.bounds = bounds;
-	}
-
-	@Override
-	public boolean isarray() {
-		return true;
 	}
 
 	/**
@@ -222,11 +219,54 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 		return new ArrayAccess(array, index, bounds.lower);
 	}
 
-	@Override
 	public void pushArrayOfType(Code code, RegisterAllocator ra,
 			List<SubrangeType> ranges) {
 		ranges.add(bounds);
 		element_type.pushArrayOfType(code, ra, ranges);
+	}
+
+	public static void pushArrayOfNonArrayType(DeclaredType type, Code code,
+			RegisterAllocator ra, List<SubrangeType> ranges) {
+		for (SubrangeType i : ranges) {
+			code.constant().setValue(i.size);
+		}
+		// For now we are storing as array of objects always
+		code.multianewarray().setDimensions(ranges.size())
+				.setType("[" + type.getTransferClass().getName());
+		int array = ra.getNextFree();
+		code.astore().setLocal(array);
+		int[] indexes = new int[ranges.size()];
+		JumpInstruction[] fjmp = new JumpInstruction[ranges.size()];
+		Instruction[] jmpbackto = new Instruction[ranges.size() + 1];
+		for (int i = 0; i < indexes.length; i++) {
+			indexes[i] = ra.getNextFree();
+			jmpbackto[i] = code.constant().setValue(0);
+			code.istore().setLocal(indexes[i]);
+			fjmp[i] = code.go2();
+		}
+		jmpbackto[ranges.size()] = code.aload().setLocal(array);
+		for (int i = 0; i < indexes.length - 1; i++) {
+			code.iload().setLocal(indexes[i]);
+			code.aaload();
+		}
+		code.iload().setLocal(indexes[indexes.length - 1]);
+		type.pushDefaultValue(code, new ScopedRegisterAllocator(ra));
+		type.convertStackToStorageType(code);
+		// Because we are not compiling yet, we are using wrapper classes in
+		// arrays.
+		// arrayStoreOperation(code);
+		code.aastore();
+		for (int i = 0; i < indexes.length; i++) {
+			code.iinc().setIncrement(1).setLocal(indexes[i]);
+			fjmp[i].setTarget(code.iload().setLocal(indexes[i]));
+			code.constant().setValue(ranges.get(i).size);
+			code.ificmplt().setTarget(jmpbackto[i + 1]);
+		}
+		for (int i = 0; i < indexes.length; i++) {
+			ra.free(indexes[i]);
+		}
+		code.aload().setLocal(array);
+		ra.free(array);
 	}
 
 	@Override
@@ -266,4 +306,5 @@ public class ArrayType<T extends DeclaredType> extends DeclaredType {
 	public void convertStackToStorageType(Code c) {
 		// Do nothing.
 	}
+
 }

@@ -1,6 +1,7 @@
 package com.js.interpreter.pascaltypes;
 
 import java.util.HashMap;
+import java.util.List;
 
 import ncsa.tools.common.util.TypeUtils;
 import serp.bytecode.Code;
@@ -17,44 +18,191 @@ import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
+import com.js.interpreter.tokens.OperatorTypes;
 
-public class JavaClassBasedType extends DeclaredType {
-	Class c;
+public enum JavaClassBasedType implements DeclaredType {
+	Boolean(Character.class) {
+		@Override
+		Object getDefaultValue() {
+			return false;
+		}
 
-	protected static final HashMap<DeclaredType, Object> default_values = new HashMap<DeclaredType, Object>();
+		@Override
+		public String toString() {
+			return "Boolean";
+		}
 
-	public static final JavaClassBasedType Boolean = new JavaClassBasedType(
-			Boolean.class);
- 
-	public static final JavaClassBasedType Character = new JavaClassBasedType(
-			Character.class);
+		@Override
+		public void convertStackToStorageType(Code c) {
+			c.invokestatic().setMethod(Boolean.class, "valueOf", Boolean.class,
+					new Class[] { boolean.class });
+		}
 
-	public static final JavaClassBasedType StringBuilder = new JavaClassBasedType(
-			StringBuilder.class);
+		@Override
+		public void arrayStoreOperation(Code c) {
+			c.bastore();
+		}
+	},
+	Character(Character.class) {
+		@Override
+		Object getDefaultValue() {
+			return '\0';
+		}
 
-	public static final JavaClassBasedType Long = new JavaClassBasedType(Long.class);
+		@Override
+		public String toString() {
+			return "Character";
+		}
 
-	public static final JavaClassBasedType Double = new JavaClassBasedType(
-			Double.class);
+		@Override
+		public void convertStackToStorageType(Code c) {
+			c.invokestatic().setMethod(Character.class, "valueOf",
+					Character.class, new Class[] { char.class });
+		}
 
-	public static final JavaClassBasedType Integer = new JavaClassBasedType(
-			Integer.class);
+		@Override
+		public void arrayStoreOperation(Code c) {
+			c.castore();
+		}
+	},
+	StringBuilder(StringBuilder.class) {
+		@Override
+		Object getDefaultValue() {
+			return new StringBuilder();
+		}
 
-	static {
-		default_values.put(JavaClassBasedType.Integer, 0);
-		default_values.put(JavaClassBasedType.Double, 0.0D);
-		default_values.put(JavaClassBasedType.Long, 0L);
-		default_values.put(JavaClassBasedType.Character, '\0');
-		default_values.put(JavaClassBasedType.Boolean, false);
-	}
+		@Override
+		public void pushDefaultValue(Code constructor_code, RegisterAllocator ra) {
+			constructor_code.anew().setType(StringBuilder.class);
+			constructor_code.dup();
+			try {
+				constructor_code.invokespecial().setMethod(
+						StringBuilder.class.getConstructor());
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		public String toString() {
+			return "String";
+		}
+
+		@Override
+		public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
+				throws ParsingException {
+			RuntimeType other_type = value.get_type(f);
+			if (other_type.declType instanceof JavaClassBasedType) {
+
+				if (this.equals(other_type.declType)) {
+					return value;
+				}
+				if (other_type.declType == JavaClassBasedType.Character) {
+					return new CharacterBoxer(value);
+				}
+				if (((JavaClassBasedType) other_type.declType).c == String.class) {
+					return new StringBoxer(value);
+				}
+
+				return TypeConverter.autoConvert(this, value,
+						(JavaClassBasedType) other_type.declType);
+			}
+			return null;
+		}
+
+		@Override
+		public ReturnsValue generateArrayAccess(ReturnsValue array,
+				ReturnsValue index) throws NonArrayIndexed {
+			return new StringIndexAccess(array, index);
+		}
+
+		@Override
+		public ReturnsValue cloneValue(ReturnsValue r) {
+			return new StringBuilderCloner(r);
+		}
+
+		@Override
+		public void cloneValueOnStack(TransformationInput t) {
+			Code c = t.getCode();
+			c.anew().setType(StringBuilder.class);
+			t.pushInputOnStack();
+			try {
+				c.invokespecial().setMethod(
+						StringBuilder.class.getConstructor(CharSequence.class));
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	},
+	Long(Long.class) {
+		@Override
+		Object getDefaultValue() {
+			return 0L;
+		}
+
+		@Override
+		public String toString() {
+			return "Long";
+		}
+	},
+	Double(Double.class) {
+		@Override
+		Object getDefaultValue() {
+			return 0.0D;
+		}
+
+		@Override
+		public String toString() {
+			return "Double";
+		}
+
+		@Override
+		public void convertStackToStorageType(Code c) {
+			c.invokestatic().setMethod(Double.class, "valueOf", Double.class,
+					new Class[] { double.class });
+		}
+
+		@Override
+		public void arrayStoreOperation(Code c) {
+			c.dastore();
+		}
+	},
+	Integer(Integer.class) {
+		@Override
+		Object getDefaultValue() {
+			return (int) 0;
+		}
+
+		@Override
+		public String toString() {
+			return "Integer";
+		}
+
+		@Override
+		public void convertStackToStorageType(Code c) {
+			c.invokestatic().setMethod(Integer.class, "valueOf", Integer.class,
+					new Class[] { int.class });
+		}
+
+		@Override
+		public void arrayStoreOperation(Code c) {
+			c.iastore();
+		}
+	};
+	private Class c;
+
+	abstract Object getDefaultValue();
 
 	private JavaClassBasedType(Class name) {
 		c = name;
-	}
-
-	@Override
-	public boolean isarray() {
-		return false;
 	}
 
 	@Override
@@ -62,24 +210,17 @@ public class JavaClassBasedType extends DeclaredType {
 		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof JavaClassBasedType) {
-			Class other = ((JavaClassBasedType) obj).c;
+		if (obj instanceof JClassBasedType) {
+			Class other = ((JClassBasedType) obj).c;
 			return c == other || c == Object.class || other == Object.class;
 		}
 		return false;
 	}
 
 	@Override
-	public int hashCode() {
-		return (TypeUtils.isPrimitiveWrapper(c) ? TypeUtils.getTypeForClass(c)
-				: c).getCanonicalName().hashCode();
-
-	}
-
-	@Override
 	public Object initialize() {
 		Object result;
-		if ((result = JavaClassBasedType.default_values.get(this)) != null) {
+		if ((result = getDefaultValue()) != null) {
 			return result;
 		} else {
 			try {
@@ -100,72 +241,37 @@ public class JavaClassBasedType extends DeclaredType {
 	}
 
 	@Override
-	public String toString() {
-		if (this == Boolean) {
-			return "Boolean";
-		} else if (this == Character) {
-			return "Character";
-		} else if (this == Integer) {
-			return "Integer";
-		} else if (this == Double) {
-			return "Double";
-		} else if (this == Long) {
-			return "Long";
-		} else if (this == StringBuilder) {
-			return "String";
-		}
-		return c.getCanonicalName();
-	}
+	public abstract String toString();
 
 	public static DeclaredType anew(Class c) {
 		if (c == Integer.class) {
-			return JavaClassBasedType.Integer;
+			return Integer;
 		}
 		if (c == Double.class) {
-			return JavaClassBasedType.Double;
+			return Double;
 		}
 		if (c == StringBuilder.class) {
-			return JavaClassBasedType.StringBuilder;
+			return StringBuilder;
 		}
 		if (c == Long.class) {
-			return JavaClassBasedType.Long;
+			return Long;
 		}
 		if (c == Character.class) {
-			return JavaClassBasedType.Character;
+			return Character;
 		}
 		if (c == Boolean.class) {
-			return JavaClassBasedType.Boolean;
+			return Boolean;
 		}
-
-		return new JavaClassBasedType(c);
+		return new JClassBasedType(c);
 	}
 
 	@Override
 	public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
 			throws ParsingException {
-
 		RuntimeType other_type = value.get_type(f);
-
 		if (other_type.declType instanceof JavaClassBasedType) {
-
 			if (this.equals(other_type.declType)) {
 				return cloneValue(value);
-			}
-			if (this == StringBuilder
-					&& other_type.declType == JavaClassBasedType.Character) {
-				return new CharacterBoxer(value);
-			}
-			if (this == StringBuilder
-					&& ((JavaClassBasedType) other_type.declType).c == String.class) {
-				return new StringBoxer(value);
-			}
-			if (this.c == String.class
-					&& other_type.declType == JavaClassBasedType.StringBuilder) {
-				return new StringBuilderBoxer(value);
-			}
-			if (this.c == String.class
-					&& other_type.declType == JavaClassBasedType.Character) {
-				return new StringBuilderBoxer(new CharacterBoxer(value));
 			}
 			return TypeConverter.autoConvert(this, value,
 					(JavaClassBasedType) other_type.declType);
@@ -175,63 +281,22 @@ public class JavaClassBasedType extends DeclaredType {
 
 	@Override
 	public void pushDefaultValue(Code constructor_code, RegisterAllocator ra) {
-		if (this == StringBuilder) {
-			constructor_code.anew().setType(StringBuilder.class);
-			constructor_code.dup();
-			try {
-				constructor_code.invokespecial().setMethod(
-						StringBuilder.class.getConstructor());
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			Object value = default_values.get(this);
-			if (value != null) {
-				constructor_code.constant().setValue(value);
-			}
-		}
+		constructor_code.constant().setValue(getDefaultValue());
 	}
 
 	@Override
 	public ReturnsValue cloneValue(final ReturnsValue r) {
-		if (this == StringBuilder) {
-			return new StringBuilderCloner(r);
-		} else {
-			return r;
-		}
+		return r;
 	}
 
 	@Override
 	public void cloneValueOnStack(TransformationInput t) {
-		if (this == StringBuilder) {
-			Code c = t.getCode();
-			c.anew().setType(StringBuilder.class);
-			t.pushInputOnStack();
-			try {
-				c.invokespecial().setMethod(
-						StringBuilder.class.getConstructor(CharSequence.class));
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			t.pushInputOnStack();
-		}
+		t.pushInputOnStack();
 	}
 
 	@Override
 	public ReturnsValue generateArrayAccess(ReturnsValue array,
 			ReturnsValue index) throws NonArrayIndexed {
-		if (this == StringBuilder) {
-			return new StringIndexAccess(array, index);
-		}
 		throw new NonArrayIndexed(array.getLineNumber(), this);
 	}
 
@@ -243,34 +308,20 @@ public class JavaClassBasedType extends DeclaredType {
 
 	@Override
 	public void arrayStoreOperation(Code c) {
-		if (this == Boolean) {
-			c.bastore();
-		} else if (this == Character) {
-			c.castore();
-		} else if (this == Double) {
-			c.dastore();
-		} else if (this == Integer) {
-			c.iastore();
-		} else {
-			c.aastore();
-		}
+		c.aastore();
 	}
 
 	@Override
 	public void convertStackToStorageType(Code c) {
-		if (this == Integer) {
-			c.invokestatic().setMethod(Integer.class, "valueOf", Integer.class,
-					new Class[] { int.class });
-		} else if (this == Double) {
-			c.invokestatic().setMethod(Double.class, "valueOf", Double.class,
-					new Class[] { double.class });
-		} else if (this == Character) {
-			c.invokestatic().setMethod(Character.class, "valueOf",
-					Character.class, new Class[] { char.class });
-		} else if (this == Boolean) {
-			c.invokestatic().setMethod(Boolean.class, "valueOf", Boolean.class,
-					new Class[] { boolean.class });
-		}
-		// Otherwise, do nothing.
+		// By default, nothing is necessary.
+	}
+
+	@Override
+	public void pushArrayOfType(Code code, RegisterAllocator ra,
+			List<SubrangeType> ranges) {
+		// Because I cannot mix this method into DeclaredType (no multiple
+		// inheritance) I have to duplicate it.
+		ArrayType.pushArrayOfNonArrayType(this, code, ra, ranges);
+
 	}
 }

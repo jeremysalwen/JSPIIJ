@@ -15,6 +15,7 @@ import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;

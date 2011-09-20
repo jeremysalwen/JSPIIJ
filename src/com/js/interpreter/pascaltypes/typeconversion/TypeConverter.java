@@ -37,6 +37,9 @@ public class TypeConverter {
 				return forceConvert(outtype, target, intype);
 			}
 		}
+		if(outtype==JavaClassBasedType.StringBuilder && intype == JavaClassBasedType.Character){
+			return forceConvert(outtype, target, intype);
+		}
 		return null;
 	}
 
@@ -64,6 +67,9 @@ public class TypeConverter {
 			ReturnsValue target, JavaClassBasedType intype) {
 		if (outtype == intype) {
 			return target;
+		}
+		if(outtype.equals(JavaClassBasedType.StringBuilder)) {
+			return new AnyToString(target);
 		}
 		if (intype == JavaClassBasedType.Character) {
 			target = new CharToInt(target);

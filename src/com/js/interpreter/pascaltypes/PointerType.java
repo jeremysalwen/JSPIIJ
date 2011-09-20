@@ -1,5 +1,7 @@
 package com.js.interpreter.pascaltypes;
 
+import java.util.List;
+
 import serp.bytecode.Code;
 
 import com.js.interpreter.ast.ExpressionContext;
@@ -11,7 +13,7 @@ import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.runtime.ObjectBasedPointer;
 import com.js.interpreter.runtime.VariableBoxer;
 
-public class PointerType extends DeclaredType {
+public class PointerType implements DeclaredType {
 	public DeclaredType pointedToType;
 
 	public PointerType(DeclaredType pointedToType) {
@@ -31,11 +33,6 @@ public class PointerType extends DeclaredType {
 	@Override
 	public Object initialize() {
 		return new ObjectBasedPointer(pointedToType.initialize());
-	}
-
-	@Override
-	public boolean isarray() {
-		return false;
 	}
 
 	@Override
@@ -97,5 +94,12 @@ public class PointerType extends DeclaredType {
 	@Override
 	public void convertStackToStorageType(Code c) {
 		// do nothing.
+	}
+	@Override
+	public void pushArrayOfType(Code code, RegisterAllocator ra,
+			List<SubrangeType> ranges) {
+		//Because I cannot mix this method into DeclaredType (no multiple inheritance) I have to duplicate it.
+		ArrayType.pushArrayOfNonArrayType(this, code, ra, ranges);
+		
 	}
 }

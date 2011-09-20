@@ -14,6 +14,7 @@ import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.JClassBasedType;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
@@ -91,19 +92,28 @@ public abstract class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 			LineInfo line) throws ParsingException {
 		DeclaredType t1 = v1.get_type(f).declType;
 		DeclaredType t2 = v2.get_type(f).declType;
-		if (!(t1 instanceof JavaClassBasedType && t2 instanceof JavaClassBasedType)) {
+		if (!(t1 instanceof JavaClassBasedType || t1 instanceof JClassBasedType)) {
+			throw new BadOperationTypeException(line, t1, t2, v1, v2, op_type);
+		}
+		if (!(t2 instanceof JavaClassBasedType || t2 instanceof JClassBasedType)) {
 			throw new BadOperationTypeException(line, t1, t2, v1, v2, op_type);
 		}
 		if (t1 == JavaClassBasedType.StringBuilder
 				|| t2 == JavaClassBasedType.StringBuilder) {
-			if (op_type != OperatorTypes.PLUS
-					&& (t1 != JavaClassBasedType.StringBuilder || t2 != JavaClassBasedType.StringBuilder)) {
-				throw new BadOperationTypeException(line, t1, t2, v1, v2,
-						op_type);
+			if (op_type == OperatorTypes.PLUS) {
+				v1 = new TypeConverter.AnyToString(v1);
+				v2 = new TypeConverter.AnyToString(v2);
+				return new StringBiOperatorEval(v1, v2, op_type, line);
+			} else {
+				v1 = JavaClassBasedType.StringBuilder.convert(v1, f);
+				v2 = JavaClassBasedType.StringBuilder.convert(v2, f);
+				if (v1 != null && v2 != null) {
+					return new StringBiOperatorEval(v1, v2, op_type, line);
+				} else {
+					throw new BadOperationTypeException(line, t1, t2, v1, v2,
+							op_type);
+				}
 			}
-			v1 = new TypeConverter.AnyToString(v1);
-			v2 = new TypeConverter.AnyToString(v2);
-			return new StringBiOperatorEval(v1, v2, op_type, line);
 		}
 		if (t1 == JavaClassBasedType.Double || t2 == JavaClassBasedType.Double) {
 			v1 = TypeConverter.forceConvertRequired(JavaClassBasedType.Double,

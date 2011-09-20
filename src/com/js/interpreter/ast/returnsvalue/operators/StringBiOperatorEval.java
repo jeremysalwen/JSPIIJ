@@ -33,11 +33,11 @@ public class StringBiOperatorEval extends BinaryOperatorEvaluation {
 	@Override
 	public Object operate(Object value1, Object value2)
 			throws PascalArithmeticException, InternalInterpreterException {
-		String v1 = (String) value1;
-		String v2 = (String) value2;
+		CharSequence v1 = (CharSequence) value1;
+		CharSequence v2 = (CharSequence) value2;
 		switch (operator_type) {
 		case EQUALS:
-			return v1 == v2;
+			return v1.equals(v2);
 		case NOTEQUAL:
 			return !v1.equals(v2);
 		case PLUS:
@@ -48,7 +48,8 @@ public class StringBiOperatorEval extends BinaryOperatorEvaluation {
 	}
 
 	@Override
-	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context) throws ParsingException {
+	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+			throws ParsingException {
 		Object val = this.compileTimeValue(context);
 		if (val != null) {
 			return new ConstantAccess(val, line);

@@ -36,6 +36,7 @@ import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
@@ -490,7 +491,7 @@ public abstract class GrouperToken extends Token {
 					throw new UnconvertibleTypeException(value_to_assign,
 							input_type, output_type, true);
 				}
-				return r.createSetValueInstruction(converted);
+				return r.createSetValueInstruction(output_type.cloneValue(converted));
 			} else if (r instanceof Executable) {
 				return (Executable) r;
 			} else {
