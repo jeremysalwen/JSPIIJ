@@ -16,7 +16,7 @@ import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
 import com.js.interpreter.pascaltypes.VarargsType;
@@ -60,7 +60,7 @@ public class PluginDeclaration extends AbstractCallableFunction {
 
 	DeclaredType convertBasicType(Type javatype) {
 		Class<?> type = (Class<?>) javatype;
-		return JavaClassBasedType.anew(type.isPrimitive() ? TypeUtils
+		return BasicType.anew(type.isPrimitive() ? TypeUtils
 				.getClassForType(type) : type);
 	}
 
@@ -159,7 +159,7 @@ public class PluginDeclaration extends AbstractCallableFunction {
 		if (result.isPrimitive()) {
 			result = TypeUtils.getClassForType(result);
 		}
-		return JavaClassBasedType.anew(result);
+		return BasicType.anew(result);
 	}
 
 	@Override

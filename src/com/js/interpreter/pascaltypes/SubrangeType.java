@@ -19,7 +19,7 @@ public class SubrangeType {
 	public SubrangeType(GrouperToken i, ExpressionContext context)
 			throws ParsingException {
 		ReturnsValue l = i.getNextExpression(context);
-		ReturnsValue low = JavaClassBasedType.Integer.convert(l, context);
+		ReturnsValue low = BasicType.Integer.convert(l, context);
 		if (low == null) {
 			throw new NonIntegerIndexException(l);
 		}
@@ -34,7 +34,7 @@ public class SubrangeType {
 			throw new ExpectedTokenException("..", t);
 		}
 		ReturnsValue h = i.getNextExpression(context);
-		ReturnsValue high = JavaClassBasedType.Integer.convert(h, context);
+		ReturnsValue high = BasicType.Integer.convert(h, context);
 		if (high == null) {
 			throw new NonIntegerIndexException(h);
 		}

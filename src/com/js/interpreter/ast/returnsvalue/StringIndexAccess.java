@@ -8,7 +8,7 @@ import com.js.interpreter.ast.returnsvalue.boxing.StringBoxer;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -25,7 +25,7 @@ public class StringIndexAccess extends DebuggableReturnsValue {
 
 	@Override
 	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
-		return new RuntimeType(JavaClassBasedType.Character,
+		return new RuntimeType(BasicType.Character,
 				container.get_type(f).writable);
 	}
 

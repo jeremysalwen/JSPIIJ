@@ -9,7 +9,7 @@ import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -30,7 +30,7 @@ public class StringBoxer extends DebuggableReturnsValue {
 
 	@Override
 	public RuntimeType get_type(ExpressionContext f) {
-		return new RuntimeType(JavaClassBasedType.StringBuilder, false);
+		return new RuntimeType(BasicType.StringBuilder, false);
 	}
 
 	@Override

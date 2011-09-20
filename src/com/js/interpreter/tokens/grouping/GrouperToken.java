@@ -37,7 +37,7 @@ import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
 import com.js.interpreter.tokens.EOF_Token;
@@ -265,7 +265,7 @@ public abstract class GrouperToken extends Token {
 				BracketedToken b = (BracketedToken) next;
 				RuntimeType t = nextTerm.get_type(context);
 				ReturnsValue v = b.getNextExpression(context);
-				ReturnsValue converted = JavaClassBasedType.Integer.convert(v,
+				ReturnsValue converted = BasicType.Integer.convert(v,
 						context);
 				if (converted == null) {
 					throw new NonIntegerIndexException(v);

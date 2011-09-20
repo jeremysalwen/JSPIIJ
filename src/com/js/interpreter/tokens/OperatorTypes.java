@@ -4,7 +4,7 @@ import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.tokens.Token.precedence;
 
 public enum OperatorTypes {
@@ -22,7 +22,7 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType type)
 				throws BadOperationTypeException {
-			if (type != JavaClassBasedType.Boolean) {
+			if (type != BasicType.Boolean) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -48,9 +48,9 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == JavaClassBasedType.Boolean
-					|| GCF == JavaClassBasedType.Character
-					|| GCF == JavaClassBasedType.StringBuilder) {
+			if (GCF == BasicType.Boolean
+					|| GCF == BasicType.Character
+					|| GCF == BasicType.StringBuilder) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -82,9 +82,9 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == JavaClassBasedType.Boolean
-					|| GCF == JavaClassBasedType.Character
-					|| GCF == JavaClassBasedType.StringBuilder) {
+			if (GCF == BasicType.Boolean
+					|| GCF == BasicType.Character
+					|| GCF == BasicType.StringBuilder) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -111,9 +111,9 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == JavaClassBasedType.Boolean
-					|| GCF == JavaClassBasedType.StringBuilder
-					|| GCF == JavaClassBasedType.Character) {
+			if (GCF == BasicType.Boolean
+					|| GCF == BasicType.StringBuilder
+					|| GCF == BasicType.Character) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -133,8 +133,8 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF != JavaClassBasedType.Integer
-					&& GCF != JavaClassBasedType.Long) {
+			if (GCF != BasicType.Integer
+					&& GCF != BasicType.Long) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -188,7 +188,7 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == JavaClassBasedType.Boolean) {
+			if (GCF == BasicType.Boolean) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -224,8 +224,8 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == JavaClassBasedType.Boolean
-					|| GCF == JavaClassBasedType.StringBuilder) {
+			if (GCF == BasicType.Boolean
+					|| GCF == BasicType.StringBuilder) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -245,7 +245,7 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF != JavaClassBasedType.Boolean) {
+			if (GCF != BasicType.Boolean) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -271,7 +271,7 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF != JavaClassBasedType.Boolean) {
+			if (GCF != BasicType.Boolean) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -290,8 +290,8 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF != JavaClassBasedType.Integer
-					&& GCF != JavaClassBasedType.Long) {
+			if (GCF != BasicType.Integer
+					&& GCF != BasicType.Long) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -311,8 +311,8 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF != JavaClassBasedType.Integer
-					&& GCF != JavaClassBasedType.Long) {
+			if (GCF != BasicType.Integer
+					&& GCF != BasicType.Long) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -338,8 +338,8 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == JavaClassBasedType.Boolean
-					|| GCF == JavaClassBasedType.StringBuilder) {
+			if (GCF == BasicType.Boolean
+					|| GCF == BasicType.StringBuilder) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -365,8 +365,8 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == JavaClassBasedType.Boolean
-					|| GCF == JavaClassBasedType.StringBuilder) {
+			if (GCF == BasicType.Boolean
+					|| GCF == BasicType.StringBuilder) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -434,8 +434,8 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == JavaClassBasedType.Boolean
-					|| GCF == JavaClassBasedType.StringBuilder) {
+			if (GCF == BasicType.Boolean
+					|| GCF == BasicType.StringBuilder) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -461,8 +461,8 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == JavaClassBasedType.Boolean
-					|| GCF == JavaClassBasedType.StringBuilder) {
+			if (GCF == BasicType.Boolean
+					|| GCF == BasicType.StringBuilder) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -602,40 +602,40 @@ public enum OperatorTypes {
 	}
 
 	public static DeclaredType get_GCF(DeclaredType one, DeclaredType two) {
-		if (one == JavaClassBasedType.StringBuilder
-				|| two == JavaClassBasedType.StringBuilder) {
-			return JavaClassBasedType.StringBuilder;
+		if (one == BasicType.StringBuilder
+				|| two == BasicType.StringBuilder) {
+			return BasicType.StringBuilder;
 		}
-		if (one == JavaClassBasedType.Double
-				|| two == JavaClassBasedType.Double) {
-			if (one == JavaClassBasedType.Boolean
-					|| two == JavaClassBasedType.Boolean) {
+		if (one == BasicType.Double
+				|| two == BasicType.Double) {
+			if (one == BasicType.Boolean
+					|| two == BasicType.Boolean) {
 				return null;
 			}
-			return JavaClassBasedType.Double;
+			return BasicType.Double;
 		}
-		if (one == JavaClassBasedType.Long || two == JavaClassBasedType.Long) {
-			if (one == JavaClassBasedType.Boolean
-					|| two == JavaClassBasedType.Boolean) {
+		if (one == BasicType.Long || two == BasicType.Long) {
+			if (one == BasicType.Boolean
+					|| two == BasicType.Boolean) {
 				return null;
 			}
-			return JavaClassBasedType.Long;
+			return BasicType.Long;
 		}
-		if (one == JavaClassBasedType.Integer
-				|| two == JavaClassBasedType.Integer) {
-			if (one == JavaClassBasedType.Boolean
-					|| two == JavaClassBasedType.Boolean) {
+		if (one == BasicType.Integer
+				|| two == BasicType.Integer) {
+			if (one == BasicType.Boolean
+					|| two == BasicType.Boolean) {
 				return null;
 			}
-			return JavaClassBasedType.Integer;
+			return BasicType.Integer;
 		}
-		if (one == JavaClassBasedType.Boolean
-				&& two == JavaClassBasedType.Boolean) {
-			return JavaClassBasedType.Boolean;
+		if (one == BasicType.Boolean
+				&& two == BasicType.Boolean) {
+			return BasicType.Boolean;
 		}
-		if (one == JavaClassBasedType.Character
-				&& two == JavaClassBasedType.Character) {
-			return JavaClassBasedType.Character;
+		if (one == BasicType.Character
+				&& two == BasicType.Character) {
+			return BasicType.Character;
 		}
 		return null;
 	}

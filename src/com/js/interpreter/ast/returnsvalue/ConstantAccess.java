@@ -6,7 +6,7 @@ import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -37,7 +37,7 @@ public class ConstantAccess extends DebuggableReturnsValue {
 
 	@Override
 	public RuntimeType get_type(ExpressionContext f) {
-		return new RuntimeType(JavaClassBasedType.anew(constant_value
+		return new RuntimeType(BasicType.anew(constant_value
 				.getClass()), false);
 	}
 

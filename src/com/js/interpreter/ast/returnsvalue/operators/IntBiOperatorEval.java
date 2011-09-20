@@ -6,7 +6,7 @@ import com.js.interpreter.ast.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.exception.PascalArithmeticException;
 import com.js.interpreter.runtime.exception.internal.InternalInterpreterException;
@@ -28,9 +28,9 @@ public class IntBiOperatorEval extends BinaryOperatorEvaluation {
 		case LESSEQ:
 		case LESSTHAN:
 		case NOTEQUAL:
-			return new RuntimeType(JavaClassBasedType.Boolean, false);
+			return new RuntimeType(BasicType.Boolean, false);
 		default:
-			return new RuntimeType(JavaClassBasedType.Integer, false);
+			return new RuntimeType(BasicType.Integer, false);
 		}
 	}
 

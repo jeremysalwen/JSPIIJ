@@ -5,7 +5,7 @@ import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnrecognizedTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 
 public class WordToken extends Token {
 	public String name;
@@ -29,22 +29,22 @@ public class WordToken extends Token {
 			throws UnrecognizedTypeException {
 		String s = name.toLowerCase().intern();
 		if (s == "integer") {
-			return JavaClassBasedType.Integer;
+			return BasicType.Integer;
 		}
 		if (s == "string") {
-			return JavaClassBasedType.StringBuilder;
+			return BasicType.StringBuilder;
 		}
 		if (s == "single" || s == "extended" || s == "double" || s == "real") {
-			return JavaClassBasedType.Double;
+			return BasicType.Double;
 		}
 		if (s == "long") {
-			return JavaClassBasedType.Long;
+			return BasicType.Long;
 		}
 		if (s == "boolean") {
-			return JavaClassBasedType.Boolean;
+			return BasicType.Boolean;
 		}
 		if (s == "character" || s == "char") {
-			return JavaClassBasedType.Character;
+			return BasicType.Character;
 		}
 		DeclaredType type = context.getTypedefType(s);
 		if (type != null) {
@@ -54,7 +54,7 @@ public class WordToken extends Token {
 			if (constval == null) {
 				throw new UnrecognizedTypeException(lineInfo, s);
 			}
-			return JavaClassBasedType.anew(constval.getClass());
+			return BasicType.anew(constval.getClass());
 		}
 	}
 }

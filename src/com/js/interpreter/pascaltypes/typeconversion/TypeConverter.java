@@ -10,7 +10,7 @@ import com.js.interpreter.exceptions.UnconvertibleTypeException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -25,8 +25,8 @@ public class TypeConverter {
 		precedence.put(Double.class, 3);
 	}
 
-	public static ReturnsValue autoConvert(JavaClassBasedType outtype,
-			ReturnsValue target, JavaClassBasedType intype) {
+	public static ReturnsValue autoConvert(BasicType outtype,
+			ReturnsValue target, BasicType intype) {
 		if (intype == outtype) {
 			return target;
 		}
@@ -37,14 +37,14 @@ public class TypeConverter {
 				return forceConvert(outtype, target, intype);
 			}
 		}
-		if(outtype==JavaClassBasedType.StringBuilder && intype == JavaClassBasedType.Character){
+		if(outtype==BasicType.StringBuilder && intype == BasicType.Character){
 			return forceConvert(outtype, target, intype);
 		}
 		return null;
 	}
 
-	public static ReturnsValue autoConvertRequired(JavaClassBasedType outtype,
-			ReturnsValue target, JavaClassBasedType intype)
+	public static ReturnsValue autoConvertRequired(BasicType outtype,
+			ReturnsValue target, BasicType intype)
 			throws UnconvertibleTypeException {
 		ReturnsValue result = autoConvert(outtype, target, intype);
 		if (result == null) {
@@ -53,8 +53,8 @@ public class TypeConverter {
 		return result;
 	}
 
-	public static ReturnsValue forceConvertRequired(JavaClassBasedType outtype,
-			ReturnsValue target, JavaClassBasedType intype)
+	public static ReturnsValue forceConvertRequired(BasicType outtype,
+			ReturnsValue target, BasicType intype)
 			throws UnconvertibleTypeException {
 		ReturnsValue result = forceConvert(outtype, target, intype);
 		if (result == null) {
@@ -63,48 +63,48 @@ public class TypeConverter {
 		return result;
 	}
 
-	public static ReturnsValue forceConvert(JavaClassBasedType outtype,
-			ReturnsValue target, JavaClassBasedType intype) {
+	public static ReturnsValue forceConvert(BasicType outtype,
+			ReturnsValue target, BasicType intype) {
 		if (outtype == intype) {
 			return target;
 		}
-		if(outtype.equals(JavaClassBasedType.StringBuilder)) {
+		if(outtype.equals(BasicType.StringBuilder)) {
 			return new AnyToString(target);
 		}
-		if (intype == JavaClassBasedType.Character) {
+		if (intype == BasicType.Character) {
 			target = new CharToInt(target);
-			if (outtype == JavaClassBasedType.Integer) {
+			if (outtype == BasicType.Integer) {
 				return target;
-			} else if (outtype == JavaClassBasedType.Long) {
+			} else if (outtype == BasicType.Long) {
 				return new NumberToLong(target);
-			} else if (outtype == JavaClassBasedType.Double) {
+			} else if (outtype == BasicType.Double) {
 				return new NumberToReal(target);
 			}
 		}
-		if (intype == JavaClassBasedType.Integer) {
-			if (outtype == JavaClassBasedType.Character) {
+		if (intype == BasicType.Integer) {
+			if (outtype == BasicType.Character) {
 				return new NumberToChar(target);
-			} else if (outtype == JavaClassBasedType.Long) {
+			} else if (outtype == BasicType.Long) {
 				return new NumberToLong(target);
-			} else if (outtype == JavaClassBasedType.Double) {
+			} else if (outtype == BasicType.Double) {
 				return new NumberToReal(target);
 			}
 		}
-		if (intype == JavaClassBasedType.Long) {
-			if (outtype == JavaClassBasedType.Character) {
+		if (intype == BasicType.Long) {
+			if (outtype == BasicType.Character) {
 				return new NumberToChar(target);
-			} else if (outtype == JavaClassBasedType.Integer) {
+			} else if (outtype == BasicType.Integer) {
 				return new NumberToInt(target);
-			} else if (outtype == JavaClassBasedType.Double) {
+			} else if (outtype == BasicType.Double) {
 				return new NumberToReal(target);
 			}
 		}
-		if (intype == JavaClassBasedType.Double) {
-			if (outtype == JavaClassBasedType.Character) {
+		if (intype == BasicType.Double) {
+			if (outtype == BasicType.Character) {
 				return new NumberToChar(target);
-			} else if (outtype == JavaClassBasedType.Integer) {
+			} else if (outtype == BasicType.Integer) {
 				return new NumberToInt(target);
-			} else if (outtype == JavaClassBasedType.Long) {
+			} else if (outtype == BasicType.Long) {
 				return new NumberToLong(target);
 			}
 		}
@@ -128,7 +128,7 @@ public class TypeConverter {
 		@Override
 		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
-			return new RuntimeType(JavaClassBasedType.Double, false);
+			return new RuntimeType(BasicType.Double, false);
 		}
 
 		@Override
@@ -177,7 +177,7 @@ public class TypeConverter {
 		@Override
 		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
-			return new RuntimeType(JavaClassBasedType.Long, false);
+			return new RuntimeType(BasicType.Long, false);
 		}
 
 		@Override
@@ -226,7 +226,7 @@ public class TypeConverter {
 		@Override
 		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
-			return new RuntimeType(JavaClassBasedType.Character, false);
+			return new RuntimeType(BasicType.Character, false);
 		}
 
 		@Override
@@ -275,7 +275,7 @@ public class TypeConverter {
 		@Override
 		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
-			return new RuntimeType(JavaClassBasedType.Integer, false);
+			return new RuntimeType(BasicType.Integer, false);
 		}
 
 		@Override
@@ -324,7 +324,7 @@ public class TypeConverter {
 		@Override
 		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
-			return new RuntimeType(JavaClassBasedType.Integer, false);
+			return new RuntimeType(BasicType.Integer, false);
 		}
 
 		@Override
@@ -371,7 +371,7 @@ public class TypeConverter {
 		@Override
 		public RuntimeType get_type(ExpressionContext f)
 				throws ParsingException {
-			return new RuntimeType(JavaClassBasedType.anew(String.class), false);
+			return new RuntimeType(BasicType.anew(String.class), false);
 		}
 
 		@Override

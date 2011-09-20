@@ -14,8 +14,8 @@ import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.JClassBasedType;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
 import com.js.interpreter.runtime.VariableContext;
@@ -92,21 +92,21 @@ public abstract class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 			LineInfo line) throws ParsingException {
 		DeclaredType t1 = v1.get_type(f).declType;
 		DeclaredType t2 = v2.get_type(f).declType;
-		if (!(t1 instanceof JavaClassBasedType || t1 instanceof JClassBasedType)) {
+		if (!(t1 instanceof BasicType || t1 instanceof JavaClassBasedType)) {
 			throw new BadOperationTypeException(line, t1, t2, v1, v2, op_type);
 		}
-		if (!(t2 instanceof JavaClassBasedType || t2 instanceof JClassBasedType)) {
+		if (!(t2 instanceof BasicType || t2 instanceof JavaClassBasedType)) {
 			throw new BadOperationTypeException(line, t1, t2, v1, v2, op_type);
 		}
-		if (t1 == JavaClassBasedType.StringBuilder
-				|| t2 == JavaClassBasedType.StringBuilder) {
+		if (t1 == BasicType.StringBuilder
+				|| t2 == BasicType.StringBuilder) {
 			if (op_type == OperatorTypes.PLUS) {
 				v1 = new TypeConverter.AnyToString(v1);
 				v2 = new TypeConverter.AnyToString(v2);
 				return new StringBiOperatorEval(v1, v2, op_type, line);
 			} else {
-				v1 = JavaClassBasedType.StringBuilder.convert(v1, f);
-				v2 = JavaClassBasedType.StringBuilder.convert(v2, f);
+				v1 = BasicType.StringBuilder.convert(v1, f);
+				v2 = BasicType.StringBuilder.convert(v2, f);
 				if (v1 != null && v2 != null) {
 					return new StringBiOperatorEval(v1, v2, op_type, line);
 				} else {
@@ -115,42 +115,42 @@ public abstract class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 				}
 			}
 		}
-		if (t1 == JavaClassBasedType.Double || t2 == JavaClassBasedType.Double) {
-			v1 = TypeConverter.forceConvertRequired(JavaClassBasedType.Double,
-					v1, (JavaClassBasedType) t1);
-			v2 = TypeConverter.forceConvertRequired(JavaClassBasedType.Double,
-					v2, (JavaClassBasedType) t2);
+		if (t1 == BasicType.Double || t2 == BasicType.Double) {
+			v1 = TypeConverter.forceConvertRequired(BasicType.Double,
+					v1, (BasicType) t1);
+			v2 = TypeConverter.forceConvertRequired(BasicType.Double,
+					v2, (BasicType) t2);
 			return new DoubleBiOperatorEval(v1, v2, op_type, line);
 		}
-		if (t1 == JavaClassBasedType.Long || t2 == JavaClassBasedType.Long) {
-			v1 = TypeConverter.forceConvertRequired(JavaClassBasedType.Long,
-					v1, (JavaClassBasedType) t1);
-			v2 = TypeConverter.forceConvertRequired(JavaClassBasedType.Long,
-					v2, (JavaClassBasedType) t2);
+		if (t1 == BasicType.Long || t2 == BasicType.Long) {
+			v1 = TypeConverter.forceConvertRequired(BasicType.Long,
+					v1, (BasicType) t1);
+			v2 = TypeConverter.forceConvertRequired(BasicType.Long,
+					v2, (BasicType) t2);
 			return new LongBiOperatorEval(v1, v2, op_type, line);
 		}
-		if (t1 == JavaClassBasedType.Integer
-				|| t2 == JavaClassBasedType.Integer) {
-			v1 = TypeConverter.forceConvertRequired(JavaClassBasedType.Integer,
-					v1, (JavaClassBasedType) t1);
-			v2 = TypeConverter.forceConvertRequired(JavaClassBasedType.Integer,
-					v2, (JavaClassBasedType) t2);
+		if (t1 == BasicType.Integer
+				|| t2 == BasicType.Integer) {
+			v1 = TypeConverter.forceConvertRequired(BasicType.Integer,
+					v1, (BasicType) t1);
+			v2 = TypeConverter.forceConvertRequired(BasicType.Integer,
+					v2, (BasicType) t2);
 			return new IntBiOperatorEval(v1, v2, op_type, line);
 		}
-		if (t1 == JavaClassBasedType.Character
-				|| t2 == JavaClassBasedType.Character) {
+		if (t1 == BasicType.Character
+				|| t2 == BasicType.Character) {
 			v1 = TypeConverter.forceConvertRequired(
-					JavaClassBasedType.Character, v1, (JavaClassBasedType) t1);
+					BasicType.Character, v1, (BasicType) t1);
 			v2 = TypeConverter.forceConvertRequired(
-					JavaClassBasedType.Character, v2, (JavaClassBasedType) t2);
+					BasicType.Character, v2, (BasicType) t2);
 			return new CharBiOperatorEval(v1, v2, op_type, line);
 		}
-		if (t1 == JavaClassBasedType.Boolean
-				|| t2 == JavaClassBasedType.Boolean) {
-			v1 = TypeConverter.forceConvertRequired(JavaClassBasedType.Boolean,
-					v1, (JavaClassBasedType) t1);
-			v2 = TypeConverter.forceConvertRequired(JavaClassBasedType.Boolean,
-					v2, (JavaClassBasedType) t2);
+		if (t1 == BasicType.Boolean
+				|| t2 == BasicType.Boolean) {
+			v1 = TypeConverter.forceConvertRequired(BasicType.Boolean,
+					v1, (BasicType) t1);
+			v2 = TypeConverter.forceConvertRequired(BasicType.Boolean,
+					v2, (BasicType) t2);
 			return new BoolBiOperatorEval(v1, v2, op_type, line);
 		}
 		throw new BadOperationTypeException(line, t1, t2, v1, v2, op_type);

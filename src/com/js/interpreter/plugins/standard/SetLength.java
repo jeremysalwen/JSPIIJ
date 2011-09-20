@@ -15,7 +15,7 @@ import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.PointerType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
@@ -29,9 +29,9 @@ public class SetLength implements TemplatedPascalPlugin {
 
 	static ArgumentType[] _argumentTypes = {
 			new RuntimeType(new ArrayType<DeclaredType>(
-					JavaClassBasedType.anew(Object.class), new SubrangeType(0,
+					BasicType.anew(Object.class), new SubrangeType(0,
 							0)), true),
-			new RuntimeType(JavaClassBasedType.Integer, false) };
+			new RuntimeType(BasicType.Integer, false) };
 
 	@Override
 	public String name() {

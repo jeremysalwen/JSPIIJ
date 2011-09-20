@@ -6,7 +6,7 @@ import com.js.interpreter.ast.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
-import com.js.interpreter.pascaltypes.JavaClassBasedType;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
@@ -35,7 +35,7 @@ public class BoolBiOperatorEval extends BinaryOperatorEvaluation {
 
 	@Override
 	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
-		return new RuntimeType(JavaClassBasedType.Boolean, false);
+		return new RuntimeType(BasicType.Boolean, false);
 	}
 
 	@Override
