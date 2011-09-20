@@ -17,6 +17,10 @@ public class Conversion_plugins implements PascalPlugin {
 		return String.valueOf(f);
 	}
 
+	public static String CharToStr(char c) {
+		return String.valueOf(c);
+	}
+
 	public static int strtoint(String s) {
 		return strtointdef(s, -1);
 	}
