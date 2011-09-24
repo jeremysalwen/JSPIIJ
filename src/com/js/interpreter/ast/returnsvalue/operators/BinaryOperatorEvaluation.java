@@ -1,11 +1,8 @@
 package com.js.interpreter.ast.returnsvalue.operators;
 
-import javax.naming.OperationNotSupportedException;
-
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.BadOperationTypeException;
@@ -13,10 +10,9 @@ import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
+import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.JavaClassBasedType;
-import com.js.interpreter.pascaltypes.BasicType;
-import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;

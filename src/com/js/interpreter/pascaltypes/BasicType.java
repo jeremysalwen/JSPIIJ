@@ -1,6 +1,5 @@
 package com.js.interpreter.pascaltypes;
 
-import java.util.HashMap;
 import java.util.List;
 
 import ncsa.tools.common.util.TypeUtils;
@@ -11,14 +10,12 @@ import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.returnsvalue.StringIndexAccess;
 import com.js.interpreter.ast.returnsvalue.boxing.CharacterBoxer;
 import com.js.interpreter.ast.returnsvalue.boxing.StringBoxer;
-import com.js.interpreter.ast.returnsvalue.boxing.StringBuilderBoxer;
 import com.js.interpreter.ast.returnsvalue.cloning.StringBuilderCloner;
 import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
-import com.js.interpreter.tokens.OperatorTypes;
 
 public enum BasicType implements DeclaredType {
 	Boolean(Character.class) {

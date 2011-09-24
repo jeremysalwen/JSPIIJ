@@ -1,7 +1,6 @@
 package com.js.interpreter.exceptions;
 
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
-import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.DeclaredType;
 
 public class UnconvertibleTypeException extends ParsingException {

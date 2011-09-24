@@ -3,8 +3,8 @@ package com.js.interpreter.tokens;
 import javax.naming.OperationNotSupportedException;
 
 import com.js.interpreter.exceptions.BadOperationTypeException;
-import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.BasicType;
+import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.tokens.Token.precedence;
 
 public enum OperatorTypes {

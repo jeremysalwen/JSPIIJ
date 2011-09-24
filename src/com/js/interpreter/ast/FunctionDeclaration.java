@@ -16,7 +16,6 @@ import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
 import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.FunctionOnStack;
 import com.js.interpreter.runtime.VariableContext;

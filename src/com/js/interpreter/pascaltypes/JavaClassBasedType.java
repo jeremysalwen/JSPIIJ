@@ -13,7 +13,6 @@ import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
-import com.js.interpreter.pascaltypes.typeconversion.TypeConverter;
 
 public class JavaClassBasedType implements DeclaredType {
 

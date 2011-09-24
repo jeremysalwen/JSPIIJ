@@ -4,8 +4,8 @@ import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnrecognizedTypeException;
 import com.js.interpreter.linenumber.LineInfo;
-import com.js.interpreter.pascaltypes.DeclaredType;
 import com.js.interpreter.pascaltypes.BasicType;
+import com.js.interpreter.pascaltypes.DeclaredType;
 
 public class WordToken extends Token {
 	public String name;

@@ -1,6 +1,5 @@
 package com.js.interpreter.pascaltypes.bytecode;
 
-import java.util.ArrayList;
 
 public class SimpleRegisterAllocator implements RegisterAllocator {
 	// Average of constant time allocation as long as the JVM's array

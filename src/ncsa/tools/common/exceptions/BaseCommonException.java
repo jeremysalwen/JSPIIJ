@@ -1,6 +1,5 @@
 package ncsa.tools.common.exceptions;
 
-import java.io.Serializable;
 
 public class BaseCommonException extends Exception
 {

@@ -1,6 +1,5 @@
 package com.js.interpreter.ast.instructions;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

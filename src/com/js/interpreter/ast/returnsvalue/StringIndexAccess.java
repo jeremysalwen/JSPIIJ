@@ -4,7 +4,6 @@ import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetCharAt;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.returnsvalue.boxing.StringBoxer;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;

@@ -1,7 +1,5 @@
 package com.js.interpreter.ast.returnsvalue;
 
-import sun.rmi.transport.ObjectTable;
-
 import com.js.interpreter.ast.CompileTimeContext;
 import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetField;
@@ -10,7 +8,6 @@ import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
-import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.ObjectType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
