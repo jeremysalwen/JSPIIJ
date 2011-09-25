@@ -2,7 +2,7 @@ package com.js.interpreter.pascaltypes;
 
 import java.util.Iterator;
 
-import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 

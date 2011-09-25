@@ -1,5 +1,6 @@
-package com.js.interpreter.ast;
+package com.js.interpreter.ast.expressioncontext;
 
+import com.js.interpreter.ast.ConstantDefinition;
 import com.js.interpreter.pascaltypes.DeclaredType;
 
 public interface CompileTimeContext {

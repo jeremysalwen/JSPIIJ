@@ -1,6 +1,6 @@
 package com.js.interpreter.ast.instructions.conditional;
 
-import com.js.interpreter.ast.CompileTimeContext;
+import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;

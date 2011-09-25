@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.js.interpreter.ast.codeunit.Library;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContextContract;
+import com.js.interpreter.ast.expressioncontext.ExpressionContextMixin;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
@@ -27,7 +30,6 @@ import com.js.interpreter.tokens.basic.SemicolonToken;
 import com.js.interpreter.tokens.basic.VarToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 import com.js.interpreter.tokens.grouping.ParenthesizedToken;
-import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
 
 public class FunctionDeclaration extends AbstractCallableFunction implements
 		ExpressionContextContract {

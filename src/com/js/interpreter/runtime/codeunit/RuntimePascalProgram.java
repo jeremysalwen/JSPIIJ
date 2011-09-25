@@ -2,7 +2,6 @@ package com.js.interpreter.runtime.codeunit;
 
 import com.js.interpreter.ast.codeunit.PascalProgram;
 import com.js.interpreter.ast.codeunit.RunMode;
-import com.js.interpreter.runtime.FunctionOnStack;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 

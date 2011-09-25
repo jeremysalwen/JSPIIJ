@@ -3,8 +3,8 @@ package com.js.interpreter.ast.returnsvalue;
 import java.lang.reflect.InvocationTargetException;
 
 import com.js.interpreter.ast.AbstractCallableFunction;
-import com.js.interpreter.ast.CompileTimeContext;
-import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;

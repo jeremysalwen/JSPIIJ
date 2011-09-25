@@ -3,7 +3,7 @@ package com.js.interpreter.ast.instructions;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.js.interpreter.ast.CompileTimeContext;
+import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;

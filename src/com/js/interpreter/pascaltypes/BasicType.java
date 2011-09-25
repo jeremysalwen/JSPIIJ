@@ -5,7 +5,7 @@ import java.util.List;
 import ncsa.tools.common.util.TypeUtils;
 import serp.bytecode.Code;
 
-import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.returnsvalue.StringIndexAccess;
 import com.js.interpreter.ast.returnsvalue.boxing.CharacterBoxer;

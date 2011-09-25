@@ -3,7 +3,7 @@ package com.js.interpreter.plugins.templated;
 import java.util.List;
 
 import com.js.interpreter.ast.AbstractFunction;
-import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.FunctionCall;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;

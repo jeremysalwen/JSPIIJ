@@ -2,8 +2,8 @@ package com.js.interpreter.ast.returnsvalue;
 
 import javax.naming.OperationNotSupportedException;
 
-import com.js.interpreter.ast.CompileTimeContext;
-import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;

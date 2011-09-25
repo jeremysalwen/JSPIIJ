@@ -2,8 +2,8 @@ package com.js.interpreter.pascaltypes.typeconversion;
 
 import java.util.HashMap;
 
-import com.js.interpreter.ast.CompileTimeContext;
-import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;

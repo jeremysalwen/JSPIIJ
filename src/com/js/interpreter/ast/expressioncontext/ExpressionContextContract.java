@@ -1,12 +1,8 @@
-package com.js.interpreter.ast;
-
-import java.util.List;
+package com.js.interpreter.ast.expressioncontext;
 
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.tokens.Token;
-import com.js.interpreter.tokens.grouping.BaseGrouperToken;
-import com.js.interpreter.tokens.grouping.BeginEndToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 
 public interface ExpressionContextContract {

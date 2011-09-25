@@ -5,18 +5,14 @@ import java.util.List;
 
 import com.google.common.collect.ListMultimap;
 import com.js.interpreter.ast.AbstractFunction;
-import com.js.interpreter.ast.FunctionDeclaration;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.exceptions.ExpectedTokenException;
-import com.js.interpreter.exceptions.MisplacedDeclarationException;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.FunctionOnStack;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.codeunit.RuntimePascalProgram;
 import com.js.interpreter.startup.ScriptSource;
 import com.js.interpreter.tokens.basic.PeriodToken;
-import com.js.interpreter.tokens.grouping.BaseGrouperToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 
 public class PascalProgram extends ExecutableCodeUnit {

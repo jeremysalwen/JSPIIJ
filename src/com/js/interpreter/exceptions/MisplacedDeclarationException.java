@@ -1,7 +1,6 @@
 package com.js.interpreter.exceptions;
 
-import com.js.interpreter.ast.ExpressionContext;
-import com.js.interpreter.ast.ExpressionContextContract;
+import com.js.interpreter.ast.expressioncontext.ExpressionContextContract;
 import com.js.interpreter.linenumber.LineInfo;
 
 public class MisplacedDeclarationException extends ParsingException {

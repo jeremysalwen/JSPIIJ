@@ -11,8 +11,8 @@ import serp.bytecode.Instruction;
 import serp.bytecode.JumpInstruction;
 import serp.bytecode.Project;
 
-import com.js.interpreter.ast.ExpressionContext;
 import com.js.interpreter.ast.VariableDeclaration;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.ast.returnsvalue.cloning.CloneableObjectCloner;
 import com.js.interpreter.exceptions.NonArrayIndexed;

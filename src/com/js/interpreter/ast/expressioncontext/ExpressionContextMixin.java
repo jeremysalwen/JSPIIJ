@@ -1,4 +1,4 @@
-package com.js.interpreter.ast;
+package com.js.interpreter.ast.expressioncontext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,11 @@ import java.util.Map;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.js.interpreter.ast.AbstractFunction;
+import com.js.interpreter.ast.ConstantDefinition;
+import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.ast.NamedEntity;
+import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
@@ -30,7 +35,6 @@ import com.js.interpreter.tokens.basic.FunctionToken;
 import com.js.interpreter.tokens.basic.ProcedureToken;
 import com.js.interpreter.tokens.basic.TypeToken;
 import com.js.interpreter.tokens.basic.VarToken;
-import com.js.interpreter.tokens.grouping.BaseGrouperToken;
 import com.js.interpreter.tokens.grouping.BeginEndToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 

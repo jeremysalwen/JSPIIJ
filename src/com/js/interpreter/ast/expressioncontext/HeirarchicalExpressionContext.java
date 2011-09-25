@@ -1,7 +1,11 @@
-package com.js.interpreter.ast;
+package com.js.interpreter.ast.expressioncontext;
 
 import java.util.List;
 
+import com.js.interpreter.ast.AbstractFunction;
+import com.js.interpreter.ast.ConstantDefinition;
+import com.js.interpreter.ast.NamedEntity;
+import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.pascaltypes.DeclaredType;

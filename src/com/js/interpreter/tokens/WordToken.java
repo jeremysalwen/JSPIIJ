@@ -1,6 +1,6 @@
 package com.js.interpreter.tokens;
 
-import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnrecognizedTypeException;
 import com.js.interpreter.linenumber.LineInfo;

@@ -1,18 +1,16 @@
 package com.js.interpreter.ast.codeunit;
 
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.ListMultimap;
 import com.js.interpreter.ast.AbstractFunction;
-import com.js.interpreter.ast.ExpressionContextContract;
-import com.js.interpreter.ast.ExpressionContextMixin;
+import com.js.interpreter.ast.expressioncontext.ExpressionContextContract;
+import com.js.interpreter.ast.expressioncontext.ExpressionContextMixin;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
-import com.js.interpreter.pascaltypes.ObjectType;
 import com.js.interpreter.runtime.codeunit.RuntimeCodeUnit;
 import com.js.interpreter.startup.ScriptSource;
 import com.js.interpreter.tokenizer.NewLexer;

@@ -1,7 +1,7 @@
 package com.js.interpreter.ast.returnsvalue.operators;
 
-import com.js.interpreter.ast.CompileTimeContext;
-import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.returnsvalue.DebuggableReturnsValue;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;

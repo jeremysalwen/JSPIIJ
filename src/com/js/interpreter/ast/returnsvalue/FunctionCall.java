@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.js.interpreter.ast.AbstractFunction;
-import com.js.interpreter.ast.CompileTimeContext;
-import com.js.interpreter.ast.ExpressionContext;
+import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.AmbiguousFunctionCallException;

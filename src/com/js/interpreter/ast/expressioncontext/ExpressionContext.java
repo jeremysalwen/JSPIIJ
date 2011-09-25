@@ -1,8 +1,10 @@
-package com.js.interpreter.ast;
+package com.js.interpreter.ast.expressioncontext;
 
 import java.util.List;
-import java.util.ListIterator;
 
+import com.js.interpreter.ast.AbstractFunction;
+import com.js.interpreter.ast.NamedEntity;
+import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.returnsvalue.ReturnsValue;
