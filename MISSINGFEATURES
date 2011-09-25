@@ -8,7 +8,6 @@ some interest in implementing:
 * Conformant Arrays
 * Enumeration Types
 * Variant fields of record types
-* Nested Functions
 * Ordinal Types-Inc,Ord,Dec,Succ,Pred
 * Non-Integer subrange types
 * File, Set, and Variant types
