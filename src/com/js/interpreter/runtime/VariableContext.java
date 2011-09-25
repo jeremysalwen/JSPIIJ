@@ -4,7 +4,8 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
 public abstract class VariableContext implements ContainsVariables {
-	protected abstract Object getLocalVar(String name) throws RuntimePascalException;
+	protected abstract Object getLocalVar(String name)
+			throws RuntimePascalException;
 
 	protected abstract boolean setLocalVar(String name, Object val);
 
@@ -41,7 +42,5 @@ public abstract class VariableContext implements ContainsVariables {
 	public VariableContext clone() {
 		return null;
 	}
-
-
 
 }

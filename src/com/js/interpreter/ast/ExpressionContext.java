@@ -1,6 +1,7 @@
 package com.js.interpreter.ast;
 
 import java.util.List;
+import java.util.ListIterator;
 
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.instructions.Executable;
@@ -19,12 +20,17 @@ public interface ExpressionContext extends CompileTimeContext {
 
 	public VariableDeclaration getVariableDefinition(String ident);
 
-	public List<AbstractFunction> getCallableFunctions(String name);
+	public void getCallableFunctions(String name,
+			List<List<AbstractFunction>> listsofar);
 
 	public boolean functionExists(String name);
-	
+
 	public CodeUnit root();
 
-	public abstract Executable handleUnrecognizedToken(Token next, GrouperToken container)
-			throws ParsingException;
+	public abstract Executable handleUnrecognizedStatement(Token next,
+			GrouperToken container) throws ParsingException;
+
+	public abstract boolean handleUnrecognizedDeclaration(Token next,
+			GrouperToken container) throws ParsingException;
+
 }

@@ -264,8 +264,7 @@ public abstract class GrouperToken extends Token {
 				BracketedToken b = (BracketedToken) next;
 				RuntimeType t = nextTerm.get_type(context);
 				ReturnsValue v = b.getNextExpression(context);
-				ReturnsValue converted = BasicType.Integer.convert(v,
-						context);
+				ReturnsValue converted = BasicType.Integer.convert(v, context);
 				if (converted == null) {
 					throw new NonIntegerIndexException(v);
 				}
@@ -471,7 +470,7 @@ public abstract class GrouperToken extends Token {
 			return new NopInstruction(next.lineInfo);
 		} else {
 			try {
-				return context.handleUnrecognizedToken(next , this);
+				return context.handleUnrecognizedStatement(next, this);
 			} catch (ParsingException e) {
 			}
 			ReturnsValue r = getNextExpression(context, next);
@@ -490,7 +489,8 @@ public abstract class GrouperToken extends Token {
 					throw new UnconvertibleTypeException(value_to_assign,
 							input_type, output_type, true);
 				}
-				return r.createSetValueInstruction(output_type.cloneValue(converted));
+				return r.createSetValueInstruction(output_type
+						.cloneValue(converted));
 			} else if (r instanceof Executable) {
 				return (Executable) r;
 			} else {

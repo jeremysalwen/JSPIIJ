@@ -25,7 +25,7 @@ public class FunctionOnStack extends VariableContext {
 		this.prototype = declaration;
 		this.parentContext = parentContext;
 		this.main = main;
-		for (VariableDeclaration v : prototype.local_variables) {
+		for (VariableDeclaration v : prototype.declarations.UnitVarDefs) {
 			v.initialize(local_variables);
 		}
 		reference_variables = new HashMap<String, VariableBoxer>();
@@ -36,9 +36,6 @@ public class FunctionOnStack extends VariableContext {
 			} else {
 				local_variables.put(prototype.argument_names[i], arguments[i]);
 			}
-		}
-		if (declaration.result_definition != null) {
-			declaration.result_definition.initialize(local_variables);
 		}
 		this.parentContext = parentContext;
 		this.prototype = declaration;

@@ -5,9 +5,11 @@ import java.util.List;
 
 import com.google.common.collect.ListMultimap;
 import com.js.interpreter.ast.AbstractFunction;
+import com.js.interpreter.exceptions.MisplacedDeclarationException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.runtime.codeunit.RuntimeLibrary;
 import com.js.interpreter.startup.ScriptSource;
+import com.js.interpreter.tokens.grouping.GrouperToken;
 
 public class Library extends CodeUnit {
 	public Library(ListMultimap<String, AbstractFunction> functionTable)
@@ -25,6 +27,12 @@ public class Library extends CodeUnit {
 	@Override
 	public RuntimeLibrary run() {
 		return new RuntimeLibrary(this);
+	}
+
+	@Override
+	public void handleBeginEnd(GrouperToken i) throws ParsingException {
+		throw new MisplacedDeclarationException(i.peek().lineInfo,
+				"main function", this);
 	}
 
 }

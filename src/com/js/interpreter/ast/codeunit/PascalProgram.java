@@ -6,7 +6,9 @@ import java.util.List;
 import com.google.common.collect.ListMultimap;
 import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.FunctionDeclaration;
+import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.exceptions.ExpectedTokenException;
+import com.js.interpreter.exceptions.MisplacedDeclarationException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.FunctionOnStack;
@@ -15,9 +17,10 @@ import com.js.interpreter.runtime.codeunit.RuntimePascalProgram;
 import com.js.interpreter.startup.ScriptSource;
 import com.js.interpreter.tokens.basic.PeriodToken;
 import com.js.interpreter.tokens.grouping.BaseGrouperToken;
+import com.js.interpreter.tokens.grouping.GrouperToken;
 
 public class PascalProgram extends ExecutableCodeUnit {
-	public FunctionDeclaration main;
+	public Executable main;
 
 	public FunctionOnStack main_running;
 
@@ -34,19 +37,15 @@ public class PascalProgram extends ExecutableCodeUnit {
 
 	@Override
 	protected void prepareForParsing() {
-		main = new FunctionDeclaration(this);
-		main.argument_names = new String[0];
-		main.argument_types = new RuntimeType[0];
-		main.name = "main";
 	}
 
 	@Override
-	protected void handleBeginEnd(BaseGrouperToken i) throws ParsingException {
-		if (main.instructions != null) {
+	public void handleBeginEnd(GrouperToken i) throws ParsingException {
+		if (main != null) {
 			throw new ParsingException(i.peek().lineInfo,
 					"Multiple definitions of main.");
 		}
-		main.instructions = i.get_next_command(main);
+		main = i.get_next_command(this.declarations);
 		if (!(i.peek() instanceof PeriodToken)) {
 			throw new ExpectedTokenException(".", i.peek());
 		}

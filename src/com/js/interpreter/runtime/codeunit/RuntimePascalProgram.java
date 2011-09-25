@@ -8,7 +8,7 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class RuntimePascalProgram extends RuntimeExecutable<PascalProgram> {
 
-	FunctionOnStack main;
+	VariableContext main;
 
 	public RuntimePascalProgram(PascalProgram p) {
 		super(p);
@@ -17,8 +17,7 @@ public class RuntimePascalProgram extends RuntimeExecutable<PascalProgram> {
 	@Override
 	public void runImpl() throws RuntimePascalException {
 		this.mode = RunMode.running;
-		main = new FunctionOnStack(this, this, definition.main, new Object[0]);
-		main.execute();
+		definition.main.execute(this, this);
 	}
 
 	@Override

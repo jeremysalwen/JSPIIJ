@@ -1,5 +1,6 @@
 package com.js.interpreter.ast.returnsvalue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,8 +18,7 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.tokens.WordToken;
 
-public abstract class FunctionCall extends
-		DebuggableExecutableReturnsValue {
+public abstract class FunctionCall extends DebuggableExecutableReturnsValue {
 
 	ReturnsValue[] arguments;
 
@@ -43,11 +43,11 @@ public abstract class FunctionCall extends
 	}
 
 	@Override
-	public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
+	public Object compileTimeValue(CompileTimeContext context)
+			throws ParsingException {
 		return null;
 	}
 
- 
 	ReturnsValue[] compileTimeExpressionFoldArguments(CompileTimeContext context)
 			throws ParsingException {
 		ReturnsValue[] args = new ReturnsValue[arguments.length];
@@ -60,35 +60,37 @@ public abstract class FunctionCall extends
 	public static ReturnsValue generate_function_call(WordToken name,
 			List<ReturnsValue> arguments, ExpressionContext f)
 			throws ParsingException {
-		List<AbstractFunction> possibilities = f.getCallableFunctions(name.name
-				.toLowerCase());
-	
+		List<List<AbstractFunction>> possibilities = new ArrayList<List<AbstractFunction>>();
+		f.getCallableFunctions(name.name.toLowerCase(), possibilities);
+
 		boolean matching = false;
-	
+
 		AbstractFunction chosen = null;
 		boolean perfectfit = false;
 		AbstractFunction ambigous = null;
 		ReturnsValue result = null;
-		for (AbstractFunction a : possibilities) {
-			result = a.generatePerfectFitCall(name.lineInfo, arguments, f);
-			if (result != null) {
-				if (perfectfit == true) {
-					throw new AmbiguousFunctionCallException(name.lineInfo,
-							chosen, a);
+		for (List<AbstractFunction> l : possibilities) {
+			for (AbstractFunction a : l) {
+				result = a.generatePerfectFitCall(name.lineInfo, arguments, f);
+				if (result != null) {
+					if (perfectfit == true) {
+						throw new AmbiguousFunctionCallException(name.lineInfo,
+								chosen, a);
+					}
+					perfectfit = true;
+					chosen = a;
+					continue;
 				}
-				perfectfit = true;
-				chosen = a;
-				continue;
-			}
-			result = a.generateCall(name.lineInfo, arguments, f);
-			if (result != null && !perfectfit) {
-				if (chosen != null) {
-					ambigous = chosen;
+				result = a.generateCall(name.lineInfo, arguments, f);
+				if (result != null && !perfectfit) {
+					if (chosen != null) {
+						ambigous = chosen;
+					}
+					chosen = a;
 				}
-				chosen = a;
-			}
-			if (a.argumentTypes().length == arguments.size()) {
-				matching = true;
+				if (a.argumentTypes().length == arguments.size()) {
+					matching = true;
+				}
 			}
 		}
 		if (result == null) {
@@ -100,7 +102,5 @@ public abstract class FunctionCall extends
 		} else {
 			return result;
 		}
-	
 	}
-
 }

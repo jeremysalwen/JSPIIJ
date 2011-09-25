@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.ast.instructions.Executable;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.OverridingFunctionException;
 import com.js.interpreter.exceptions.ParsingException;
@@ -30,15 +27,12 @@ import com.js.interpreter.tokens.basic.SemicolonToken;
 import com.js.interpreter.tokens.basic.VarToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 import com.js.interpreter.tokens.grouping.ParenthesizedToken;
+import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
 
 public class FunctionDeclaration extends AbstractCallableFunction implements
-		ExpressionContext {
-
-	CodeUnit root;
-	ExpressionContext parentContext;
+		ExpressionContextContract {
+	final public ExpressionContextMixin declarations;
 	public String name;
-
-	public List<VariableDeclaration> local_variables = new ArrayList<VariableDeclaration>();
 
 	public Executable instructions;
 
@@ -52,11 +46,12 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 	public RuntimeType[] argument_types;
 
 	/* <----- */
-	
+
+	private boolean body_declared;
+
 	public FunctionDeclaration(ExpressionContext parent, GrouperToken i,
 			boolean is_procedure) throws ParsingException {
-		this.parentContext = parent;
-		this.root = parent.root();
+		this.declarations = new ExpressionContextMixin(this, parent);
 		this.line = i.peek().lineInfo;
 		name = i.next_word_value();
 
@@ -69,18 +64,11 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 		if (!is_procedure && next instanceof ColonToken) {
 			i.take();
 			result_definition = new VariableDeclaration("result",
-					i.get_next_pascal_type(this), line);
+					i.get_next_pascal_type(declarations), line);
+			this.declarations.declareVariable(result_definition);
 		}
 		i.assert_next_semicolon();
-		while (true) {
-			next = i.peek();
-			if (next instanceof VarToken) {
-				i.take();
-				local_variables.addAll(i.get_variable_declarations(this));
-			} else {
-				break;
-			}
-		}
+
 		instructions = null;
 		NamedEntity n = parent.getConstantDefinition(name);
 		if (n != null) {
@@ -93,26 +81,23 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 	}
 
 	public void parse_function_body(GrouperToken i) throws ParsingException {
-		Token next = i.peek_no_EOF();
 
+		Token next = i.peek_no_EOF();
 		if (next instanceof ForwardToken) {
 			i.take();
+			i.assert_next_semicolon();
 		} else {
 			if (instructions != null) {
 				throw new OverridingFunctionException(this, i.lineInfo);
 			}
-			instructions = i.get_next_command(this);
+			while (!body_declared) {
+				declarations.add_next_declaration(i);
+			}
 		}
-		i.assert_next_semicolon();
-	}
-
-	public void add_local_variable(VariableDeclaration v) {
-		local_variables.add(v);
 	}
 
 	public FunctionDeclaration(ExpressionContext p) {
-		this.parentContext = p;
-		this.root = p.root();
+		this.declarations = new ExpressionContextMixin(this, p);
 		this.argument_names = new String[0];
 		this.argument_types = new RuntimeType[0];
 	}
@@ -126,42 +111,16 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 	public Object call(VariableContext parentcontext,
 			RuntimeExecutable<?> main, Object[] arguments)
 			throws RuntimePascalException {
-		if (this.root instanceof Library) {
-			parentcontext = main.getLibrary((Library) this.root);
+		if (this.declarations.root() instanceof Library) {
+			parentcontext = main.getLibrary((Library) declarations.root());
 		}
 		return new FunctionOnStack(parentcontext, main, this, arguments)
 				.execute();
 	}
 
-	VariableDeclaration getLocalVariableDefinition(String name) {
-		if (name.equalsIgnoreCase("result")) {
-			return this.result_definition;
-		}
-		int index = StaticMethods.indexOf(argument_names, name);
-		if (index != -1) {
-			return new VariableDeclaration(name,
-					argument_types[index].declType, line);
-		} else {
-			for (VariableDeclaration v : local_variables) {
-				if (v.name.equals(name)) {
-					return v;
-				}
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public VariableDeclaration getVariableDefinition(String name) {
-		VariableDeclaration v = getLocalVariableDefinition(name);
-		if (v != null) {
-			return v;
-		}
-		return parentContext.getVariableDefinition(name);
-	}
 	private void get_arguments_for_declaration(GrouperToken i,
 			boolean is_procedure) throws ParsingException { // need
-		List<String> names_list = new ArrayList<String>();
+		List<WordToken> names_list = new ArrayList<WordToken>();
 		List<RuntimeType> types_list = new ArrayList<RuntimeType>();
 		Token next = i.peek();
 		if (next instanceof ParenthesizedToken) {
@@ -175,7 +134,7 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 					next = arguments_token.take();
 				}
 				while (true) {
-					names_list.add(((WordToken) next).name);
+					names_list.add((WordToken) next);
 					j++;
 					next = arguments_token.take();
 					if (next instanceof CommaToken) {
@@ -189,7 +148,7 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 					throw new ExpectedTokenException(":", next);
 				}
 				DeclaredType type;
-				type = arguments_token.get_next_pascal_type(this);
+				type = arguments_token.get_next_pascal_type(declarations);
 
 				while (j > 0) {
 					types_list.add(new RuntimeType(type, is_varargs));
@@ -204,7 +163,13 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 			}
 		}
 		argument_types = types_list.toArray(new RuntimeType[types_list.size()]);
-		argument_names = names_list.toArray(new String[names_list.size()]);
+		argument_names = new String[names_list.size()];
+		for (int j = 0; j < argument_names.length; j++) {
+			WordToken n = names_list.get(j);
+			argument_names[j] = n.name;
+			declarations.declareVariable(new VariableDeclaration(n.name,
+					argument_types[j].declType, n.lineInfo));
+		}
 
 	}
 
@@ -237,31 +202,6 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 	}
 
 	@Override
-	public boolean functionExists(String name) {
-		return parentContext.functionExists(name);
-	}
-
-	@Override
-	public List<AbstractFunction> getCallableFunctions(String name) {
-		return parentContext.getCallableFunctions(name);
-	}
-
-	@Override
-	public ConstantDefinition getConstantDefinition(String ident) {
-		return parentContext.getConstantDefinition(ident);
-	}
-
-	@Override
-	public DeclaredType getTypedefType(String ident) {
-		return parentContext.getTypedefType(ident);
-	}
-
-	@Override
-	public CodeUnit root() {
-		return root;
-	}
-
-	@Override
 	public String getEntityType() {
 		return "function";
 	}
@@ -272,26 +212,27 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 	}
 
 	@Override
-	public void verifyNonConflictingSymbol(NamedEntity n)
-			throws SameNameException {
-		VariableDeclaration v = getLocalVariableDefinition(n.name());
-		if (v != null) {
-			throw new SameNameException(v, n);
-		}
+	public Executable handleUnrecognizedStatement(Token next,
+			GrouperToken container) throws ParsingException {
+		return null;
 	}
 
 	@Override
-	public ReturnsValue getIdentifierValue(WordToken name)
-			throws ParsingException {
-		if (getLocalVariableDefinition(name.name) != null) {
-			return new VariableAccess(name);
+	public boolean handleUnrecognizedDeclaration(Token next,
+			GrouperToken container) throws ParsingException {
+		if (next instanceof ForwardToken) {
+			container.assert_next_semicolon();
+			body_declared = true;
+			return true;
 		}
-		return parentContext.getIdentifierValue(name);
+		return false;
 	}
 
 	@Override
-	public Executable handleUnrecognizedToken(Token next, GrouperToken container)
-			throws ParsingException {
-		return parentContext.handleUnrecognizedToken(next, container);
+	public void handleBeginEnd(GrouperToken i) throws ParsingException {
+		body_declared = true;
+		instructions = i.get_next_command(declarations);
+		i.assert_next_semicolon();
 	}
+
 }
