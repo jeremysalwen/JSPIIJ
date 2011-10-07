@@ -35,7 +35,7 @@ public class Library extends CodeUnit {
 		@Override
 		public void handleBeginEnd(GrouperToken i) throws ParsingException {
 			throw new MisplacedDeclarationException(i.peek().lineInfo,
-					"main function", Library.this.instance);
+					"main function", Library.this.context);
 		}
 	}
 

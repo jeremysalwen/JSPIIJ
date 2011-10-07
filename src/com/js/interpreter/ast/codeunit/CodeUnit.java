@@ -17,7 +17,7 @@ import com.js.interpreter.tokens.basic.ProgramToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 
 public abstract class CodeUnit {
-	public final ExpressionContextMixin instance;
+	public final ExpressionContextMixin context;
 
 	protected CodeUnitExpressionContext getExpressionContextInstance(
 			ListMultimap<String, AbstractFunction> ftable) {
@@ -58,7 +58,7 @@ public abstract class CodeUnit {
 
 	public CodeUnit(ListMultimap<String, AbstractFunction> functionTable) {
 		prepareForParsing();
-		this.instance = getExpressionContextInstance(functionTable);
+		this.context = getExpressionContextInstance(functionTable);
 	}
 
 	public CodeUnit(Reader program,
@@ -73,7 +73,7 @@ public abstract class CodeUnit {
 
 	void parse_tree(GrouperToken tokens) throws ParsingException {
 		while (tokens.hasNext()) {
-			instance.add_next_declaration(tokens);
+			context.add_next_declaration(tokens);
 		}
 	}
 
