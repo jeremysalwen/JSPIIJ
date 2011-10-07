@@ -15,25 +15,12 @@ public abstract class HeirarchicalExpressionContext implements
 	ExpressionContext parent;
 	CodeUnit root;
 
-	public HeirarchicalExpressionContext(CodeUnit root, ExpressionContext parent) {
-		if (root == null) {
-			this.parent = parent;
-			this.root = parent.root();
-		} else {
-			this.parent = null;
-			this.root = root;
-		}
-	}
 
-	public HeirarchicalExpressionContext(CodeUnit root) {
-		this.parent = null;
+	public HeirarchicalExpressionContext(CodeUnit root,ExpressionContext parent) {
+		this.parent = parent;
 		this.root = root;
 	}
 
-	public HeirarchicalExpressionContext(ExpressionContext parent) {
-		this.parent = parent;
-		this.root = parent.root();
-	}
 
 	protected abstract ConstantDefinition getConstantDefinitionLocal(
 			String ident);

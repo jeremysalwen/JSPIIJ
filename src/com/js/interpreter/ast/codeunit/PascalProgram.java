@@ -20,6 +20,33 @@ public class PascalProgram extends ExecutableCodeUnit {
 
 	public FunctionOnStack main_running;
 
+	@Override
+	protected PascalProgramExpressionContext getExpressionContextInstance(
+			ListMultimap<String, AbstractFunction> f) {
+		return new PascalProgramExpressionContext(f);
+	}
+
+	protected class PascalProgramExpressionContext extends
+			CodeUnitExpressionContext {
+		protected PascalProgramExpressionContext(
+				ListMultimap<String, AbstractFunction> f) {
+			super(f);
+		}
+
+		@Override
+		public void handleBeginEnd(GrouperToken i) throws ParsingException {
+			if (main != null) {
+				throw new ParsingException(i.peek().lineInfo,
+						"Multiple definitions of main.");
+			}
+			main = i.get_next_command(this);
+			if (!(i.peek() instanceof PeriodToken)) {
+				throw new ExpectedTokenException(".", i.peek());
+			}
+			i.take();
+		}
+	}
+
 	public PascalProgram(ListMultimap<String, AbstractFunction> functionTable) {
 		super(functionTable);
 	}
@@ -29,23 +56,6 @@ public class PascalProgram extends ExecutableCodeUnit {
 			String sourcename, List<ScriptSource> includeDirectories)
 			throws ParsingException {
 		super(program, functionTable, sourcename, includeDirectories);
-	}
-
-	@Override
-	protected void prepareForParsing() {
-	}
-
-	@Override
-	public void handleBeginEnd(GrouperToken i) throws ParsingException {
-		if (main != null) {
-			throw new ParsingException(i.peek().lineInfo,
-					"Multiple definitions of main.");
-		}
-		main = i.get_next_command(this.declarations);
-		if (!(i.peek() instanceof PeriodToken)) {
-			throw new ExpectedTokenException(".", i.peek());
-		}
-		i.take();
 	}
 
 	@Override

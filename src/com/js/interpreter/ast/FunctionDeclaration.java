@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.codeunit.Library;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.expressioncontext.ExpressionContextContract;
 import com.js.interpreter.ast.expressioncontext.ExpressionContextMixin;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.exceptions.ExpectedTokenException;
@@ -31,8 +31,7 @@ import com.js.interpreter.tokens.basic.VarToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 import com.js.interpreter.tokens.grouping.ParenthesizedToken;
 
-public class FunctionDeclaration extends AbstractCallableFunction implements
-		ExpressionContextContract {
+public class FunctionDeclaration extends AbstractCallableFunction {
 	final public ExpressionContextMixin declarations;
 	public String name;
 
@@ -51,9 +50,40 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 
 	private boolean body_declared;
 
+	private class FunctionExpressionContext extends ExpressionContextMixin {
+
+		public FunctionExpressionContext(ExpressionContext parent) {
+			super(parent.root(), parent);
+		}
+
+		@Override
+		public Executable handleUnrecognizedStatementImpl(Token next,
+				GrouperToken container) throws ParsingException {
+			return null;
+		}
+
+		@Override
+		public boolean handleUnrecognizedDeclarationImpl(Token next,
+				GrouperToken container) throws ParsingException {
+			if (next instanceof ForwardToken) {
+				container.assert_next_semicolon();
+				body_declared = true;
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public void handleBeginEnd(GrouperToken i) throws ParsingException {
+			body_declared = true;
+			instructions = i.get_next_command(declarations);
+			i.assert_next_semicolon();
+		}
+	}
+
 	public FunctionDeclaration(ExpressionContext parent, GrouperToken i,
 			boolean is_procedure) throws ParsingException {
-		this.declarations = new ExpressionContextMixin(this, parent);
+		this.declarations = new FunctionExpressionContext(parent);
 		this.line = i.peek().lineInfo;
 		name = i.next_word_value();
 
@@ -99,7 +129,7 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 	}
 
 	public FunctionDeclaration(ExpressionContext p) {
-		this.declarations = new ExpressionContextMixin(this, p);
+		this.declarations = new FunctionExpressionContext(p);
 		this.argument_names = new String[0];
 		this.argument_types = new RuntimeType[0];
 	}
@@ -211,30 +241,6 @@ public class FunctionDeclaration extends AbstractCallableFunction implements
 	@Override
 	public LineInfo getLineNumber() {
 		return line;
-	}
-
-	@Override
-	public Executable handleUnrecognizedStatement(Token next,
-			GrouperToken container) throws ParsingException {
-		return null;
-	}
-
-	@Override
-	public boolean handleUnrecognizedDeclaration(Token next,
-			GrouperToken container) throws ParsingException {
-		if (next instanceof ForwardToken) {
-			container.assert_next_semicolon();
-			body_declared = true;
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public void handleBeginEnd(GrouperToken i) throws ParsingException {
-		body_declared = true;
-		instructions = i.get_next_command(declarations);
-		i.assert_next_semicolon();
 	}
 
 }

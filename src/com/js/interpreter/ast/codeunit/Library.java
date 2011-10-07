@@ -17,6 +17,28 @@ public class Library extends CodeUnit {
 		super(functionTable);
 	}
 
+	@Override
+	protected LibraryExpressionContext getExpressionContextInstance(
+			
+			
+			ListMultimap<String, AbstractFunction> f) {
+		return new LibraryExpressionContext(f);
+	}
+
+	protected class LibraryExpressionContext extends CodeUnitExpressionContext {
+
+		protected LibraryExpressionContext(
+				ListMultimap<String, AbstractFunction> function) {
+			super(function);
+		}
+
+		@Override
+		public void handleBeginEnd(GrouperToken i) throws ParsingException {
+			throw new MisplacedDeclarationException(i.peek().lineInfo,
+					"main function", Library.this.instance);
+		}
+	}
+
 	public Library(Reader program,
 			ListMultimap<String, AbstractFunction> functionTable,
 			String sourcename, List<ScriptSource> includeDirectories)
@@ -27,12 +49,6 @@ public class Library extends CodeUnit {
 	@Override
 	public RuntimeLibrary run() {
 		return new RuntimeLibrary(this);
-	}
-
-	@Override
-	public void handleBeginEnd(GrouperToken i) throws ParsingException {
-		throw new MisplacedDeclarationException(i.peek().lineInfo,
-				"main function", this);
 	}
 
 }

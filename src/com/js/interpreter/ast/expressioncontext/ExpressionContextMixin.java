@@ -38,27 +38,17 @@ import com.js.interpreter.tokens.basic.VarToken;
 import com.js.interpreter.tokens.grouping.BeginEndToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 
-public class ExpressionContextMixin extends HeirarchicalExpressionContext {
-	public ExpressionContextMixin(ExpressionContextContract domain,
-			ExpressionContext parent) {
-		this(domain, parent, (ListMultimap) ArrayListMultimap.create());
+public abstract class ExpressionContextMixin extends
+		HeirarchicalExpressionContext {
+	public ExpressionContextMixin(CodeUnit root, ExpressionContext parent) {
+		this(root, parent, (ListMultimap) ArrayListMultimap.create());
 	}
 
-	public ExpressionContextMixin(ExpressionContextContract domain,
-			ExpressionContext parent,
+	public ExpressionContextMixin(CodeUnit root, ExpressionContext parent,
 			ListMultimap<String, AbstractFunction> callable_functions) {
-		super((domain instanceof CodeUnit) ? (CodeUnit) domain : null, parent);
-		if (domain instanceof CodeUnit) {
-			root = (CodeUnit) parent;
-		} else {
-			root = parent.root();
-		}
-		this.parent = parent;
+		super(root, parent);
 		this.callable_functions = callable_functions;
-		this.me = domain;
 	}
-
-	ExpressionContextContract me;
 
 	public Map<String, ConstantDefinition> constants = new HashMap<String, ConstantDefinition>();
 
@@ -124,7 +114,7 @@ public class ExpressionContextMixin extends HeirarchicalExpressionContext {
 			declaration = getExistingFunction(declaration);
 			declaration.parse_function_body(i);
 		} else if (next instanceof BeginEndToken) {
-			me.handleBeginEnd(i);
+			handleBeginEnd(i);
 		} else if (next instanceof VarToken) {
 			i.take();
 			List<VariableDeclaration> d = i.get_variable_declarations(this);
@@ -146,9 +136,11 @@ public class ExpressionContextMixin extends HeirarchicalExpressionContext {
 				i.assert_next_semicolon();
 			}
 		} else {
-			me.handleUnrecognizedDeclaration(i.take(), i);
+			handleUnrecognizedDeclaration(i.take(), i);
 		}
 	}
+
+	protected abstract void handleBeginEnd(GrouperToken i) throws ParsingException;
 
 	public VariableDeclaration getVariableDefinitionLocal(String ident) {
 		for (VariableDeclaration v : UnitVarDefs) {
@@ -224,7 +216,7 @@ public class ExpressionContextMixin extends HeirarchicalExpressionContext {
 			GrouperToken container) throws ParsingException {
 		ParsingException e;
 		try {
-			Executable result = me.handleUnrecognizedStatement(next, container);
+			Executable result = handleUnrecognizedStatementImpl(next, container);
 			if (result != null) {
 				return result;
 			}
@@ -240,10 +232,13 @@ public class ExpressionContextMixin extends HeirarchicalExpressionContext {
 		return result;
 	}
 
+	protected abstract Executable handleUnrecognizedStatementImpl(Token next,
+			GrouperToken container) throws ParsingException;
+
 	@Override
 	public boolean handleUnrecognizedDeclaration(Token next,
 			GrouperToken container) throws ParsingException {
-		boolean result = me.handleUnrecognizedDeclaration(next, container)
+		boolean result = handleUnrecognizedDeclarationImpl(next, container)
 				|| (parent != null && parent.handleUnrecognizedDeclaration(
 						next, container));
 		if (!result) {
@@ -251,5 +246,8 @@ public class ExpressionContextMixin extends HeirarchicalExpressionContext {
 		}
 		return result;
 	}
+
+	protected abstract boolean handleUnrecognizedDeclarationImpl(Token next,
+			GrouperToken container) throws ParsingException;
 
 }

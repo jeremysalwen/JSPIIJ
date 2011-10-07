@@ -16,7 +16,7 @@ public abstract class RuntimeCodeUnit<parent extends CodeUnit> extends
 
 	public RuntimeCodeUnit(parent definition) {
 		this.definition = definition;
-		for (VariableDeclaration v : definition.declarations.UnitVarDefs) {
+		for (VariableDeclaration v : definition.instance.UnitVarDefs) {
 			v.initialize(UnitVariables);
 		}
 	}
