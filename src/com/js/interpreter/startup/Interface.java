@@ -125,7 +125,7 @@ public class Interface {
 					PascalPlugin.class, cl);
 			for (PascalPlugin p : loader) {
 				if(!p.instantiate(pluginContext)) {
-					System.err.println("Error instantiating plugins: "+p.getClass().getName());
+					System.err.println("Plugin refused to initialize [non fatal]: "+p.getClass().getName());
 					continue;
 				}
 				for (Method m : p.getClass().getDeclaredMethods()) {
