@@ -35,8 +35,8 @@ import com.js.interpreter.exceptions.grouping.GroupingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.BasicType;
-import com.js.interpreter.pascaltypes.CustomType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.RecordType;
 import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.pascaltypes.SubrangeType;
 import com.js.interpreter.tokens.EOF_Token;
@@ -171,7 +171,7 @@ public abstract class GrouperToken extends Token {
 		}
 		if (n instanceof RecordToken) {
 			RecordToken r = (RecordToken) n;
-			CustomType result = new CustomType();
+			RecordType result = new RecordType();
 			result.variable_types = r.get_variable_declarations(context);
 			return result;
 		}
