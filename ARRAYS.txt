@@ -1,0 +1,41 @@
+
+
+The pascal standard offers conformant array parameters as a way of defining a function which will accept an array of any length. Delphi/ FPC offers Dynamic arrays. In this interpreter I attempt to support them both. However, there are some subtleties when these two elements mix.
+Single Dimensional Arrays
+Dynamic Arrays
+
+Dynamic arrays are resizable, and start off uninitialized. When a function accepts a dynamic array parameter, it expects to be able to do the following things with it:
+
+    Fetch an element at an index.
+    Store an element at an index.
+    Get the bounds of the array.
+    Set the bounds of the array. (Dynamic arrays actually always start at 0, so really it's just setting the length). 
+
+Conformant Arrays
+
+Conformant arrays are of the syntax:
+
+function square(var arr: array[low..high:integer] of real)
+
+Thus they can accept an array of any length, although normally they only deal with arrays of fixed length. Thus, a function accepting a conformant array is expecting to be able to do the following with the array it receives:
+
+    Fetch an element at an index.
+    Store an element at an index.
+    Get the bounds of the array. 
+
+As we can see, dynamic arrays strictly subtype conformant arrays: That is, a dynamic array works perfectly fine with a dynamic array. There are no subtle issues. Thus conformant arrays and variable length arrays work fine together in the single dimensional case.
+Multidimensional arrays
+Conformant Arrays
+
+Since arrays in standard pascal are all of fixed length, multimensional arrays are all rectangular, in higher dimensional space. That is, the length of each dimension is fixed. If A is a two dimensional array, we know that length(A0?)==length(A1?), and so on.
+
+Thus the dimensions of a multidimensional array can be specified as follows:
+
+function square(var arr: array[low..high:integer][low2..high2:integer] of real)
+
+Where low/high give us the size of the first dimension, and low2,high2 give us the size of the second dimension.
+Dynamic Arrays
+
+Dynamic arrays are not necessarily rectangular.
+
+To be Continued...
