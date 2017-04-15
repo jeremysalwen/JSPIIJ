@@ -27,7 +27,7 @@ public class SubrangeType {
 		if (min == null) {
 			throw new NonConstantExpressionException(low);
 		}
-		lower = (Integer) min;
+		lower = (int) min;
 
 		Token t = i.take();
 		if (!(t instanceof DotDotToken)) {
@@ -42,7 +42,7 @@ public class SubrangeType {
 		if (max == null) {
 			throw new NonConstantExpressionException(high);
 		}
-		size = (((Integer) max) - lower) + 1;
+		size = (((int) max) - lower) + 1;
 	}
 
 	public SubrangeType(int lower, int size) {
