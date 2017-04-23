@@ -43,7 +43,7 @@ public class FunctionOnStack extends VariableContext {
 
     public Object execute() throws RuntimePascalException {
         prototype.instructions.execute(this, main);
-        return local_variables.get("result");
+        return local_variables.get(prototype.name());
     }
 
     @Override
