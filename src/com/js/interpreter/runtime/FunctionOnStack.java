@@ -48,11 +48,11 @@ public class FunctionOnStack extends VariableContext {
 
 	@Override
 	public Object getLocalVar(String name) throws RuntimePascalException {
-		if (local_variables.containsKey(name)) {
-			return local_variables.get(name);
-		} else if (reference_variables.containsKey(name)) {
+		if (reference_variables.containsKey(name)) {
 			return reference_variables.get(name).get();
-		} else {
+		} else if (local_variables.containsKey(name)) {
+			return local_variables.get(name);
+		}else {
 			return null;
 		}
 	}
@@ -60,11 +60,11 @@ public class FunctionOnStack extends VariableContext {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean setLocalVar(String name, Object val) {
-		if (local_variables.containsKey(name)) {
-			local_variables.put(name, val);
-		} else if (reference_variables.containsKey(name)) {
+		if (reference_variables.containsKey(name)) {
 			reference_variables.get(name).set(val);
-		} else {
+		} else if (local_variables.containsKey(name)) {
+			local_variables.put(name, val);
+		}  else {
 			return false;
 		}
 		return true;
