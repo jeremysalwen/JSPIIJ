@@ -118,6 +118,14 @@ public abstract class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 					v2, (BasicType) t2);
 			return new DoubleBiOperatorEval(v1, v2, op_type, line);
 		}
+		if (t1 == BasicType.Character
+				|| t2 == BasicType.Character) {
+			v1 = TypeConverter.forceConvertRequired(
+					BasicType.Character, v1, (BasicType) t1);
+			v2 = TypeConverter.forceConvertRequired(
+					BasicType.Character, v2, (BasicType) t2);
+			return new CharBiOperatorEval(v1, v2, op_type, line);
+		}
 		if (t1 == BasicType.Long || t2 == BasicType.Long) {
 			v1 = TypeConverter.forceConvertRequired(BasicType.Long,
 					v1, (BasicType) t1);
@@ -133,14 +141,7 @@ public abstract class BinaryOperatorEvaluation extends DebuggableReturnsValue {
 					v2, (BasicType) t2);
 			return new IntBiOperatorEval(v1, v2, op_type, line);
 		}
-		if (t1 == BasicType.Character
-				|| t2 == BasicType.Character) {
-			v1 = TypeConverter.forceConvertRequired(
-					BasicType.Character, v1, (BasicType) t1);
-			v2 = TypeConverter.forceConvertRequired(
-					BasicType.Character, v2, (BasicType) t2);
-			return new CharBiOperatorEval(v1, v2, op_type, line);
-		}
+		
 		if (t1 == BasicType.Boolean
 				|| t2 == BasicType.Boolean) {
 			v1 = TypeConverter.forceConvertRequired(BasicType.Boolean,
