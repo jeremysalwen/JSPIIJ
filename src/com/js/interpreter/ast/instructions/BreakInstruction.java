@@ -7,26 +7,26 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class BreakInstruction extends DebuggableExecutable {
-	LineInfo line;
+    LineInfo line;
 
-	public BreakInstruction(LineInfo line) {
-		this.line = line;
-	}
+    public BreakInstruction(LineInfo line) {
+        this.line = line;
+    }
 
-	@Override
-	public LineInfo getLineNumber() {
-		return line;
-	}
+    @Override
+    public LineInfo getLineNumber() {
+        return line;
+    }
 
-	@Override
-	public ExecutionResult executeImpl(VariableContext f,
-			RuntimeExecutable<?> main) throws RuntimePascalException {
-		return ExecutionResult.BREAK;
-	}
+    @Override
+    public ExecutionResult executeImpl(VariableContext f,
+                                       RuntimeExecutable<?> main) throws RuntimePascalException {
+        return ExecutionResult.BREAK;
+    }
 
-	@Override
-	public Executable compileTimeConstantTransform(CompileTimeContext c) {
-		return this;
-	}
+    @Override
+    public Executable compileTimeConstantTransform(CompileTimeContext c) {
+        return this;
+    }
 
 }

@@ -4,12 +4,12 @@ import com.js.interpreter.linenumber.LineInfo;
 
 public class UntilToken extends BasicToken {
 
-	public UntilToken(LineInfo line) {
-		super(line);
-	}
+    public UntilToken(LineInfo line) {
+        super(line);
+    }
 
-	@Override
-	public String toString() {
-		return "until";
-	}
+    @Override
+    public String toString() {
+        return "until";
+    }
 }

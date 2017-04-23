@@ -1,15 +1,15 @@
 package com.js.interpreter.pascaltypes.bytecode;
 
 public interface RegisterAllocator {
-	public int getNextFree();
+    public int getNextFree();
 
-	public int getNextFreeLong();
+    public int getNextFreeLong();
 
-	public void free(int i);
+    public void free(int i);
 
-	public void freeLong(int i);
+    public void freeLong(int i);
 
-	public boolean slotFree(int i);
+    public boolean slotFree(int i);
 
-	public RegisterAllocator clone();
+    public RegisterAllocator clone();
 }

@@ -3,15 +3,15 @@ package com.js.interpreter.runtime.exception;
 import com.js.interpreter.linenumber.LineInfo;
 
 public class PascalArithmeticException extends RuntimePascalException {
-	public ArithmeticException error;
+    public ArithmeticException error;
 
-	public PascalArithmeticException(LineInfo line, ArithmeticException e) {
-		super(line);
-		this.error = e;
-	}
+    public PascalArithmeticException(LineInfo line, ArithmeticException e) {
+        super(line);
+        this.error = e;
+    }
 
-	@Override
-	public String getMessage() {
-		return "Arithmetic Exception: " + error.getMessage(); 
-	}
+    @Override
+    public String getMessage() {
+        return "Arithmetic Exception: " + error.getMessage();
+    }
 }

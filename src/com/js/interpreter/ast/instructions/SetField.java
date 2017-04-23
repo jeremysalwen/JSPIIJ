@@ -10,41 +10,41 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
 public class SetField implements SetValueExecutable {
-	ReturnsValue container;
-	String name;
-	ReturnsValue toset;
-	LineInfo line;
+    ReturnsValue container;
+    String name;
+    ReturnsValue toset;
+    LineInfo line;
 
-	public SetField(ReturnsValue container, String name, LineInfo line,
-			ReturnsValue toset) {
-		this.container = container;
-		this.name = name;
-		this.line = line;
-		this.toset = toset;
-	}
+    public SetField(ReturnsValue container, String name, LineInfo line,
+                    ReturnsValue toset) {
+        this.container = container;
+        this.name = name;
+        this.line = line;
+        this.toset = toset;
+    }
 
-	@Override
-	public LineInfo getLineNumber() {
-		return line;
-	}
+    @Override
+    public LineInfo getLineNumber() {
+        return line;
+    }
 
-	@Override
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
-			throws RuntimePascalException {
-		ContainsVariables val = (ContainsVariables) container.getValue(f, main);
-		val.set_var(name, toset.getValue(f, main));
-		return ExecutionResult.NONE;
-	}
+    @Override
+    public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+            throws RuntimePascalException {
+        ContainsVariables val = (ContainsVariables) container.getValue(f, main);
+        val.set_var(name, toset.getValue(f, main));
+        return ExecutionResult.NONE;
+    }
 
-	@Override
-	public void setAssignedValue(ReturnsValue value) {
-		this.toset = value;
-	}
+    @Override
+    public void setAssignedValue(ReturnsValue value) {
+        this.toset = value;
+    }
 
-	@Override
-	public SetValueExecutable compileTimeConstantTransform(CompileTimeContext c)
-			throws ParsingException {
-		return this;
-	}
+    @Override
+    public SetValueExecutable compileTimeConstantTransform(CompileTimeContext c)
+            throws ParsingException {
+        return this;
+    }
 
 }

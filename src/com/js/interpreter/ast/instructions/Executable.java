@@ -8,14 +8,14 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public interface Executable {
-	public LineInfo getLineNumber();
+    public LineInfo getLineNumber();
 
-	/*
-	 * This should not modify the state of the object, unless it is a plugin
-	 * call.
-	 */
-	public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
-			throws RuntimePascalException;
+    /*
+     * This should not modify the state of the object, unless it is a plugin
+     * call.
+     */
+    public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+            throws RuntimePascalException;
 
-	public Executable compileTimeConstantTransform(CompileTimeContext c) throws ParsingException;
+    public Executable compileTimeConstantTransform(CompileTimeContext c) throws ParsingException;
 }

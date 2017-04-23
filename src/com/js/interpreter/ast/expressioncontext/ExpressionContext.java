@@ -1,7 +1,5 @@
 package com.js.interpreter.ast.expressioncontext;
 
-import java.util.List;
-
 import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.NamedEntity;
 import com.js.interpreter.ast.VariableDeclaration;
@@ -14,25 +12,27 @@ import com.js.interpreter.tokens.Token;
 import com.js.interpreter.tokens.WordToken;
 import com.js.interpreter.tokens.grouping.GrouperToken;
 
+import java.util.List;
+
 public interface ExpressionContext extends CompileTimeContext {
-	public ReturnsValue getIdentifierValue(WordToken name)
-			throws ParsingException;
+    public ReturnsValue getIdentifierValue(WordToken name)
+            throws ParsingException;
 
-	void verifyNonConflictingSymbol(NamedEntity n) throws SameNameException;
+    void verifyNonConflictingSymbol(NamedEntity n) throws SameNameException;
 
-	public VariableDeclaration getVariableDefinition(String ident);
+    public VariableDeclaration getVariableDefinition(String ident);
 
-	public void getCallableFunctions(String name,
-			List<List<AbstractFunction>> listsofar);
+    public void getCallableFunctions(String name,
+                                     List<List<AbstractFunction>> listsofar);
 
-	public boolean functionExists(String name);
+    public boolean functionExists(String name);
 
-	public CodeUnit root();
+    public CodeUnit root();
 
-	public abstract Executable handleUnrecognizedStatement(Token next,
-			GrouperToken container) throws ParsingException;
+    public abstract Executable handleUnrecognizedStatement(Token next,
+                                                           GrouperToken container) throws ParsingException;
 
-	public abstract boolean handleUnrecognizedDeclaration(Token next,
-			GrouperToken container) throws ParsingException;
+    public abstract boolean handleUnrecognizedDeclaration(Token next,
+                                                          GrouperToken container) throws ParsingException;
 
 }

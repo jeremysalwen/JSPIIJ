@@ -3,11 +3,11 @@ package com.js.interpreter.pascaltypes.bytecode;
 import serp.bytecode.Code;
 
 public interface TransformationInput {
-	public void pushInputOnStack();
+    public void pushInputOnStack();
 
-	public Code getCode();
+    public Code getCode();
 
-	public int getFreeRegister();
+    public int getFreeRegister();
 
-	public void freeRegister(int index);
+    public void freeRegister(int index);
 }

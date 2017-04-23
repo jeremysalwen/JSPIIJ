@@ -1,7 +1,8 @@
 program int;
 
-var i: integer;
+var
+    i: integer;
 begin
- i:=6;
- writeln('test='+inttostr(i));
+    i := 6;
+    writeln('test=' + inttostr(i));
 end.

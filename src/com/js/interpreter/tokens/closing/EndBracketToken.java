@@ -9,14 +9,14 @@ import com.js.interpreter.tokens.grouping.GrouperToken;
 
 public class EndBracketToken extends ClosingToken {
 
-	public EndBracketToken(LineInfo line) {
-		super(line);
-	}
+    public EndBracketToken(LineInfo line) {
+        super(line);
+    }
 
-	@Override
-	public GroupingException getClosingException(GrouperToken t) {
-		return t instanceof BracketedToken ? null
-				: new EnumeratedGroupingException(lineInfo,
-						grouping_exception_types.MISMATCHED_BRACKETS);
-	}
+    @Override
+    public GroupingException getClosingException(GrouperToken t) {
+        return t instanceof BracketedToken ? null
+                : new EnumeratedGroupingException(lineInfo,
+                grouping_exception_types.MISMATCHED_BRACKETS);
+    }
 }

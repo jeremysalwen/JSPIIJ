@@ -1,6 +1,9 @@
 program res;
 
-var record: integer;
+var
+record: integer;
 begin
 
-end;
+end
+
+;

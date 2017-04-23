@@ -1,5 +1,6 @@
 program int;
-var i:;
+var
+    i:;
 begin
 
 end.

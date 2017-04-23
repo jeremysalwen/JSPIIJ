@@ -5,9 +5,9 @@ import com.js.interpreter.ast.returnsvalue.ReturnsValue;
 import com.js.interpreter.exceptions.ParsingException;
 
 public interface SetValueExecutable extends Executable {
-	public void setAssignedValue(ReturnsValue value);
+    public void setAssignedValue(ReturnsValue value);
 
-	@Override
-	public SetValueExecutable compileTimeConstantTransform(CompileTimeContext c)
-			throws ParsingException;
+    @Override
+    public SetValueExecutable compileTimeConstantTransform(CompileTimeContext c)
+            throws ParsingException;
 }

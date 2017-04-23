@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 // Make this annotation accessible at runtime via reflection.
-@Target({ ElementType.METHOD })
+@Target({ElementType.METHOD})
 public @interface MethodTypeData {
-	public ArrayBoundsInfo[] info();
+    public ArrayBoundsInfo[] info();
 }

@@ -20,6 +20,7 @@ public class ClassToken extends GrouperToken {
         result.append("end");
         return result.toString();
     }
+
     @Override
     protected String getClosingText() {
         return "end";

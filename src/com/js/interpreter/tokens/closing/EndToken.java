@@ -11,18 +11,18 @@ import com.js.interpreter.tokens.grouping.RecordToken;
 
 public class EndToken extends ClosingToken {
 
-	public EndToken(LineInfo line) {
-		super(line);
-	}
+    public EndToken(LineInfo line) {
+        super(line);
+    }
 
-	@Override
-	public GroupingException getClosingException(GrouperToken t) {
-		if (t instanceof BeginEndToken || t instanceof CaseToken
-				|| t instanceof RecordToken) {
-			return null;
-		} else {
-			return new EnumeratedGroupingException(lineInfo,
-					grouping_exception_types.EXTRA_END);
-		}
-	}
+    @Override
+    public GroupingException getClosingException(GrouperToken t) {
+        if (t instanceof BeginEndToken || t instanceof CaseToken
+                || t instanceof RecordToken) {
+            return null;
+        } else {
+            return new EnumeratedGroupingException(lineInfo,
+                    grouping_exception_types.EXTRA_END);
+        }
+    }
 }

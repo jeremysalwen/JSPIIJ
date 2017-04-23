@@ -7,20 +7,20 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class RuntimePascalProgram extends RuntimeExecutable<PascalProgram> {
 
-	VariableContext main;
+    VariableContext main;
 
-	public RuntimePascalProgram(PascalProgram p) {
-		super(p);
-	}
+    public RuntimePascalProgram(PascalProgram p) {
+        super(p);
+    }
 
-	@Override
-	public void runImpl() throws RuntimePascalException {
-		this.mode = RunMode.running;
-		definition.main.execute(this, this);
-	}
+    @Override
+    public void runImpl() throws RuntimePascalException {
+        this.mode = RunMode.running;
+        definition.main.execute(this, this);
+    }
 
-	@Override
-	public VariableContext getParentContext() {
-		return null;
-	}
+    @Override
+    public VariableContext getParentContext() {
+        return null;
+    }
 }

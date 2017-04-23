@@ -9,14 +9,14 @@ import com.js.interpreter.tokens.grouping.ParenthesizedToken;
 
 public class EndParenToken extends ClosingToken {
 
-	public EndParenToken(LineInfo line) {
-		super(line);
-	}
+    public EndParenToken(LineInfo line) {
+        super(line);
+    }
 
-	@Override
-	public GroupingException getClosingException(GrouperToken t) {
-		return t instanceof ParenthesizedToken ? null
-				: new EnumeratedGroupingException(lineInfo,
-						grouping_exception_types.MISMATCHED_PARENS);
-	}
+    @Override
+    public GroupingException getClosingException(GrouperToken t) {
+        return t instanceof ParenthesizedToken ? null
+                : new EnumeratedGroupingException(lineInfo,
+                grouping_exception_types.MISMATCHED_PARENS);
+    }
 }

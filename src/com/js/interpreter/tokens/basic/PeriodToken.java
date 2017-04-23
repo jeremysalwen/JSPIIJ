@@ -3,17 +3,17 @@ package com.js.interpreter.tokens.basic;
 import com.js.interpreter.linenumber.LineInfo;
 
 public class PeriodToken extends BasicToken {
-	public PeriodToken(LineInfo line) {
-		super(line);
-	}
+    public PeriodToken(LineInfo line) {
+        super(line);
+    }
 
-	@Override
-	public String toString() {
-		return ".";
-	}
+    @Override
+    public String toString() {
+        return ".";
+    }
 
-	@Override
-	public precedence getOperatorPrecedence() {
-		return precedence.Dereferencing;
-	}
+    @Override
+    public precedence getOperatorPrecedence() {
+        return precedence.Dereferencing;
+    }
 }

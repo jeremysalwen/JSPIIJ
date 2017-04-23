@@ -5,14 +5,14 @@ import com.js.interpreter.runtime.VariableContext;
 
 public class RuntimeLibrary extends RuntimeCodeUnit<Library> {
 
-	public RuntimeLibrary(Library l) {
-		super(l);
-	}
+    public RuntimeLibrary(Library l) {
+        super(l);
+    }
 
 
-	@Override
-	public VariableContext getParentContext() {
-		return null;
-	}
+    @Override
+    public VariableContext getParentContext() {
+        return null;
+    }
 
 }

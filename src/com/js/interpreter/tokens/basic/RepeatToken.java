@@ -4,12 +4,12 @@ import com.js.interpreter.linenumber.LineInfo;
 
 public class RepeatToken extends BasicToken {
 
-	public RepeatToken(LineInfo line) {
-		super(line);
-	}
+    public RepeatToken(LineInfo line) {
+        super(line);
+    }
 
-	@Override
-	public String toString() {
-		return "repeat";
-	}
+    @Override
+    public String toString() {
+        return "repeat";
+    }
 }

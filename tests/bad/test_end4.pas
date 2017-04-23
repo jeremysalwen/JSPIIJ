@@ -1,6 +1,7 @@
 program test_end;
 
 begin
- begin
+begin
 
-end.
+end
+    .

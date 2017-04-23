@@ -5,14 +5,14 @@ import com.js.interpreter.tokens.Token;
 
 public abstract class ValueToken extends Token {
 
-	public ValueToken(LineInfo line) {
-		super(line);
-	}
+    public ValueToken(LineInfo line) {
+        super(line);
+    }
 
-	public abstract Object getValue();
+    public abstract Object getValue();
 
-	@Override
-	public String toString() {
-		return getValue().toString();
-	}
+    @Override
+    public String toString() {
+        return getValue().toString();
+    }
 }

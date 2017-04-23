@@ -1,40 +1,40 @@
 package com.js.interpreter.runtime.codeunit;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.codeunit.RunMode;
 import com.js.interpreter.runtime.VariableContext;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class RuntimeCodeUnit<parent extends CodeUnit> extends
-		VariableContext {
-	Map<String, Object> UnitVariables = new HashMap<String, Object>();
+        VariableContext {
+    Map<String, Object> UnitVariables = new HashMap<String, Object>();
 
-	parent definition;
+    parent definition;
 
-	public RuntimeCodeUnit(parent definition) {
-		this.definition = definition;
-		for (VariableDeclaration v : definition.context.UnitVarDefs) {
-			v.initialize(UnitVariables);
-		}
-	}
+    public RuntimeCodeUnit(parent definition) {
+        this.definition = definition;
+        for (VariableDeclaration v : definition.context.UnitVarDefs) {
+            v.initialize(UnitVariables);
+        }
+    }
 
-	public volatile RunMode mode;
+    public volatile RunMode mode;
 
-	public parent getDefinition() {
-		return definition;
-	}
+    public parent getDefinition() {
+        return definition;
+    }
 
-	@Override
-	public Object getLocalVar(String name) {
-		return UnitVariables.get(name);
-	}
+    @Override
+    public Object getLocalVar(String name) {
+        return UnitVariables.get(name);
+    }
 
-	@Override
-	protected boolean setLocalVar(String name, Object val) {
-		return UnitVariables.put(name, val) != null;
-	}
+    @Override
+    protected boolean setLocalVar(String name, Object val) {
+        return UnitVariables.put(name, val) != null;
+    }
 
 }

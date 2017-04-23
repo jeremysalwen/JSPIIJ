@@ -4,16 +4,16 @@ import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class InternalInterpreterException extends RuntimePascalException {
-	public InternalInterpreterException(LineInfo line) {
-		super(line);
-	}
+    public InternalInterpreterException(LineInfo line) {
+        super(line);
+    }
 
-	public String getInternalError() {
-		return "Unspecified";
-	}
+    public String getInternalError() {
+        return "Unspecified";
+    }
 
-	@Override
-	public String getMessage() {
-		return "Internal Interpreter Error: " + getInternalError();
-	}
+    @Override
+    public String getMessage() {
+        return "Internal Interpreter Error: " + getInternalError();
+    }
 }

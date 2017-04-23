@@ -17,69 +17,69 @@ import com.js.interpreter.runtime.variables.ContainsVariables;
 import com.js.interpreter.tokens.WordToken;
 
 public class FieldAccess extends DebuggableReturnsValue {
-	ReturnsValue container;
-	String name;
-	LineInfo line;
+    ReturnsValue container;
+    String name;
+    LineInfo line;
 
-	public FieldAccess(ReturnsValue container, String name, LineInfo line) {
-		this.container = container;
-		this.name = name;
-		this.line = line;
-	}
+    public FieldAccess(ReturnsValue container, String name, LineInfo line) {
+        this.container = container;
+        this.name = name;
+        this.line = line;
+    }
 
-	public FieldAccess(ReturnsValue container, WordToken name) {
-		this(container, name.name, name.lineInfo);
-	}
+    public FieldAccess(ReturnsValue container, WordToken name) {
+        this(container, name.name, name.lineInfo);
+    }
 
-	@Override
-	public RuntimeType get_type(ExpressionContext f) throws ParsingException {
-		RuntimeType r = container.get_type(f);
-		return new RuntimeType(((ObjectType) (r.declType)).getMemberType(name),
-				r.writable);
-	}
+    @Override
+    public RuntimeType get_type(ExpressionContext f) throws ParsingException {
+        RuntimeType r = container.get_type(f);
+        return new RuntimeType(((ObjectType) (r.declType)).getMemberType(name),
+                r.writable);
+    }
 
-	@Override
-	public LineInfo getLineNumber() {
-		return line;
-	}
+    @Override
+    public LineInfo getLineNumber() {
+        return line;
+    }
 
-	@Override
-	public Object compileTimeValue(CompileTimeContext context)
-			throws ParsingException {
-		Object value = container.compileTimeValue(context);
-		if (value != null) {
-			try {
-				return ((ContainsVariables) value).get_var(name);
-			} catch (RuntimePascalException e) {
-				throw new ConstantCalculationException(e);
-			}
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public Object compileTimeValue(CompileTimeContext context)
+            throws ParsingException {
+        Object value = container.compileTimeValue(context);
+        if (value != null) {
+            try {
+                return ((ContainsVariables) value).get_var(name);
+            } catch (RuntimePascalException e) {
+                throw new ConstantCalculationException(e);
+            }
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-			throws UnassignableTypeException {
-		return new SetField(container, name, line, r);
-	}
+    @Override
+    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
+            throws UnassignableTypeException {
+        return new SetField(container, name, line, r);
+    }
 
-	@Override
-	public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
-			throws RuntimePascalException {
-		Object value = container.getValue(f, main);
-		return ((ContainsVariables) value).get_var(name);
-	}
+    @Override
+    public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
+            throws RuntimePascalException {
+        Object value = container.getValue(f, main);
+        return ((ContainsVariables) value).get_var(name);
+    }
 
-	@Override
-	public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
-			throws ParsingException {
-		Object val = this.compileTimeValue(context);
-		if (val != null) {
-			return new ConstantAccess(val, line);
-		} else {
-			return new FieldAccess(
-					container.compileTimeExpressionFold(context), name, line);
-		}
-	}
+    @Override
+    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+            throws ParsingException {
+        Object val = this.compileTimeValue(context);
+        if (val != null) {
+            return new ConstantAccess(val, line);
+        } else {
+            return new FieldAccess(
+                    container.compileTimeExpressionFold(context), name, line);
+        }
+    }
 }

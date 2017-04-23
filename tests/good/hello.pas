@@ -2,5 +2,5 @@ program test;
 {$mode objfpc}{$H+}
 
 begin
- writeln('Hello World');
+    writeln('Hello World');
 end.

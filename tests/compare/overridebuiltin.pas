@@ -1,12 +1,13 @@
 procedure test();
-var max:integer;
+var
+    max: integer;
 begin
- max := 3;
- writeln(max);
+    max := 3;
+    writeln(max);
 end;
 begin
- test;
- writeln(max(3,10));
+    test;
+    writeln(max(3,10));
 end.
 
 

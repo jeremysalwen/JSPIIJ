@@ -1,7 +1,8 @@
 program int;
 
-var i: integer = 5;
+var
+    i: integer = 5;
 
 begin
- writeln('test=', i);
+    writeln('test=', i);
 end.

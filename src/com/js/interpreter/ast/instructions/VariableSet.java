@@ -9,43 +9,43 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class VariableSet extends DebuggableExecutable implements
-		SetValueExecutable {
-	String name;
+        SetValueExecutable {
+    String name;
 
-	ReturnsValue value;
-	LineInfo line;
+    ReturnsValue value;
+    LineInfo line;
 
-	public VariableSet(String name, ReturnsValue value, LineInfo line) {
-		this.name = name;
-		this.value = value;
-		this.line = line;
-	}
+    public VariableSet(String name, ReturnsValue value, LineInfo line) {
+        this.name = name;
+        this.value = value;
+        this.line = line;
+    }
 
-	@Override
-	public ExecutionResult executeImpl(VariableContext f,
-			RuntimeExecutable<?> main) throws RuntimePascalException {
-		f.set_var(name, value.getValue(f, main));
-		return ExecutionResult.NONE;
-	}
+    @Override
+    public ExecutionResult executeImpl(VariableContext f,
+                                       RuntimeExecutable<?> main) throws RuntimePascalException {
+        f.set_var(name, value.getValue(f, main));
+        return ExecutionResult.NONE;
+    }
 
-	@Override
-	public String toString() {
-		return name + " := " + value;
-	}
+    @Override
+    public String toString() {
+        return name + " := " + value;
+    }
 
-	@Override
-	public LineInfo getLineNumber() {
-		return this.line;
-	}
+    @Override
+    public LineInfo getLineNumber() {
+        return this.line;
+    }
 
-	@Override
-	public void setAssignedValue(ReturnsValue value) {
-		this.value = value;
-	}
+    @Override
+    public void setAssignedValue(ReturnsValue value) {
+        this.value = value;
+    }
 
-	@Override
-	public SetValueExecutable compileTimeConstantTransform(CompileTimeContext c)
-			throws ParsingException {
-		return new VariableSet(name, value.compileTimeExpressionFold(c), line);
-	}
+    @Override
+    public SetValueExecutable compileTimeConstantTransform(CompileTimeContext c)
+            throws ParsingException {
+        return new VariableSet(name, value.compileTimeExpressionFold(c), line);
+    }
 }

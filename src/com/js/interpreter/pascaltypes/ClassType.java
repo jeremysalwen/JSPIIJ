@@ -1,12 +1,11 @@
 package com.js.interpreter.pascaltypes;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.js.interpreter.ast.FunctionDeclaration;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCMethod;
 
-import com.js.interpreter.ast.FunctionDeclaration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClassType extends CustomType {
     List<FunctionDeclaration> memberfunctions = new ArrayList<FunctionDeclaration>();
