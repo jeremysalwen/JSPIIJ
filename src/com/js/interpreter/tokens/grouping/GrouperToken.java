@@ -33,12 +33,7 @@ import com.js.interpreter.exceptions.UnconvertibleTypeException;
 import com.js.interpreter.exceptions.UnrecognizedTokenException;
 import com.js.interpreter.exceptions.grouping.GroupingException;
 import com.js.interpreter.linenumber.LineInfo;
-import com.js.interpreter.pascaltypes.ArrayType;
-import com.js.interpreter.pascaltypes.BasicType;
-import com.js.interpreter.pascaltypes.DeclaredType;
-import com.js.interpreter.pascaltypes.RecordType;
-import com.js.interpreter.pascaltypes.RuntimeType;
-import com.js.interpreter.pascaltypes.SubrangeType;
+import com.js.interpreter.pascaltypes.*;
 import com.js.interpreter.tokens.EOF_Token;
 import com.js.interpreter.tokens.GroupingExceptionToken;
 import com.js.interpreter.tokens.OperatorToken;
@@ -175,6 +170,11 @@ public abstract class GrouperToken extends Token {
 			result.variable_types = r.get_variable_declarations(context);
 			return result;
 		}
+		/*if (n instanceof ClassToken) {
+			ClassToken o = (ClassToken)n;
+			ClassType result = new ClassType();
+			throw new ExpectedTokenException("[asdf]", n);
+		}*/
 		if (!(n instanceof WordToken)) {
 			throw new ExpectedTokenException("[Type Identifier]", n);
 		}

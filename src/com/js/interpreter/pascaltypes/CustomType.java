@@ -93,6 +93,13 @@ public class CustomType extends ObjectType {
 		}
 		Project p = new Project();
 		BCClass c = p.loadClass(name);
+			declareClassElements(c);
+		cachedClass = bcl.loadThisClass(c.toByteArray());
+		return cachedClass;
+	}
+
+	protected void declareClassElements(BCClass c) {
+		c.declareInterface(ContainsVariables.class);
 		c.setDeclaredInterfaces(new Class[] { ContainsVariables.class });
 		for (VariableDeclaration v : variable_types) {
 			Class type = v.type.getStorageClass();
@@ -102,8 +109,6 @@ public class CustomType extends ObjectType {
 		add_get_var(c);
 		add_set_var(c);
 		add_clone(c);
-		cachedClass = bcl.loadThisClass(c.toByteArray());
-		return cachedClass;
 	}
 
 	static ByteClassLoader bcl = new ByteClassLoader();
