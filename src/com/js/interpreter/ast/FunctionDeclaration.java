@@ -51,9 +51,11 @@ public class FunctionDeclaration extends AbstractCallableFunction {
 	private boolean body_declared;
 
 	private class FunctionExpressionContext extends ExpressionContextMixin {
+		FunctionDeclaration function;
 
-		public FunctionExpressionContext(ExpressionContext parent) {
+		public FunctionExpressionContext(FunctionDeclaration function, ExpressionContext parent) {
 			super(parent.root(), parent);
+			this.function = function;
 		}
 
 		@Override
@@ -79,11 +81,25 @@ public class FunctionDeclaration extends AbstractCallableFunction {
 			instructions = i.get_next_command(declarations);
 			i.assert_next_semicolon();
 		}
+
+		@Override
+		public VariableDeclaration getVariableDefinitionLocal(String ident) {
+			VariableDeclaration unit_variable_decl = super.getVariableDefinitionLocal(ident);
+			if (unit_variable_decl !=null) {
+				return unit_variable_decl;
+			}
+			for(int i=0; i<argument_names.length; i++) {
+				if(argument_names[i].equals(ident)) {
+					return new VariableDeclaration(argument_names[i], argument_types[i].declType, function.line);
+				}
+			}
+			return null;
+		}
 	}
 
 	public FunctionDeclaration(ExpressionContext parent, GrouperToken i,
 			boolean is_procedure) throws ParsingException {
-		this.declarations = new FunctionExpressionContext(parent);
+		this.declarations = new FunctionExpressionContext(this, parent);
 		this.line = i.peek().lineInfo;
 		name = i.next_word_value();
 
@@ -129,7 +145,7 @@ public class FunctionDeclaration extends AbstractCallableFunction {
 	}
 
 	public FunctionDeclaration(ExpressionContext p) {
-		this.declarations = new FunctionExpressionContext(p);
+		this.declarations = new FunctionExpressionContext(this, p);
 		this.argument_names = new String[0];
 		this.argument_types = new RuntimeType[0];
 	}
@@ -199,10 +215,7 @@ public class FunctionDeclaration extends AbstractCallableFunction {
 		for (int j = 0; j < argument_names.length; j++) {
 			WordToken n = names_list.get(j);
 			argument_names[j] = n.name;
-			declarations.declareVariable(new VariableDeclaration(n.name,
-					argument_types[j].declType, n.lineInfo));
 		}
-
 	}
 
 	@Override
