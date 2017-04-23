@@ -65,7 +65,7 @@ public class CharBiOperatorEval extends BinaryOperatorEvaluation {
 		case OR:
 			return v1 | v2;
 		case PLUS:
-			return (char) (v1 + v2)
+			return (char) (v1 + v2);
 		case SHIFTLEFT:
 			return v1 << v2;
 		case SHIFTRIGHT:
