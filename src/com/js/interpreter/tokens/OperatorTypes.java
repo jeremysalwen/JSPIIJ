@@ -338,8 +338,7 @@ public enum OperatorTypes {
         @Override
         public void verifyOperation(DeclaredType GCF)
                 throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder) {
+            if (GCF == BasicType.Boolean) {
                 throw new BadOperationTypeException();
             }
         }
@@ -365,8 +364,7 @@ public enum OperatorTypes {
         @Override
         public void verifyOperation(DeclaredType GCF)
                 throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder) {
+            if (GCF == BasicType.Boolean) {
                 throw new BadOperationTypeException();
             }
         }
@@ -434,8 +432,7 @@ public enum OperatorTypes {
         @Override
         public void verifyOperation(DeclaredType GCF)
                 throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder) {
+            if (GCF == BasicType.Boolean) {
                 throw new BadOperationTypeException();
             }
         }
@@ -461,8 +458,7 @@ public enum OperatorTypes {
         @Override
         public void verifyOperation(DeclaredType GCF)
                 throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder) {
+            if (GCF == BasicType.Boolean) {
                 throw new BadOperationTypeException();
             }
         }
