@@ -33,17 +33,25 @@ public class StringBiOperatorEval extends BinaryOperatorEvaluation {
 	@Override
 	public Object operate(Object value1, Object value2)
 			throws PascalArithmeticException, InternalInterpreterException {
-		CharSequence v1 = (CharSequence) value1;
-		CharSequence v2 = (CharSequence) value2;
+		String v1 = value1.toString();
+		String v2 = value2.toString();
 		switch (operator_type) {
-		case EQUALS:
-			return v1.equals(v2);
-		case NOTEQUAL:
-			return !v1.equals(v2);
-		case PLUS:
-			return new StringBuilder(v1).append(v2);
-		default:
-			throw new InternalInterpreterException(line);
+			case EQUALS:
+				return v1.equals(v2);
+			case NOTEQUAL:
+				return !v1.equals(v2);
+			case LESSTHAN:
+				return v1.compareTo(v2) < 0;
+			case LESSEQ:
+				return v1.compareTo(v2) <= 0;
+			case GREATEREQ:
+				return v1.compareTo(v2) >= 0;
+			case GREATERTHAN:
+				return v1.compareTo(v2) > 0;
+			case PLUS:
+				return new StringBuilder(v1).append(v2);
+			default:
+				throw new InternalInterpreterException(line);
 		}
 	}
 

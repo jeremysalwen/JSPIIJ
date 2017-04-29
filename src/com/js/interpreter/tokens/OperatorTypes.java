@@ -338,8 +338,7 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == BasicType.Boolean
-					|| GCF == BasicType.StringBuilder) {
+			if (GCF == BasicType.Boolean) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -365,12 +364,10 @@ public enum OperatorTypes {
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == BasicType.Boolean
-					|| GCF == BasicType.StringBuilder) {
+			if (GCF == BasicType.Boolean) {
 				throw new BadOperationTypeException();
 			}
 		}
-
 		@Override
 		public precedence getPrecedence() {
 			return precedence.Relational;
@@ -431,11 +428,11 @@ public enum OperatorTypes {
 			return d1 <= d2;
 		}
 
+
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == BasicType.Boolean
-					|| GCF == BasicType.StringBuilder) {
+			if (GCF == BasicType.Boolean) {
 				throw new BadOperationTypeException();
 			}
 		}
@@ -458,11 +455,11 @@ public enum OperatorTypes {
 			return l1 >= l2;
 		}
 
+
 		@Override
 		public void verifyOperation(DeclaredType GCF)
 				throws BadOperationTypeException {
-			if (GCF == BasicType.Boolean
-					|| GCF == BasicType.StringBuilder) {
+			if (GCF == BasicType.Boolean) {
 				throw new BadOperationTypeException();
 			}
 		}
