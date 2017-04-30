@@ -186,8 +186,7 @@ public enum OperatorTypes {
     LESSTHAN(false, false) {
         @Override
         public boolean verifyBinaryOperation(DeclaredType GCF) {
-            return !(GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder);
+            return !(GCF == BasicType.Boolean);
         }
 
         @Override
@@ -198,8 +197,7 @@ public enum OperatorTypes {
     GREATERTHAN(false, false) {
         @Override
         public boolean verifyBinaryOperation(DeclaredType GCF) {
-            return !(GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder);
+            return !(GCF == BasicType.Boolean);
         }
 
         @Override
@@ -239,8 +237,7 @@ public enum OperatorTypes {
     GREATEREQ(false, false) {
         @Override
         public boolean verifyBinaryOperation(DeclaredType GCF) {
-            return ! (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder);
+            return ! (GCF == BasicType.Boolean);
         }
 
         @Override
@@ -257,7 +254,7 @@ public enum OperatorTypes {
 
         @Override
         public boolean verifyBinaryOperation(DeclaredType GCF) {
-            return true;
+            return !(GCF == BasicType.Boolean);
         }
 
         @Override
