@@ -3,7 +3,7 @@ package com.js.interpreter.plugins.templated;
 import com.js.interpreter.ast.AbstractFunction;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.FunctionCall;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
@@ -45,9 +45,9 @@ public class TemplatedPluginDeclaration extends AbstractFunction {
 
     @Override
     public FunctionCall generatePerfectFitCall(LineInfo line,
-                                               List<ReturnsValue> values, ExpressionContext f)
+                                               List<RValue> values, ExpressionContext f)
             throws ParsingException {
-        ReturnsValue[] args = this.perfectMatch(values, f);
+        RValue[] args = this.perfectMatch(values, f);
         if (args == null) {
             return null;
         }
@@ -55,9 +55,9 @@ public class TemplatedPluginDeclaration extends AbstractFunction {
     }
 
     @Override
-    public FunctionCall generateCall(LineInfo line, List<ReturnsValue> values,
+    public FunctionCall generateCall(LineInfo line, List<RValue> values,
                                      ExpressionContext f) throws ParsingException {
-        ReturnsValue[] args = this.format_args(values, f);
+        RValue[] args = this.format_args(values, f);
         if (args == null) {
             return null;
         }

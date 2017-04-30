@@ -2,32 +2,31 @@ package com.js.interpreter.ast.returnsvalue;
 
 import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.instructions.SetField;
-import com.js.interpreter.ast.instructions.SetValueExecutable;
+import com.js.interpreter.ast.instructions.FieldReference;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ObjectType;
 import com.js.interpreter.pascaltypes.RuntimeType;
+import com.js.interpreter.runtime.Reference;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 import com.js.interpreter.tokens.WordToken;
 
-public class FieldAccess extends DebuggableReturnsValue {
-    ReturnsValue container;
+public class FieldAccess extends DebuggableLValue {
+    RValue container;
     String name;
     LineInfo line;
 
-    public FieldAccess(ReturnsValue container, String name, LineInfo line) {
+    public FieldAccess(RValue container, String name, LineInfo line) {
         this.container = container;
         this.name = name;
         this.line = line;
     }
 
-    public FieldAccess(ReturnsValue container, WordToken name) {
+    public FieldAccess(RValue container, WordToken name) {
         this(container, name.name, name.lineInfo);
     }
 
@@ -58,11 +57,6 @@ public class FieldAccess extends DebuggableReturnsValue {
         }
     }
 
-    @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        return new SetField(container, name, line, r);
-    }
 
     @Override
     public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
@@ -72,7 +66,12 @@ public class FieldAccess extends DebuggableReturnsValue {
     }
 
     @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+    public Reference<?> getReferenceImpl(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+        return new FieldReference((ContainsVariables)container.getValue(f,main), name);
+    }
+
+    @Override
+    public RValue compileTimeExpressionFold(CompileTimeContext context)
             throws ParsingException {
         Object val = this.compileTimeValue(context);
         if (val != null) {

@@ -54,7 +54,7 @@ public class WordToken extends Token {
             if (constval == null) {
                 throw new UnrecognizedTypeException(lineInfo, s);
             }
-            return BasicType.anew(constval.getClass());
+            return BasicType.create(constval.getClass());
         }
     }
 }

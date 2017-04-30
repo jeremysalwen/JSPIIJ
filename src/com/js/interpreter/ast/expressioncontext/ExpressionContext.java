@@ -5,7 +5,7 @@ import com.js.interpreter.ast.NamedEntity;
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.instructions.Executable;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.SameNameException;
 import com.js.interpreter.tokens.Token;
@@ -15,7 +15,7 @@ import com.js.interpreter.tokens.grouping.GrouperToken;
 import java.util.List;
 
 public interface ExpressionContext extends CompileTimeContext {
-    public ReturnsValue getIdentifierValue(WordToken name)
+    public RValue getIdentifierValue(WordToken name)
             throws ParsingException;
 
     void verifyNonConflictingSymbol(NamedEntity n) throws SameNameException;

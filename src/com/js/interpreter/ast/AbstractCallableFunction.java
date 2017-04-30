@@ -2,7 +2,7 @@ package com.js.interpreter.ast;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.FunctionCall;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.ast.returnsvalue.SimpleFunctionCall;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -16,7 +16,7 @@ import java.util.List;
 public abstract class AbstractCallableFunction extends AbstractFunction {
 
     /**
-     * This invokes a function call of any type.
+     * This invokes a function call of any operator.
      *
      * @param parentcontext The program context.
      * @param arguments
@@ -33,9 +33,9 @@ public abstract class AbstractCallableFunction extends AbstractFunction {
 
     @Override
     public FunctionCall generatePerfectFitCall(LineInfo line,
-                                               List<ReturnsValue> values, ExpressionContext f)
+                                               List<RValue> values, ExpressionContext f)
             throws ParsingException {
-        ReturnsValue[] args = perfectMatch(values, f);
+        RValue[] args = perfectMatch(values, f);
         if (args == null) {
             return null;
         }
@@ -43,9 +43,9 @@ public abstract class AbstractCallableFunction extends AbstractFunction {
     }
 
     @Override
-    public FunctionCall generateCall(LineInfo line, List<ReturnsValue> values,
+    public FunctionCall generateCall(LineInfo line, List<RValue> values,
                                      ExpressionContext f) throws ParsingException {
-        ReturnsValue[] args = format_args(values, f);
+        RValue[] args = format_args(values, f);
         if (args == null) {
             return null;
         }

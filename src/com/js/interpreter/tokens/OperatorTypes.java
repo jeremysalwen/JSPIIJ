@@ -3,12 +3,13 @@ package com.js.interpreter.tokens;
 import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.pascaltypes.BasicType;
 import com.js.interpreter.pascaltypes.DeclaredType;
+import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.tokens.Token.precedence;
 
 import javax.naming.OperationNotSupportedException;
 
 public enum OperatorTypes {
-    NOT(true) {
+    NOT(true, false) {
         @Override
         public Object operate(boolean b) throws OperationNotSupportedException {
             return !b;
@@ -20,11 +21,8 @@ public enum OperatorTypes {
         }
 
         @Override
-        public void verifyOperation(DeclaredType type)
-                throws BadOperationTypeException {
-            if (type != BasicType.Boolean) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType type) {
+            return type == BasicType.Boolean;
         }
 
         @Override
@@ -32,27 +30,12 @@ public enum OperatorTypes {
             return precedence.Negation;
         }
     },
-    MULTIPLY(false) {
+    MULTIPLY(false, false) {
         @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return d1 * d2;
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 * l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return !(GCF == BasicType.Boolean
                     || GCF == BasicType.Character
-                    || GCF == BasicType.StringBuilder) {
-                throw new BadOperationTypeException();
-            }
+                    || GCF == BasicType.StringBuilder);
         }
 
         @Override
@@ -60,33 +43,12 @@ public enum OperatorTypes {
             return precedence.Multiplicative;
         }
     },
-    DIVIDE(false) {
+    DIVIDE(false, false) {
         @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            if (d2 == 0) {
-                throw new ArithmeticException("/ by zero");
-            }
-            return d1 / d2;
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            if (l2 == 0) {
-                throw new ArithmeticException("/ by zero");
-            }
-            return (double) l1 / (double) l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return !(GCF == BasicType.Boolean
                     || GCF == BasicType.Character
-                    || GCF == BasicType.StringBuilder) {
-                throw new BadOperationTypeException();
-            }
+                    || GCF == BasicType.StringBuilder);
         }
 
         @Override
@@ -95,27 +57,12 @@ public enum OperatorTypes {
         }
 
     },
-    DIV(false) {
+    DIV(false, false) {
         @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return ((long) d1) / ((long) d2);
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 / l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return !(GCF == BasicType.Boolean
                     || GCF == BasicType.StringBuilder
-                    || GCF == BasicType.Character) {
-                throw new BadOperationTypeException();
-            }
+                    || GCF == BasicType.Character);
         }
 
         @Override
@@ -123,20 +70,11 @@ public enum OperatorTypes {
             return precedence.Multiplicative;
         }
     },
-    MOD(false) {
+    MOD(false, false) {
         @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 % l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF != BasicType.Integer
-                    && GCF != BasicType.Long) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return ! (GCF != BasicType.Integer
+                    && GCF != BasicType.Long);
         }
 
         @Override
@@ -144,31 +82,13 @@ public enum OperatorTypes {
             return precedence.Multiplicative;
         }
     },
-    AND(false) {
-        @Override
-        public Object operate(boolean b1, boolean b2)
-                throws OperationNotSupportedException {
-            return b1 && b2;
-        }
-
+    AND(false, false) {
         @Override
         public precedence getPrecedence() {
             return precedence.Multiplicative;
         }
     },
-    PLUS(true) {
-        @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return d1 + d2;
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 + l2;
-        }
-
+    PLUS(true, false) {
         @Override
         public Object operate(double d) throws OperationNotSupportedException {
             return d;
@@ -186,11 +106,8 @@ public enum OperatorTypes {
         }
 
         @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return ! (GCF == BasicType.Boolean);
         }
 
         @Override
@@ -198,19 +115,7 @@ public enum OperatorTypes {
             return precedence.Additive;
         }
     },
-    MINUS(true) {
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 - l2;
-        }
-
-        @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return d1 - d2;
-        }
-
+    MINUS(true, false) {
         @Override
         public Object operate(long l) throws OperationNotSupportedException {
             return -l;
@@ -222,12 +127,9 @@ public enum OperatorTypes {
         }
 
         @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return ! (GCF == BasicType.Boolean
+                    || GCF == BasicType.StringBuilder);
         }
 
         @Override
@@ -235,19 +137,10 @@ public enum OperatorTypes {
             return precedence.Additive;
         }
     },
-    OR(false) {
+    OR(false, false) {
         @Override
-        public Object operate(boolean b1, boolean b2)
-                throws OperationNotSupportedException {
-            return b1 || b2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF != BasicType.Boolean) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return  (GCF == BasicType.Boolean);
         }
 
         @Override
@@ -255,25 +148,10 @@ public enum OperatorTypes {
             return precedence.Additive;
         }
     },
-    XOR(false) {
+    XOR(false, false) {
         @Override
-        public Object operate(boolean b1, boolean b2)
-                throws OperationNotSupportedException {
-            return b1 ^ b2;
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 ^ l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF != BasicType.Boolean) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return  (GCF == BasicType.Boolean);
         }
 
         @Override
@@ -281,19 +159,11 @@ public enum OperatorTypes {
             return precedence.Additive;
         }
     },
-    SHIFTLEFT(false) {
+    SHIFTLEFT(false, false) {
         @Override
-        public Object operate(long l1, long l2) {
-            return l1 << l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF != BasicType.Integer
-                    && GCF != BasicType.Long) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return  (GCF == BasicType.Integer
+                    || GCF == BasicType.Long);
         }
 
         @Override
@@ -301,20 +171,11 @@ public enum OperatorTypes {
             return precedence.Multiplicative;
         }
     },
-    SHIFTRIGHT(false) {
+    SHIFTRIGHT(false, false) {
         @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 >> l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF != BasicType.Integer
-                    && GCF != BasicType.Long) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return (GCF == BasicType.Integer
+                    || GCF != BasicType.Long);
         }
 
         @Override
@@ -322,26 +183,11 @@ public enum OperatorTypes {
             return precedence.Multiplicative;
         }
     },
-    LESSTHAN(false) {
+    LESSTHAN(false, false) {
         @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return d1 < d2;
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 < l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return !(GCF == BasicType.Boolean
+                    || GCF == BasicType.StringBuilder);
         }
 
         @Override
@@ -349,26 +195,11 @@ public enum OperatorTypes {
             return precedence.Relational;
         }
     },
-    GREATERTHAN(false) {
+    GREATERTHAN(false, false) {
         @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return d1 > d2;
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 > l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return !(GCF == BasicType.Boolean
+                    || GCF == BasicType.StringBuilder);
         }
 
         @Override
@@ -376,31 +207,7 @@ public enum OperatorTypes {
             return precedence.Relational;
         }
     },
-    EQUALS(false) {
-        @Override
-        public Object operate(char c1, char c2)
-                throws OperationNotSupportedException {
-            return c1 == c2;
-        }
-
-        @Override
-        public Object operate(boolean b1, boolean b2)
-                throws OperationNotSupportedException {
-            return b1 == b2;
-        }
-
-        @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return d1 == d2;
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 == l2;
-        }
-
+    EQUALS(false, false) {
         @Override
         public Object operate(String s1, String s2)
                 throws OperationNotSupportedException {
@@ -408,9 +215,8 @@ public enum OperatorTypes {
         }
 
         @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            return;
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return true;
         }
 
         @Override
@@ -418,26 +224,11 @@ public enum OperatorTypes {
             return precedence.Relational;
         }
     },
-    LESSEQ(false) {
+    LESSEQ(false, false) {
         @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 <= l2;
-        }
-
-        @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return d1 <= d2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return !(GCF == BasicType.Boolean
+                    || GCF == BasicType.StringBuilder);
         }
 
         @Override
@@ -445,26 +236,11 @@ public enum OperatorTypes {
             return precedence.Relational;
         }
     },
-    GREATEREQ(false) {
+    GREATEREQ(false, false) {
         @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return d1 >= d2;
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 >= l2;
-        }
-
-        @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            if (GCF == BasicType.Boolean
-                    || GCF == BasicType.StringBuilder) {
-                throw new BadOperationTypeException();
-            }
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return ! (GCF == BasicType.Boolean
+                    || GCF == BasicType.StringBuilder);
         }
 
         @Override
@@ -472,31 +248,7 @@ public enum OperatorTypes {
             return precedence.Relational;
         }
     },
-    NOTEQUAL(false) {
-        @Override
-        public Object operate(char c1, char c2)
-                throws OperationNotSupportedException {
-            return c1 != c2;
-        }
-
-        @Override
-        public Object operate(boolean b1, boolean b2)
-                throws OperationNotSupportedException {
-            return b1 != b2;
-        }
-
-        @Override
-        public Object operate(double d1, double d2)
-                throws OperationNotSupportedException {
-            return d1 != d2;
-        }
-
-        @Override
-        public Object operate(long l1, long l2)
-                throws OperationNotSupportedException {
-            return l1 != l2;
-        }
-
+    NOTEQUAL(false, false) {
         @Override
         public Object operate(String s1, String s2)
                 throws OperationNotSupportedException {
@@ -504,46 +256,44 @@ public enum OperatorTypes {
         }
 
         @Override
-        public void verifyOperation(DeclaredType GCF)
-                throws BadOperationTypeException {
-            return;
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return true;
         }
 
         @Override
         public precedence getPrecedence() {
             return precedence.Relational;
         }
+    },
+    ADDRESS(true, false) {
+        @Override
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return true;
+        }
+
+        @Override
+        public precedence getPrecedence() {
+            return precedence.Dereferencing;
+        }
+    },
+    DEREF(true, true) {
+        @Override
+        public boolean verifyBinaryOperation(DeclaredType GCF) {
+            return true;
+        }
+
+        @Override
+        public precedence getPrecedence() {
+            return precedence.Dereferencing;
+        }
     };
 
     public boolean can_be_unary;
+    public boolean postfix;
 
-    OperatorTypes(boolean can_be_unary) {
+    OperatorTypes(boolean can_be_unary, boolean postfix) {
         this.can_be_unary = can_be_unary;
-    }
-
-    public Object operate(char c1, char c2)
-            throws OperationNotSupportedException {
-        throw new OperationNotSupportedException(this
-                + " does not support operating on character types");
-    }
-
-    public Object operate(double d1, double d2)
-            throws OperationNotSupportedException {
-        throw new OperationNotSupportedException(this
-                + " does not support operating on floating point types");
-    }
-
-    public Object operate(long l1, long l2)
-            throws OperationNotSupportedException {
-        throw new OperationNotSupportedException(this
-                + " does not support operating on integer types");
-    }
-
-    public Object operate(boolean b1, boolean b2)
-            throws OperationNotSupportedException {
-        throw new OperationNotSupportedException(this
-                + " does not support operating on boolean types");
-
+        this.postfix = postfix;
     }
 
     public Object operate(boolean b) throws OperationNotSupportedException {
@@ -560,37 +310,41 @@ public enum OperatorTypes {
 
     public Object operate(long l) throws OperationNotSupportedException {
         throw new OperationNotSupportedException(this
-                + " does not support operating on an integer type number");
+                + " does not support operating on an integer operator number");
 
     }
 
-    public void verifyOperation(DeclaredType type1, DeclaredType type2)
+    public boolean verifyBinaryOperation(DeclaredType type1, DeclaredType type2)
             throws BadOperationTypeException {
         DeclaredType GCF = get_GCF(type1, type2);
         if (GCF == null) {
-            throw new BadOperationTypeException();
+            return false;
         }
-        verifyOperation(GCF);
+        return verifyBinaryOperation(GCF);
     }
 
-    void verifyOperation(DeclaredType GCF) throws BadOperationTypeException {
-        return;
+    boolean verifyBinaryOperation(DeclaredType GCF) {
+        return true;
     }
 
-    public Object operate(Object o) throws OperationNotSupportedException {
-        if (o instanceof Boolean) {
-            return operate(((Boolean) o).booleanValue());
+    public boolean verifyUnaryOperation(DeclaredType type) {
+        return true;
+    }
+
+    public Object operate(Object o, RuntimeType type) throws OperationNotSupportedException {
+        if (type.declType == BasicType.Boolean) {
+            return operate((Boolean) o);
         }
-        if (o instanceof Integer) {
+        if (type.declType == BasicType.Integer) {
             return ((Long) operate(((Integer) o).longValue())).intValue();
         }
-        if (o instanceof Long) {
-            return operate(((Long) o).longValue());
+        if (type.declType == BasicType.Long) {
+            return operate((Long) o);
         }
-        if (o instanceof Double) {
-            return operate(((Double) o).doubleValue());
+        if (type.declType == BasicType.Double) {
+            return operate((Double) o);
         }
-        throw new RuntimeException("unrecognized type " + o.getClass()
+        throw new RuntimeException("unrecognized operator " + o.getClass()
                 + " for operation " + this);
     }
 

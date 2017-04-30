@@ -4,28 +4,27 @@ import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
-import com.js.interpreter.ast.returnsvalue.DebuggableReturnsValue;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.DebuggableRValue;
+import com.js.interpreter.ast.returnsvalue.LValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.PointerType;
 import com.js.interpreter.pascaltypes.RuntimeType;
+import com.js.interpreter.runtime.PascalReference;
 import com.js.interpreter.runtime.Reference;
-import com.js.interpreter.runtime.VariableBoxer;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class GetAddress extends DebuggableReturnsValue {
-    final ReturnsValue target;
+import javax.sound.sampled.Line;
 
-    final SetValueExecutable setTarget;
-    LineInfo line;
+public class GetAddress extends DebuggableRValue {
+    final LValue target;
 
-    public GetAddress(ReturnsValue target) throws UnassignableTypeException {
+    public GetAddress(LValue target) throws UnassignableTypeException {
         this.target = target;
-        setTarget = target.createSetValueInstruction(target);
     }
 
     @Override
@@ -46,45 +45,14 @@ public class GetAddress extends DebuggableReturnsValue {
     }
 
     @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        throw new UnassignableTypeException(this);
-    }
-
-    @Override
     public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
             throws RuntimePascalException {
-        final ConstantAccess ca = new ConstantAccess(null, line);
-        final VariableContext ff = f;
-        final RuntimeExecutable<?> fmain = main;
-        setTarget.setAssignedValue(ca);
-        return new VariableBoxer() {
-
-            @Override
-            public void set(Object value) {
-                ca.constant_value = value;
-                try {
-                    setTarget.execute(ff, fmain);
-                } catch (RuntimePascalException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public Object get() throws RuntimePascalException {
-                return target.getValue(ff, fmain);
-            }
-
-            @Override
-            public Reference clone() {
-                return this;
-            }
-        };
+       return target.getReference(f, main);
     }
 
     @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+    public RValue compileTimeExpressionFold(CompileTimeContext context)
             throws ParsingException {
-        return new GetAddress(target.compileTimeExpressionFold(context));
+       return this;
     }
 }

@@ -5,13 +5,13 @@ import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.returnsvalue.FunctionCall;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.*;
 import com.js.interpreter.plugins.templated.TemplatedPascalPlugin;
-import com.js.interpreter.runtime.VariableBoxer;
+import com.js.interpreter.runtime.PascalReference;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
@@ -22,7 +22,7 @@ public class SetLength implements TemplatedPascalPlugin {
 
     static ArgumentType[] _argumentTypes = {
             new RuntimeType(new ArrayType<DeclaredType>(
-                    BasicType.anew(Object.class), new SubrangeType(0,
+                    BasicType.create(Object.class), new SubrangeType(0,
                     0)), true),
             new RuntimeType(BasicType.Integer, false)};
 
@@ -32,10 +32,10 @@ public class SetLength implements TemplatedPascalPlugin {
     }
 
     @Override
-    public FunctionCall generateCall(LineInfo line, ReturnsValue[] arguments,
+    public FunctionCall generateCall(LineInfo line, RValue[] arguments,
                                      ExpressionContext f) throws ParsingException {
-        ReturnsValue array = arguments[0];
-        ReturnsValue size = arguments[1];
+        RValue array = arguments[0];
+        RValue size = arguments[1];
         @SuppressWarnings("rawtypes")
         DeclaredType elemtype = ((ArrayType) ((PointerType) array.get_type(f).declType).pointedToType).element_type;
         LineInfo l = line;
@@ -44,7 +44,7 @@ public class SetLength implements TemplatedPascalPlugin {
 
     @Override
     public FunctionCall generatePerfectFitCall(LineInfo line,
-                                               ReturnsValue[] values, ExpressionContext f) throws ParsingException {
+                                               RValue[] values, ExpressionContext f) throws ParsingException {
         return generateCall(line, values, f);
     }
 
@@ -59,13 +59,13 @@ public class SetLength implements TemplatedPascalPlugin {
     }
 
     class SetLengthCall extends FunctionCall {
-        ReturnsValue array;
-        ReturnsValue size;
+        RValue array;
+        RValue size;
         DeclaredType elemtype;
 
         LineInfo line;
 
-        public SetLengthCall(ReturnsValue array, ReturnsValue size,
+        public SetLengthCall(RValue array, RValue size,
                              DeclaredType elemType, LineInfo line) {
             this.array = array;
             this.size = size;
@@ -85,18 +85,12 @@ public class SetLength implements TemplatedPascalPlugin {
         }
 
         @Override
-        public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-                throws UnassignableTypeException {
-            throw new UnassignableTypeException(this);
-        }
-
-        @Override
         public Object compileTimeValue(CompileTimeContext context) {
             return null;
         }
 
         @Override
-        public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+        public RValue compileTimeExpressionFold(CompileTimeContext context)
                 throws ParsingException {
             return new SetLengthCall(array.compileTimeExpressionFold(context),
                     size.compileTimeExpressionFold(context), elemtype, line);
@@ -119,7 +113,7 @@ public class SetLength implements TemplatedPascalPlugin {
                 throws RuntimePascalException {
             int s = (Integer) size.getValue(f, main);
             @SuppressWarnings("rawtypes")
-            VariableBoxer a = (VariableBoxer) array.getValue(f, main);
+            PascalReference a = (PascalReference) array.getValue(f, main);
             Object arr = a.get();
             int oldlength = Array.getLength(arr);
             Object newarr = Array.newInstance(elemtype.getTransferClass(), s);

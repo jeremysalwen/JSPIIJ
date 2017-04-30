@@ -2,7 +2,7 @@ package com.js.interpreter.pascaltypes;
 
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.ast.returnsvalue.cloning.CloneableObjectCloner;
 import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
@@ -18,11 +18,11 @@ import java.util.List;
 
 public class CustomType extends ObjectType {
     /**
-     * This class represents a declaration of a new type in pascal.
+     * This class represents a declaration of a new operator in pascal.
      */
 
     /**
-     * This is a list of the defined variables in the custom type.
+     * This is a list of the defined variables in the custom operator.
      */
     public List<VariableDeclaration> variable_types;
 
@@ -33,9 +33,9 @@ public class CustomType extends ObjectType {
     }
 
     /**
-     * Adds another sub-variable to this user defined type.
+     * Adds another sub-variable to this user defined operator.
      *
-     * @param v The name and type of the variable to add.
+     * @param v The name and operator of the variable to add.
      */
     public void add_variable_declaration(VariableDeclaration v) {
         variable_types.add(v);
@@ -117,7 +117,7 @@ public class CustomType extends ObjectType {
     }
 
     @Override
-    public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
+    public RValue convert(RValue value, ExpressionContext f)
             throws ParsingException {
         RuntimeType other_type = value.get_type(f);
         if (this.equals(other_type.declType)) {
@@ -355,13 +355,13 @@ public class CustomType extends ObjectType {
     }
 
     @Override
-    public ReturnsValue generateArrayAccess(ReturnsValue array,
-                                            ReturnsValue index) throws NonArrayIndexed {
+    public RValue generateArrayAccess(RValue array,
+                                      RValue index) throws NonArrayIndexed {
         throw new NonArrayIndexed(array.getLineNumber(), this);
     }
 
     @Override
-    public ReturnsValue cloneValue(ReturnsValue r) {
+    public RValue cloneValue(RValue r) {
         return new CloneableObjectCloner(r);
     }
 

@@ -2,7 +2,7 @@ package com.js.interpreter.pascaltypes;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.ArrayAccess;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.ast.returnsvalue.cloning.ArrayCloner;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
@@ -112,7 +112,7 @@ public class ArrayType<T extends DeclaredType> implements DeclaredType {
      * array_type.equals(Object o)}.
      */
     @Override
-    public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
+    public RValue convert(RValue value, ExpressionContext f)
             throws ParsingException {
         RuntimeType other = value.get_type(f);
         return this.superset(other.declType) ? cloneValue(value) : null;
@@ -126,7 +126,7 @@ public class ArrayType<T extends DeclaredType> implements DeclaredType {
     }
 
     @Override
-    public ReturnsValue cloneValue(final ReturnsValue r) {
+    public RValue cloneValue(final RValue r) {
         return new ArrayCloner<T>(r);
     }
 
@@ -213,8 +213,8 @@ public class ArrayType<T extends DeclaredType> implements DeclaredType {
     }
 
     @Override
-    public ReturnsValue generateArrayAccess(ReturnsValue array,
-                                            ReturnsValue index) {
+    public RValue generateArrayAccess(RValue array,
+                                      RValue index) {
         return new ArrayAccess(array, index, bounds.lower);
     }
 

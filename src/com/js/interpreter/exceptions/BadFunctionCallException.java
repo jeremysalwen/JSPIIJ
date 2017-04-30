@@ -19,7 +19,7 @@ public class BadFunctionCallException extends ParsingException {
     public String getMessage() {
         if (functionExists) {
             if (numargsMatch) {
-                return ("One or more arguments has an incorrect type when calling function \""
+                return ("One or more arguments has an incorrect operator when calling function \""
                         + functionName + "\".");
             } else {
                 return ("Either too few or two many arguments are being passed to function \""

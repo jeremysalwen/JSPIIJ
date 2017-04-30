@@ -1,7 +1,7 @@
 package com.js.interpreter.tokens.grouping;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -34,9 +34,9 @@ public class ParenthesizedToken extends GrouperToken {
         return builder.toString();
     }
 
-    public List<ReturnsValue> get_arguments_for_call(ExpressionContext context)
+    public List<RValue> get_arguments_for_call(ExpressionContext context)
             throws ParsingException {
-        List<ReturnsValue> result = new ArrayList<ReturnsValue>();
+        List<RValue> result = new ArrayList<RValue>();
         while (hasNext()) {
             result.add(getNextExpression(context));
             if (hasNext()) {

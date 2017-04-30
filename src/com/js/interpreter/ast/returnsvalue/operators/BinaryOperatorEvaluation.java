@@ -3,8 +3,8 @@ package com.js.interpreter.ast.returnsvalue.operators;
 import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.returnsvalue.DebuggableReturnsValue;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.DebuggableRValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.BadOperationTypeException;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ParsingException;
@@ -21,15 +21,15 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.exception.internal.InternalInterpreterException;
 import com.js.interpreter.tokens.OperatorTypes;
 
-public abstract class BinaryOperatorEvaluation extends DebuggableReturnsValue {
+public abstract class BinaryOperatorEvaluation extends DebuggableRValue {
     OperatorTypes operator_type;
 
-    ReturnsValue operon1;
+    RValue operon1;
 
-    ReturnsValue operon2;
+    RValue operon2;
     LineInfo line;
 
-    public BinaryOperatorEvaluation(ReturnsValue operon1, ReturnsValue operon2,
+    public BinaryOperatorEvaluation(RValue operon1, RValue operon2,
                                     OperatorTypes operator, LineInfo line) {
         this.operator_type = operator;
         this.operon1 = operon1;
@@ -76,15 +76,9 @@ public abstract class BinaryOperatorEvaluation extends DebuggableReturnsValue {
         }
     }
 
-    @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        throw new UnassignableTypeException(r);
-    }
-
     /* Boy, templates or macros like C++ sure would be useful now... */
     public static BinaryOperatorEvaluation generateOp(ExpressionContext f,
-                                                      ReturnsValue v1, ReturnsValue v2, OperatorTypes op_type,
+                                                      RValue v1, RValue v2, OperatorTypes op_type,
                                                       LineInfo line) throws ParsingException {
         DeclaredType t1 = v1.get_type(f).declType;
         DeclaredType t2 = v2.get_type(f).declType;

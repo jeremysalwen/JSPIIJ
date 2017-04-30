@@ -16,6 +16,7 @@ public class LexerTest {
      * @throws IOException
      * @throws GroupingException
      */
+    @Deprecated
     public static void main(String[] args) throws IOException,
             GroupingException {
         String file = "scripts/concord.pas";

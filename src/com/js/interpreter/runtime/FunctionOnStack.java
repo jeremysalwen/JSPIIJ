@@ -16,7 +16,7 @@ public class FunctionOnStack extends VariableContext {
 
     RuntimeExecutable<?> main;
     @SuppressWarnings("rawtypes")
-    HashMap<String, VariableBoxer> reference_variables;
+    HashMap<String, PascalReference> reference_variables;
 
     @SuppressWarnings("rawtypes")
     public FunctionOnStack(VariableContext parentContext,
@@ -28,11 +28,11 @@ public class FunctionOnStack extends VariableContext {
         for (VariableDeclaration v : prototype.declarations.UnitVarDefs) {
             v.initialize(local_variables);
         }
-        reference_variables = new HashMap<String, VariableBoxer>();
+        reference_variables = new HashMap<String, PascalReference>();
         for (int i = 0; i < arguments.length; i++) {
             if (prototype.argument_types[i].writable) {
                 reference_variables.put(prototype.argument_names[i],
-                        (VariableBoxer) arguments[i]);
+                        (PascalReference) arguments[i]);
             } else {
                 local_variables.put(prototype.argument_names[i], arguments[i]);
             }

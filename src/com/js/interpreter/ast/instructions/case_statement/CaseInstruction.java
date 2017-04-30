@@ -6,8 +6,8 @@ import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.InstructionGrouper;
-import com.js.interpreter.ast.returnsvalue.CachedReturnsValue;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.CachedRValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ConstantCalculationException;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CaseInstruction extends DebuggableExecutable {
-    ReturnsValue switch_value;
+    RValue switch_value;
     CasePossibility[] possibilies;
     InstructionGrouper otherwise;
     LineInfo line;
@@ -33,7 +33,7 @@ public class CaseInstruction extends DebuggableExecutable {
     public CaseInstruction(CaseToken i, ExpressionContext context)
             throws ParsingException {
         this.line = i.lineInfo;
-        switch_value = new CachedReturnsValue(i.getNextExpression(context));
+        switch_value = new CachedRValue(i.getNextExpression(context));
         Token next = i.take();
         if (!(next instanceof OfToken)) {
             throw new ExpectedTokenException("of", next);
@@ -43,14 +43,14 @@ public class CaseInstruction extends DebuggableExecutable {
                 && !(i.peek() instanceof EOF_Token)) {
             List<CaseCondition> conditions = new ArrayList<CaseCondition>();
             while (true) {
-                ReturnsValue val = i.getNextExpression(context);
+                RValue val = i.getNextExpression(context);
                 Object v = val.compileTimeValue(context);
                 if (v == null) {
                     throw new NonConstantExpressionException(val);
                 }
                 if (i.peek() instanceof DotDotToken) {
                     i.take();
-                    ReturnsValue upper = i.getNextExpression(context);
+                    RValue upper = i.getNextExpression(context);
                     Object hi = upper.compileTimeValue(context);
                     if (hi == null) {
                         throw new NonConstantExpressionException(upper);

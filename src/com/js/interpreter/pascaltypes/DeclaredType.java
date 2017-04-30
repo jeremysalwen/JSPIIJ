@@ -1,7 +1,7 @@
 package com.js.interpreter.pascaltypes;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
@@ -17,8 +17,8 @@ public interface DeclaredType {
     public abstract Class getTransferClass();
 
 
-    public abstract ReturnsValue convert(ReturnsValue returns_value,
-                                         ExpressionContext f) throws ParsingException;
+    public abstract RValue convert(RValue returns_value,
+                                   ExpressionContext f) throws ParsingException;
 
     public abstract boolean equals(DeclaredType other);
 
@@ -27,10 +27,10 @@ public interface DeclaredType {
 
     public abstract void cloneValueOnStack(TransformationInput t);
 
-    public abstract ReturnsValue cloneValue(ReturnsValue r);
+    public abstract RValue cloneValue(RValue r);
 
-    public abstract ReturnsValue generateArrayAccess(ReturnsValue array,
-                                                     ReturnsValue index) throws NonArrayIndexed;
+    public abstract RValue generateArrayAccess(RValue array,
+                                               RValue index) throws NonArrayIndexed;
 
     public abstract Class<?> getStorageClass();
 

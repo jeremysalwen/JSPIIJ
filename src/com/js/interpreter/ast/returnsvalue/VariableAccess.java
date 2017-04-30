@@ -2,18 +2,20 @@ package com.js.interpreter.ast.returnsvalue;
 
 import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
+import com.js.interpreter.ast.instructions.FieldReference;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.instructions.VariableSet;
+import com.js.interpreter.ast.instructions.Assignment;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.RuntimeType;
+import com.js.interpreter.runtime.Reference;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.tokens.WordToken;
 
-public class VariableAccess extends DebuggableReturnsValue {
+public class VariableAccess extends DebuggableLValue {
     public String name;
     LineInfo line;
 
@@ -39,6 +41,11 @@ public class VariableAccess extends DebuggableReturnsValue {
     }
 
     @Override
+    public Reference<?> getReferenceImpl(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+        return new FieldReference(f, name);
+    }
+
+    @Override
     public String toString() {
         return name;
     }
@@ -55,13 +62,7 @@ public class VariableAccess extends DebuggableReturnsValue {
     }
 
     @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        return new VariableSet(name, r, line);
-    }
-
-    @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+    public RValue compileTimeExpressionFold(CompileTimeContext context)
             throws ParsingException {
         return this;
     }

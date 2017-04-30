@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class FunctionCall extends DebuggableExecutableReturnsValue {
+public abstract class FunctionCall extends DebuggableExecutableRValue {
 
-    ReturnsValue[] arguments;
+    RValue[] arguments;
 
     @Override
     public String toString() {
@@ -37,28 +37,22 @@ public abstract class FunctionCall extends DebuggableExecutableReturnsValue {
     }
 
     @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        throw new UnassignableTypeException(r);
-    }
-
-    @Override
     public Object compileTimeValue(CompileTimeContext context)
             throws ParsingException {
         return null;
     }
 
-    ReturnsValue[] compileTimeExpressionFoldArguments(CompileTimeContext context)
+    RValue[] compileTimeExpressionFoldArguments(CompileTimeContext context)
             throws ParsingException {
-        ReturnsValue[] args = new ReturnsValue[arguments.length];
+        RValue[] args = new RValue[arguments.length];
         for (int i = 0; i < arguments.length; i++) {
             args[i] = arguments[i].compileTimeExpressionFold(context);
         }
         return args;
     }
 
-    public static ReturnsValue generate_function_call(WordToken name,
-                                                      List<ReturnsValue> arguments, ExpressionContext f)
+    public static RValue generate_function_call(WordToken name,
+                                                List<RValue> arguments, ExpressionContext f)
             throws ParsingException {
         List<List<AbstractFunction>> possibilities = new ArrayList<List<AbstractFunction>>();
         f.getCallableFunctions(name.name.toLowerCase(), possibilities);
@@ -68,7 +62,7 @@ public abstract class FunctionCall extends DebuggableExecutableReturnsValue {
         AbstractFunction chosen = null;
         boolean perfectfit = false;
         AbstractFunction ambigous = null;
-        ReturnsValue result = null;
+        RValue result = null;
         for (List<AbstractFunction> l : possibilities) {
             for (AbstractFunction a : l) {
                 result = a.generatePerfectFitCall(name.lineInfo, arguments, f);

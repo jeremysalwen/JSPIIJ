@@ -7,7 +7,7 @@ public class IncompatableFunctionDeclaration extends ParsingException {
 
     public IncompatableFunctionDeclaration(LineInfo line,
                                            DeclaredType returntype, DeclaredType previousreturntype) {
-        super(line, "Function declaration declares conflicting return type "
+        super(line, "Function declaration declares conflicting return operator "
                 + returntype + ".  It previously was defined as "
                 + previousreturntype);
     }

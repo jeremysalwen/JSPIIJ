@@ -1,7 +1,7 @@
 package com.js.interpreter.pascaltypes;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.ast.returnsvalue.boxing.CharacterBoxer;
 import com.js.interpreter.ast.returnsvalue.boxing.StringBuilderBoxer;
 import com.js.interpreter.ast.returnsvalue.cloning.CloneableObjectCloner;
@@ -41,7 +41,7 @@ public class JavaClassBasedType implements DeclaredType {
     }
 
     @Override
-    public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
+    public RValue convert(RValue value, ExpressionContext f)
             throws ParsingException {
         RuntimeType other_type = value.get_type(f);
         if (other_type.declType instanceof BasicType) {
@@ -91,13 +91,13 @@ public class JavaClassBasedType implements DeclaredType {
     }
 
     @Override
-    public ReturnsValue cloneValue(ReturnsValue r) {
+    public RValue cloneValue(RValue r) {
         return new CloneableObjectCloner(r);
     }
 
     @Override
-    public ReturnsValue generateArrayAccess(ReturnsValue array,
-                                            ReturnsValue index) throws NonArrayIndexed {
+    public RValue generateArrayAccess(RValue array,
+                                      RValue index) throws NonArrayIndexed {
         return null;
     }
 

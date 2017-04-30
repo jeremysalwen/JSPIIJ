@@ -11,7 +11,7 @@ import com.js.interpreter.pascaltypes.RuntimeType;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 
-public class ConstantAccess extends DebuggableReturnsValue {
+public class ConstantAccess extends DebuggableRValue {
     public Object constant_value;
     final LineInfo line;
 
@@ -37,7 +37,7 @@ public class ConstantAccess extends DebuggableReturnsValue {
 
     @Override
     public RuntimeType get_type(ExpressionContext f) {
-        return new RuntimeType(BasicType.anew(constant_value
+        return new RuntimeType(BasicType.create(constant_value
                 .getClass()), false);
     }
 
@@ -47,13 +47,7 @@ public class ConstantAccess extends DebuggableReturnsValue {
     }
 
     @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        throw new UnassignableTypeException(this);
-    }
-
-    @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+    public RValue compileTimeExpressionFold(CompileTimeContext context)
             throws ParsingException {
         return this;
     }

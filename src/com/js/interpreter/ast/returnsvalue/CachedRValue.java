@@ -11,11 +11,11 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class CachedReturnsValue implements ReturnsValue {
-    ReturnsValue other;
+public class CachedRValue implements RValue {
+    RValue other;
     Object cache = null;
 
-    public CachedReturnsValue(ReturnsValue other) {
+    public CachedRValue(RValue other) {
         this.other = other;
     }
 
@@ -40,19 +40,18 @@ public class CachedReturnsValue implements ReturnsValue {
     }
 
     @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+    public RValue compileTimeExpressionFold(CompileTimeContext context)
             throws ParsingException {
         if (cache != null) {
             return this;
         } else {
-            return new CachedReturnsValue(other);
+            return new CachedRValue(other);
         }
     }
 
     @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        throw new UnassignableTypeException(this);
+    public LValue asLValue(ExpressionContext f) {
+        return null;
     }
 
     @Override

@@ -22,7 +22,7 @@ public class SimpleFunctionCall extends FunctionCall {
     LineInfo line;
 
     public SimpleFunctionCall(AbstractCallableFunction function,
-                              ReturnsValue[] arguments, LineInfo line) {
+                              RValue[] arguments, LineInfo line) {
         this.function = function;
         if (function == null) {
             System.err.println("Warning: Null function call");
@@ -68,7 +68,7 @@ public class SimpleFunctionCall extends FunctionCall {
     }
 
     @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+    public RValue compileTimeExpressionFold(CompileTimeContext context)
             throws ParsingException {
         return new SimpleFunctionCall(function,
                 compileTimeExpressionFoldArguments(context), line);

@@ -2,7 +2,7 @@ package com.js.interpreter.plugins.standard;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.FunctionCall;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
@@ -19,14 +19,14 @@ public class SetArrayLength implements TemplatedPascalPlugin {
     }
 
     @Override
-    public FunctionCall generateCall(LineInfo line, ReturnsValue[] values,
+    public FunctionCall generateCall(LineInfo line, RValue[] values,
                                      ExpressionContext f) throws ParsingException {
         return a.generateCall(line, values, f);
     }
 
     @Override
     public FunctionCall generatePerfectFitCall(LineInfo line,
-                                               ReturnsValue[] values, ExpressionContext f) throws ParsingException {
+                                               RValue[] values, ExpressionContext f) throws ParsingException {
         return a.generatePerfectFitCall(line, values, f);
     }
 

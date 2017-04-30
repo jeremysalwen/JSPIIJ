@@ -1,14 +1,13 @@
 package com.js.interpreter.ast.returnsvalue;
 
-import com.js.interpreter.ast.instructions.Executable;
-import com.js.interpreter.ast.instructions.ExecutionResult;
+import com.js.interpreter.ast.expressioncontext.ExpressionContext;
+import com.js.interpreter.runtime.Reference;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.exception.UnhandledPascalException;
 
-public abstract class DebuggableExecutableReturnsValue implements Executable,
-        ReturnsValue {
+public abstract class DebuggableLValue implements LValue {
 
     @Override
     public Object getValue(VariableContext f, RuntimeExecutable<?> main)
@@ -25,14 +24,18 @@ public abstract class DebuggableExecutableReturnsValue implements Executable,
         }
     }
 
-    public abstract Object getValueImpl(VariableContext f,
-                                        RuntimeExecutable<?> main) throws RuntimePascalException;
-
     @Override
-    public ExecutionResult execute(VariableContext f, RuntimeExecutable<?> main)
+    public LValue asLValue(ExpressionContext f) {
+        return this;
+    }
+
+    public Reference<?> getReference(VariableContext f, RuntimeExecutable<?> main)
             throws RuntimePascalException {
         try {
-            return executeImpl(f, main);
+            if (main != null) {
+                main.scriptControlCheck(getLineNumber());
+            }
+            return getReferenceImpl(f, main);
         } catch (RuntimePascalException e) {
             throw e;
         } catch (Exception e) {
@@ -40,6 +43,9 @@ public abstract class DebuggableExecutableReturnsValue implements Executable,
         }
     }
 
-    public abstract ExecutionResult executeImpl(VariableContext f,
-                                                RuntimeExecutable<?> main) throws RuntimePascalException;
+    public abstract Object getValueImpl(VariableContext f,
+                                        RuntimeExecutable<?> main) throws RuntimePascalException;
+
+    public abstract Reference<?> getReferenceImpl(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException;
+
 }

@@ -2,7 +2,7 @@ package com.js.interpreter.runtime;
 
 import java.lang.reflect.Array;
 
-public class ArrayPointer<T> implements VariableBoxer<T> {
+public class ArrayPointer<T> implements PascalReference<T> {
     private final int index;
     private final Object container;
 

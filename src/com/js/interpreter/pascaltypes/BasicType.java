@@ -1,8 +1,9 @@
 package com.js.interpreter.pascaltypes;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
-import com.js.interpreter.ast.returnsvalue.StringIndexAccess;
+import com.js.interpreter.ast.returnsvalue.RValue;
+import com.js.interpreter.ast.returnsvalue.StringIndex;
+import com.js.interpreter.ast.returnsvalue.StringIndexReference;
 import com.js.interpreter.ast.returnsvalue.boxing.CharacterBoxer;
 import com.js.interpreter.ast.returnsvalue.boxing.StringBoxer;
 import com.js.interpreter.ast.returnsvalue.cloning.StringBuilderCloner;
@@ -89,7 +90,7 @@ public enum BasicType implements DeclaredType {
         }
 
         @Override
-        public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
+        public RValue convert(RValue value, ExpressionContext f)
                 throws ParsingException {
             RuntimeType other_type = value.get_type(f);
             if (other_type.declType instanceof BasicType) {
@@ -111,13 +112,13 @@ public enum BasicType implements DeclaredType {
         }
 
         @Override
-        public ReturnsValue generateArrayAccess(ReturnsValue array,
-                                                ReturnsValue index) throws NonArrayIndexed {
-            return new StringIndexAccess(array, index);
+        public RValue generateArrayAccess(RValue array,
+                                          RValue index) throws NonArrayIndexed {
+            return new StringIndex(array, index);
         }
 
         @Override
-        public ReturnsValue cloneValue(ReturnsValue r) {
+        public RValue cloneValue(RValue r) {
             return new StringBuilderCloner(r);
         }
 
@@ -239,7 +240,7 @@ public enum BasicType implements DeclaredType {
     @Override
     public abstract String toString();
 
-    public static DeclaredType anew(Class c) {
+    public static DeclaredType create(Class c) {
         if (c == Integer.class) {
             return Integer;
         }
@@ -262,7 +263,7 @@ public enum BasicType implements DeclaredType {
     }
 
     @Override
-    public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
+    public RValue convert(RValue value, ExpressionContext f)
             throws ParsingException {
         RuntimeType other_type = value.get_type(f);
         if (other_type.declType instanceof BasicType) {
@@ -281,7 +282,7 @@ public enum BasicType implements DeclaredType {
     }
 
     @Override
-    public ReturnsValue cloneValue(final ReturnsValue r) {
+    public RValue cloneValue(final RValue r) {
         return r;
     }
 
@@ -291,8 +292,8 @@ public enum BasicType implements DeclaredType {
     }
 
     @Override
-    public ReturnsValue generateArrayAccess(ReturnsValue array,
-                                            ReturnsValue index) throws NonArrayIndexed {
+    public RValue generateArrayAccess(RValue array,
+                                      RValue index) throws NonArrayIndexed {
         throw new NonArrayIndexed(array.getLineNumber(), this);
     }
 

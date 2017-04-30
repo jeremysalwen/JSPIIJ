@@ -102,7 +102,7 @@ public class FunctionDeclaration extends AbstractCallableFunction {
         Token next = i.peek();
         if (!(is_procedure ^ (next instanceof ColonToken))) {
             throw new ParsingException(next.lineInfo,
-                    "Functions must have a return type, and procedures cannot have one");
+                    "Functions must have a return operator, and procedures cannot have one");
         }
         if (!is_procedure && next instanceof ColonToken) {
             i.take();
@@ -169,7 +169,7 @@ public class FunctionDeclaration extends AbstractCallableFunction {
         if (next instanceof ParenthesizedToken) {
             ParenthesizedToken arguments_token = (ParenthesizedToken) i.take();
             while (arguments_token.hasNext()) {
-                int j = 0; // counts number added of this type
+                int j = 0; // counts number added of this operator
                 next = arguments_token.take();
                 boolean is_varargs = false;
                 if (next instanceof VarToken) {
@@ -233,7 +233,7 @@ public class FunctionDeclaration extends AbstractCallableFunction {
             if (result_definition == null || other.return_type() == null
                     || !result_definition.equals(other.return_type())) {
                 System.err
-                        .println("Warning: Overriding previously declared return type for function "
+                        .println("Warning: Overriding previously declared return operator for function "
                                 + name);
             }
             return true;

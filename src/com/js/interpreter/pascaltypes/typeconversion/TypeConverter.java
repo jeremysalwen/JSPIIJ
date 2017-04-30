@@ -3,7 +3,8 @@ package com.js.interpreter.pascaltypes.typeconversion;
 import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.LValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.exceptions.UnconvertibleTypeException;
@@ -26,8 +27,8 @@ public class TypeConverter {
         precedence.put(Double.class, 3);
     }
 
-    public static ReturnsValue autoConvert(BasicType outtype,
-                                           ReturnsValue target, BasicType intype) {
+    public static RValue autoConvert(BasicType outtype,
+                                     RValue target, BasicType intype) {
         if (intype == outtype) {
             return target;
         }
@@ -44,28 +45,28 @@ public class TypeConverter {
         return null;
     }
 
-    public static ReturnsValue autoConvertRequired(BasicType outtype,
-                                                   ReturnsValue target, BasicType intype)
+    public static RValue autoConvertRequired(BasicType outtype,
+                                             RValue target, BasicType intype)
             throws UnconvertibleTypeException {
-        ReturnsValue result = autoConvert(outtype, target, intype);
+        RValue result = autoConvert(outtype, target, intype);
         if (result == null) {
             throw new UnconvertibleTypeException(target, outtype, intype, true);
         }
         return result;
     }
 
-    public static ReturnsValue forceConvertRequired(BasicType outtype,
-                                                    ReturnsValue target, BasicType intype)
+    public static RValue forceConvertRequired(BasicType outtype,
+                                              RValue target, BasicType intype)
             throws UnconvertibleTypeException {
-        ReturnsValue result = forceConvert(outtype, target, intype);
+        RValue result = forceConvert(outtype, target, intype);
         if (result == null) {
             throw new UnconvertibleTypeException(target, outtype, intype, false);
         }
         return result;
     }
 
-    public static ReturnsValue forceConvert(BasicType outtype,
-                                            ReturnsValue target, BasicType intype) {
+    public static RValue forceConvert(BasicType outtype,
+                                      RValue target, BasicType intype) {
         if (outtype == intype) {
             return target;
         }
@@ -112,10 +113,10 @@ public class TypeConverter {
         return null;
     }
 
-    static class NumberToReal implements ReturnsValue {
-        ReturnsValue other;
+    static class NumberToReal implements RValue {
+        RValue other;
 
-        public NumberToReal(ReturnsValue other) {
+        public NumberToReal(RValue other) {
             this.other = other;
         }
 
@@ -148,23 +149,23 @@ public class TypeConverter {
             }
         }
 
-        @Override
-        public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-                throws UnassignableTypeException {
-            throw new UnassignableTypeException(this);
-        }
 
         @Override
-        public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+        public RValue compileTimeExpressionFold(CompileTimeContext context)
                 throws ParsingException {
             return new NumberToReal(other.compileTimeExpressionFold(context));
         }
+
+        @Override
+        public LValue asLValue(ExpressionContext f) {
+            return null;
+        }
     }
 
-    static class NumberToLong implements ReturnsValue {
-        ReturnsValue other;
+    static class NumberToLong implements RValue {
+        RValue other;
 
-        public NumberToLong(ReturnsValue other) {
+        public NumberToLong(RValue other) {
             this.other = other;
         }
 
@@ -197,23 +198,23 @@ public class TypeConverter {
             }
         }
 
-        @Override
-        public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-                throws UnassignableTypeException {
-            throw new UnassignableTypeException(this);
-        }
 
         @Override
-        public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+        public RValue compileTimeExpressionFold(CompileTimeContext context)
                 throws ParsingException {
             return new NumberToLong(other.compileTimeExpressionFold(context));
         }
+
+        @Override
+        public LValue asLValue(ExpressionContext f) {
+            return null;
+        }
     }
 
-    static class NumberToChar implements ReturnsValue {
-        ReturnsValue other;
+    static class NumberToChar implements RValue {
+        RValue other;
 
-        public NumberToChar(ReturnsValue other) {
+        public NumberToChar(RValue other) {
             this.other = other;
         }
 
@@ -246,23 +247,23 @@ public class TypeConverter {
             }
         }
 
-        @Override
-        public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-                throws UnassignableTypeException {
-            throw new UnassignableTypeException(this);
-        }
 
         @Override
-        public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+        public RValue compileTimeExpressionFold(CompileTimeContext context)
                 throws ParsingException {
             return new NumberToChar(other.compileTimeExpressionFold(context));
         }
+
+        @Override
+        public LValue asLValue(ExpressionContext f) {
+            return null;
+        }
     }
 
-    static class NumberToInt implements ReturnsValue {
-        ReturnsValue other;
+    static class NumberToInt implements RValue {
+        RValue other;
 
-        public NumberToInt(ReturnsValue other) {
+        public NumberToInt(RValue other) {
             this.other = other;
         }
 
@@ -296,22 +297,21 @@ public class TypeConverter {
         }
 
         @Override
-        public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-                throws UnassignableTypeException {
-            throw new UnassignableTypeException(this);
-        }
-
-        @Override
-        public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+        public RValue compileTimeExpressionFold(CompileTimeContext context)
                 throws ParsingException {
             return new NumberToInt(other.compileTimeExpressionFold(context));
         }
+
+        @Override
+        public LValue asLValue(ExpressionContext f) {
+            return null;
+        }
     }
 
-    static class CharToInt implements ReturnsValue {
-        ReturnsValue other;
+    static class CharToInt implements RValue {
+        RValue other;
 
-        public CharToInt(ReturnsValue other) {
+        public CharToInt(RValue other) {
             this.other = other;
         }
 
@@ -344,23 +344,23 @@ public class TypeConverter {
             }
         }
 
-        @Override
-        public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-                throws UnassignableTypeException {
-            throw new UnassignableTypeException(this);
-        }
 
         @Override
-        public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+        public RValue compileTimeExpressionFold(CompileTimeContext context)
                 throws ParsingException {
             return new CharToInt(other.compileTimeExpressionFold(context));
         }
+
+        @Override
+        public LValue asLValue(ExpressionContext f) {
+            return null;
+        }
     }
 
-    public static class AnyToString implements ReturnsValue {
-        ReturnsValue other;
+    public static class AnyToString implements RValue {
+        RValue other;
 
-        public AnyToString(ReturnsValue other) {
+        public AnyToString(RValue other) {
             this.other = other;
         }
 
@@ -373,7 +373,7 @@ public class TypeConverter {
         @Override
         public RuntimeType get_type(ExpressionContext f)
                 throws ParsingException {
-            return new RuntimeType(BasicType.anew(String.class), false);
+            return new RuntimeType(BasicType.create(String.class), false);
         }
 
         @Override
@@ -392,16 +392,16 @@ public class TypeConverter {
             }
         }
 
+
         @Override
-        public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-                throws UnassignableTypeException {
-            throw new UnassignableTypeException(this);
+        public RValue compileTimeExpressionFold(CompileTimeContext context)
+                throws ParsingException {
+            return new AnyToString(other.compileTimeExpressionFold(context));
         }
 
         @Override
-        public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
-                throws ParsingException {
-            return new AnyToString(other.compileTimeExpressionFold(context));
+        public LValue asLValue(ExpressionContext f) {
+            return null;
         }
     }
 }

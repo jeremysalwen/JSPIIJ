@@ -1,10 +1,11 @@
 package com.js.interpreter.pascaltypes;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.LValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.ast.returnsvalue.boxing.GetAddress;
 import com.js.interpreter.exceptions.ParsingException;
-import com.js.interpreter.runtime.VariableBoxer;
+import com.js.interpreter.runtime.PascalReference;
 
 import java.util.Iterator;
 
@@ -17,13 +18,13 @@ public class RuntimeType implements ArgumentType {
         this.writable = writable;
     }
 
-    public ReturnsValue convert(ReturnsValue value, ExpressionContext f)
+    public RValue convert(RValue value, ExpressionContext f)
             throws ParsingException {
 
         RuntimeType other = value.get_type(f);
         if (writable) {
             if (this.equals(other)) {
-                return new GetAddress(value);
+                return new GetAddress((LValue) value);
             } else {
                 return null;
             }
@@ -50,15 +51,15 @@ public class RuntimeType implements ArgumentType {
     @Override
     public Class<?> getRuntimeClass() {
         if (writable) {
-            return VariableBoxer.class;
+            return PascalReference.class;
         } else {
             return declType.getTransferClass();
         }
     }
 
     @Override
-    public ReturnsValue convertArgType(Iterator<ReturnsValue> args,
-                                       ExpressionContext f) throws ParsingException {
+    public RValue convertArgType(Iterator<RValue> args,
+                                 ExpressionContext f) throws ParsingException {
         if (!args.hasNext()) {
             return null;
         }
@@ -66,16 +67,16 @@ public class RuntimeType implements ArgumentType {
     }
 
     @Override
-    public ReturnsValue perfectFit(Iterator<ReturnsValue> args,
-                                   ExpressionContext e) throws ParsingException {
+    public RValue perfectFit(Iterator<RValue> args,
+                             ExpressionContext e) throws ParsingException {
         if (!args.hasNext()) {
             return null;
         }
-        ReturnsValue val = args.next();
+        RValue val = args.next();
         RuntimeType other = val.get_type(e);
         if (this.declType.equals(other.declType)) {
             if (writable) {
-                return new GetAddress(val);
+                return new GetAddress((LValue)val);
             } else {
                 return other.declType.cloneValue(val);
             }

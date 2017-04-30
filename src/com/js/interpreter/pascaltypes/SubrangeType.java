@@ -1,7 +1,7 @@
 package com.js.interpreter.pascaltypes;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ExpectedTokenException;
 import com.js.interpreter.exceptions.NonConstantExpressionException;
 import com.js.interpreter.exceptions.NonIntegerIndexException;
@@ -18,8 +18,8 @@ public class SubrangeType {
 
     public SubrangeType(GrouperToken i, ExpressionContext context)
             throws ParsingException {
-        ReturnsValue l = i.getNextExpression(context);
-        ReturnsValue low = BasicType.Integer.convert(l, context);
+        RValue l = i.getNextExpression(context);
+        RValue low = BasicType.Integer.convert(l, context);
         if (low == null) {
             throw new NonIntegerIndexException(l);
         }
@@ -33,8 +33,8 @@ public class SubrangeType {
         if (!(t instanceof DotDotToken)) {
             throw new ExpectedTokenException("..", t);
         }
-        ReturnsValue h = i.getNextExpression(context);
-        ReturnsValue high = BasicType.Integer.convert(h, context);
+        RValue h = i.getNextExpression(context);
+        RValue high = BasicType.Integer.convert(h, context);
         if (high == null) {
             throw new NonIntegerIndexException(h);
         }

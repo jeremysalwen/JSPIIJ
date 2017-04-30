@@ -1,6 +1,6 @@
 package com.js.interpreter.runtime;
 
-public class ObjectBasedPointer<T> implements VariableBoxer<T> {
+public class ObjectBasedPointer<T> implements Reference<T> {
     public T obj;
 
     public ObjectBasedPointer(T val) {

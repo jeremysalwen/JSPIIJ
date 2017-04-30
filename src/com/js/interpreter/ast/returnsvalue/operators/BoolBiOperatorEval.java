@@ -3,7 +3,7 @@ package com.js.interpreter.ast.returnsvalue.operators;
 import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.BasicType;
@@ -17,7 +17,7 @@ import com.js.interpreter.tokens.OperatorTypes;
 
 public class BoolBiOperatorEval extends BinaryOperatorEvaluation {
 
-    public BoolBiOperatorEval(ReturnsValue operon1, ReturnsValue operon2,
+    public BoolBiOperatorEval(RValue operon1, RValue operon2,
                               OperatorTypes operator, LineInfo line) {
         super(operon1, operon2, operator, line);
     }
@@ -60,7 +60,7 @@ public class BoolBiOperatorEval extends BinaryOperatorEvaluation {
     }
 
     @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context) throws ParsingException {
+    public RValue compileTimeExpressionFold(CompileTimeContext context) throws ParsingException {
         Object val = this.compileTimeValue(context);
         if (val != null) {
             return new ConstantAccess(val, line);

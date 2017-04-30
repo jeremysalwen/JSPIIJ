@@ -4,7 +4,8 @@ import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.*;
 import com.js.interpreter.plugins.annotations.ArrayBoundsInfo;
 import com.js.interpreter.plugins.annotations.MethodTypeData;
-import com.js.interpreter.runtime.VariableBoxer;
+import com.js.interpreter.runtime.PascalPointer;
+import com.js.interpreter.runtime.PascalReference;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import ncsa.tools.common.util.TypeUtils;
@@ -47,8 +48,15 @@ public class PluginDeclaration extends AbstractCallableFunction {
     }
 
     DeclaredType convertBasicType(Type javatype) {
+        if(javatype == PascalPointer.class
+                || (javatype instanceof ParameterizedType && ((ParameterizedType) javatype)
+                .getRawType() == PascalPointer.class)) {
+            Type subtype = getFirstGenericType(javatype);
+            return new PointerType(convertBasicType(subtype));
+        }
+
         Class<?> type = (Class<?>) javatype;
-        return BasicType.anew(type.isPrimitive() ? TypeUtils
+        return BasicType.create(type.isPrimitive() ? TypeUtils
                 .getClassForType(type) : type);
     }
 
@@ -82,14 +90,14 @@ public class PluginDeclaration extends AbstractCallableFunction {
     RuntimeType convertReferenceType(Type javatype,
                                      Iterator<SubrangeType> arraysizes) {
         Type subtype = javatype;
-        boolean pointer = javatype == VariableBoxer.class
+        boolean reference_argument = javatype == PascalReference.class
                 || (javatype instanceof ParameterizedType && ((ParameterizedType) javatype)
-                .getRawType() == VariableBoxer.class);
-        if (pointer) {
+                .getRawType() == PascalReference.class);
+        if (reference_argument) {
             subtype = getFirstGenericType(javatype);
         }
         DeclaredType arraytype = convertArrayType(subtype, arraysizes);
-        return new RuntimeType(arraytype, pointer);
+        return new RuntimeType(arraytype, reference_argument);
     }
 
     RuntimeType deducePascalTypeFromJavaTypeAndAnnotations(Type javatype,
@@ -140,14 +148,14 @@ public class PluginDeclaration extends AbstractCallableFunction {
     @Override
     public DeclaredType return_type() {
         Class<?> result = method.getReturnType();
-        if (result == VariableBoxer.class) {
+        if (result == PascalReference.class) {
             result = (Class<?>) ((ParameterizedType) method
                     .getGenericReturnType()).getActualTypeArguments()[0];
         }
         if (result.isPrimitive()) {
             result = TypeUtils.getClassForType(result);
         }
-        return BasicType.anew(result);
+        return BasicType.create(result);
     }
 
     @Override

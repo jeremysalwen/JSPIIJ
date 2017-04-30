@@ -1,7 +1,7 @@
 package com.js.interpreter.ast.instructions;
 
 import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
@@ -9,12 +9,12 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class SetCharAt implements SetValueExecutable {
-    ReturnsValue container;
-    ReturnsValue index;
-    ReturnsValue value;
+    RValue container;
+    RValue index;
+    RValue value;
 
-    public SetCharAt(ReturnsValue container, ReturnsValue index,
-                     ReturnsValue value) {
+    public SetCharAt(RValue container, RValue index,
+                     RValue value) {
         this.container = container;
         this.index = index;
         this.value = value;
@@ -36,7 +36,7 @@ public class SetCharAt implements SetValueExecutable {
     }
 
     @Override
-    public void setAssignedValue(ReturnsValue value) {
+    public void setAssignedValue(RValue value) {
         this.value = value;
     }
 

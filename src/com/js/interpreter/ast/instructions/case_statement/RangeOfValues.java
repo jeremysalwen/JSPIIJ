@@ -1,7 +1,7 @@
 package com.js.interpreter.ast.instructions.case_statement;
 
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.ast.returnsvalue.operators.BinaryOperatorEvaluation;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -15,13 +15,13 @@ public class RangeOfValues implements CaseCondition {
     BinaryOperatorEvaluation greater_than_lower;
     BinaryOperatorEvaluation less_than_higher;
 
-    public RangeOfValues(ReturnsValue value, Object lower, Object higher,
+    public RangeOfValues(RValue value, Object lower, Object higher,
                          LineInfo line) throws ParsingException {
         ConstantAccess low = new ConstantAccess(lower, line);
         ConstantAccess hi = new ConstantAccess(higher, line);
-        BinaryOperatorEvaluation greater_than_lower = BinaryOperatorEvaluation
+        greater_than_lower = BinaryOperatorEvaluation
                 .generateOp(null, value, low, OperatorTypes.GREATEREQ, line);
-        BinaryOperatorEvaluation less_than_higher = BinaryOperatorEvaluation
+        less_than_higher = BinaryOperatorEvaluation
                 .generateOp(null, value, hi, OperatorTypes.LESSEQ, line);
         this.line = line;
     }

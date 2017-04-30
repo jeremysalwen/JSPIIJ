@@ -2,13 +2,14 @@ package com.js.interpreter.ast.returnsvalue;
 
 import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.instructions.SetArray;
+import com.js.interpreter.ast.instructions.ArrayReference;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArrayType;
 import com.js.interpreter.pascaltypes.RuntimeType;
+import com.js.interpreter.runtime.Reference;
 import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.PascalIndexOutOfBoundsException;
@@ -16,12 +17,12 @@ import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 import java.lang.reflect.Array;
 
-public class ArrayAccess extends DebuggableReturnsValue {
-    ReturnsValue container;
-    ReturnsValue index;
+public class ArrayAccess extends DebuggableLValue {
+    RValue container;
+    RValue index;
     int offset;
 
-    public ArrayAccess(ReturnsValue container, ReturnsValue index, int offset) {
+    public ArrayAccess(RValue container, RValue index, int offset) {
         this.container = container;
         this.index = index;
         this.offset = offset;
@@ -52,12 +53,6 @@ public class ArrayAccess extends DebuggableReturnsValue {
     }
 
     @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        return new SetArray(container, index, offset, r);
-    }
-
-    @Override
     public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main)
             throws RuntimePascalException {
         Object cont = container.getValue(f, main);
@@ -71,7 +66,14 @@ public class ArrayAccess extends DebuggableReturnsValue {
     }
 
     @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+    public Reference<?> getReferenceImpl(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
+        Object cont = container.getValue(f, main);
+        Integer ind = (Integer) index.getValue(f, main);
+        return new ArrayReference(cont, ind, offset);
+    }
+
+    @Override
+    public RValue compileTimeExpressionFold(CompileTimeContext context)
             throws ParsingException {
         return new ArrayAccess(container.compileTimeExpressionFold(context),
                 index.compileTimeExpressionFold(context), offset);

@@ -4,7 +4,7 @@ import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.instructions.DebuggableExecutable;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
@@ -12,14 +12,14 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class IfStatement extends DebuggableExecutable {
-    ReturnsValue condition;
+    RValue condition;
 
     Executable instruction;
 
     Executable else_instruction;
     LineInfo line;
 
-    public IfStatement(ReturnsValue condition, Executable instruction,
+    public IfStatement(RValue condition, Executable instruction,
                        Executable else_instruction, LineInfo line) {
         this.condition = condition;
         this.instruction = instruction;

@@ -16,7 +16,7 @@ import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.util.List;
 import java.util.Stack;
-
+@Deprecated
 public class Grouper implements Runnable {
     String sourcename;
     public BaseGrouperToken token_queue;
@@ -140,7 +140,7 @@ public class Grouper implements Runnable {
                             temp_type = OperatorTypes.OR;
                         } else if (tokenizer.sval == "var") {
                             next_token = new VarToken(line);
-                        } else if (tokenizer.sval == "type") {
+                        } else if (tokenizer.sval == "operator") {
                             next_token = new TypeToken(line);
                         } else if (tokenizer.sval == "xor") {
                             temp_type = OperatorTypes.XOR;

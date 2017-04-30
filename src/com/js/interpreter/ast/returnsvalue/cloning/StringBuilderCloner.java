@@ -3,7 +3,8 @@ package com.js.interpreter.ast.returnsvalue.cloning;
 import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.LValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -12,8 +13,8 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class StringBuilderCloner implements ReturnsValue {
-    ReturnsValue r;
+public class StringBuilderCloner implements RValue {
+    RValue r;
 
     @Override
     public RuntimeType get_type(ExpressionContext f)
@@ -34,12 +35,6 @@ public class StringBuilderCloner implements ReturnsValue {
     }
 
     @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        throw new UnassignableTypeException(this);
-    }
-
-    @Override
     public Object compileTimeValue(CompileTimeContext context)
             throws ParsingException {
         Object val = r.compileTimeValue(context);
@@ -50,12 +45,17 @@ public class StringBuilderCloner implements ReturnsValue {
     }
 
     @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+    public RValue compileTimeExpressionFold(CompileTimeContext context)
             throws ParsingException {
         return new StringBuilderCloner(r);
     }
 
-    public StringBuilderCloner(ReturnsValue r) {
+    @Override
+    public LValue asLValue(ExpressionContext f) {
+        return null;
+    }
+
+    public StringBuilderCloner(RValue r) {
         this.r = r;
     }
 }

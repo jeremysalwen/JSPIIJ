@@ -6,7 +6,7 @@ import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.instructions.ExecutionResult;
 import com.js.interpreter.ast.instructions.NopInstruction;
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.runtime.VariableContext;
@@ -14,12 +14,12 @@ import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
 public class WhileStatement extends DebuggableExecutable {
-    ReturnsValue condition;
+    RValue condition;
 
     Executable command;
     LineInfo line;
 
-    public WhileStatement(ReturnsValue condition, Executable command,
+    public WhileStatement(RValue condition, Executable command,
                           LineInfo line) {
         this.condition = condition;
         this.command = command;

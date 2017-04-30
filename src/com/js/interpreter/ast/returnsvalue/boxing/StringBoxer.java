@@ -4,8 +4,8 @@ import com.js.interpreter.ast.expressioncontext.CompileTimeContext;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
 import com.js.interpreter.ast.instructions.SetValueExecutable;
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
-import com.js.interpreter.ast.returnsvalue.DebuggableReturnsValue;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.DebuggableRValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.exceptions.UnassignableTypeException;
 import com.js.interpreter.linenumber.LineInfo;
@@ -15,9 +15,9 @@ import com.js.interpreter.runtime.VariableContext;
 import com.js.interpreter.runtime.codeunit.RuntimeExecutable;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 
-public class StringBoxer extends DebuggableReturnsValue {
+public class StringBoxer extends DebuggableRValue {
 
-    public StringBoxer(ReturnsValue tobox) {
+    public StringBoxer(RValue tobox) {
         this.s = tobox;
     }
 
@@ -26,7 +26,7 @@ public class StringBoxer extends DebuggableReturnsValue {
         return s.getLineNumber();
     }
 
-    final ReturnsValue s;
+    final RValue s;
 
     @Override
     public RuntimeType get_type(ExpressionContext f) {
@@ -51,13 +51,7 @@ public class StringBoxer extends DebuggableReturnsValue {
     }
 
     @Override
-    public SetValueExecutable createSetValueInstruction(ReturnsValue r)
-            throws UnassignableTypeException {
-        throw new UnassignableTypeException(this);
-    }
-
-    @Override
-    public ReturnsValue compileTimeExpressionFold(CompileTimeContext context)
+    public RValue compileTimeExpressionFold(CompileTimeContext context)
             throws ParsingException {
         Object val = this.compileTimeValue(context);
         if (val != null) {

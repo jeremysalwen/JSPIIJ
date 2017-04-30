@@ -3,7 +3,7 @@ package com.js.interpreter.runtime;
 import com.js.interpreter.runtime.exception.RuntimePascalException;
 import com.js.interpreter.runtime.variables.ContainsVariables;
 
-public class ContainsVariablesPointer<T> implements VariableBoxer<T> {
+public class ContainsVariablesPointer<T> implements Reference<T> {
     private final ContainsVariables container;
     private final String index;
 

@@ -7,7 +7,7 @@ import com.js.interpreter.ast.codeunit.CodeUnit;
 import com.js.interpreter.ast.instructions.Executable;
 import com.js.interpreter.ast.returnsvalue.ConstantAccess;
 import com.js.interpreter.ast.returnsvalue.FunctionCall;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.ast.returnsvalue.VariableAccess;
 import com.js.interpreter.exceptions.*;
 import com.js.interpreter.pascaltypes.DeclaredType;
@@ -58,11 +58,11 @@ public abstract class ExpressionContextMixin extends
     }
 
     @Override
-    public ReturnsValue getIdentifierValue(WordToken name)
+    public RValue getIdentifierValue(WordToken name)
             throws ParsingException {
         if (functionExistsLocal(name.name)) {
             return FunctionCall.generate_function_call(name,
-                    new ArrayList<ReturnsValue>(0), this);
+                    new ArrayList<RValue>(0), this);
         } else if (getConstantDefinitionLocal(name.name) != null) {
             return new ConstantAccess(getConstantDefinition(name.name)
                     .getValue(), name.lineInfo);
@@ -179,7 +179,7 @@ public abstract class ExpressionContextMixin extends
                     || ((OperatorToken) equals).type != OperatorTypes.EQUALS) {
                 throw new ExpectedTokenException("=", constname);
             }
-            ReturnsValue value = i.getNextExpression(this);
+            RValue value = i.getNextExpression(this);
             Object comptimeval = value.compileTimeValue(this);
             if (comptimeval == null) {
                 throw new NonConstantExpressionException(value);

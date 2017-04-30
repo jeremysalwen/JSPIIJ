@@ -1,13 +1,13 @@
 package com.js.interpreter.pascaltypes;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.NonArrayIndexed;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.pascaltypes.bytecode.RegisterAllocator;
 import com.js.interpreter.pascaltypes.bytecode.TransformationInput;
 import com.js.interpreter.runtime.ObjectBasedPointer;
-import com.js.interpreter.runtime.VariableBoxer;
+import com.js.interpreter.runtime.PascalReference;
 import serp.bytecode.Code;
 
 import java.util.List;
@@ -20,23 +20,23 @@ public class PointerType implements DeclaredType {
     }
 
     @Override
-    public ReturnsValue convert(ReturnsValue returnsValue, ExpressionContext f)
+    public RValue convert(RValue rValue, ExpressionContext f)
             throws ParsingException {
-        RuntimeType other = returnsValue.get_type(f);
+        RuntimeType other = rValue.get_type(f);
         if (this.equals(other)) {
-            return returnsValue;
+            return rValue;
         }
         return null;
     }
 
     @Override
     public Object initialize() {
-        return new ObjectBasedPointer(pointedToType.initialize());
+        return new ObjectBasedPointer(null);
     }
 
     @Override
     public Class<?> getTransferClass() {
-        return VariableBoxer.class;
+        return PascalReference.class;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class PointerType implements DeclaredType {
 
     // The pointer itself contains no mutable information.
     @Override
-    public ReturnsValue cloneValue(final ReturnsValue r) {
+    public RValue cloneValue(final RValue r) {
         return r;
     }
 
@@ -75,8 +75,8 @@ public class PointerType implements DeclaredType {
     }
 
     @Override
-    public ReturnsValue generateArrayAccess(ReturnsValue array,
-                                            ReturnsValue index) throws NonArrayIndexed {
+    public RValue generateArrayAccess(RValue array,
+                                      RValue index) throws NonArrayIndexed {
         throw new NonArrayIndexed(array.getLineNumber(), this);
     }
 
@@ -101,5 +101,10 @@ public class PointerType implements DeclaredType {
         //Because I cannot mix this method into DeclaredType (no multiple inheritance) I have to duplicate it.
         ArrayType.pushArrayOfNonArrayType(this, code, ra, ranges);
 
+    }
+
+    @Override
+    public String toString() {
+        return "^"+pointedToType.toString();
     }
 }

@@ -17,7 +17,8 @@ begin
 end;
 
 var
-    doobie: strlen; i: integer;
+    doobie: strlen;
+    i: integer;
 begin
     doobie.s := 'hello';
     doobie.l := 5;

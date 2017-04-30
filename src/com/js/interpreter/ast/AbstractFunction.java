@@ -1,7 +1,7 @@
 package com.js.interpreter.ast;
 
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.returnsvalue.ReturnsValue;
+import com.js.interpreter.ast.returnsvalue.RValue;
 import com.js.interpreter.exceptions.ParsingException;
 import com.js.interpreter.linenumber.LineInfo;
 import com.js.interpreter.pascaltypes.ArgumentType;
@@ -36,11 +36,11 @@ public abstract class AbstractFunction implements NamedEntity {
      * @return converted arguments, or null, if they do not fit.
      * @throws ParsingException
      */
-    public ReturnsValue[] format_args(List<ReturnsValue> values,
-                                      ExpressionContext f) throws ParsingException {
+    public RValue[] format_args(List<RValue> values,
+                                ExpressionContext f) throws ParsingException {
         ArgumentType[] accepted_types = argumentTypes();
-        ReturnsValue[] result = new ReturnsValue[accepted_types.length];
-        Iterator<ReturnsValue> iterator = values.iterator();
+        RValue[] result = new RValue[accepted_types.length];
+        Iterator<RValue> iterator = values.iterator();
         for (int i = 0; i < accepted_types.length; i++) {
             result[i] = accepted_types[i].convertArgType(iterator, f);
             if (result[i] == null) {/*
@@ -55,11 +55,11 @@ public abstract class AbstractFunction implements NamedEntity {
         return result;
     }
 
-    public ReturnsValue[] perfectMatch(List<ReturnsValue> args,
-                                       ExpressionContext context) throws ParsingException {
+    public RValue[] perfectMatch(List<RValue> args,
+                                 ExpressionContext context) throws ParsingException {
         ArgumentType[] accepted_types = argumentTypes();
-        Iterator<ReturnsValue> iterator = args.iterator();
-        ReturnsValue[] result = new ReturnsValue[accepted_types.length];
+        Iterator<RValue> iterator = args.iterator();
+        RValue[] result = new RValue[accepted_types.length];
         for (int i = 0; i < accepted_types.length; i++) {
             result[i] = accepted_types[i].perfectFit(iterator, context);
             if (result[i] == null) {
@@ -69,12 +69,12 @@ public abstract class AbstractFunction implements NamedEntity {
         return result;
     }
 
-    public abstract ReturnsValue generatePerfectFitCall(LineInfo line,
-                                                        List<ReturnsValue> values, ExpressionContext f)
+    public abstract RValue generatePerfectFitCall(LineInfo line,
+                                                  List<RValue> values, ExpressionContext f)
             throws ParsingException;
 
-    public abstract ReturnsValue generateCall(LineInfo line,
-                                              List<ReturnsValue> values, ExpressionContext f)
+    public abstract RValue generateCall(LineInfo line,
+                                        List<RValue> values, ExpressionContext f)
             throws ParsingException;
 
 }
