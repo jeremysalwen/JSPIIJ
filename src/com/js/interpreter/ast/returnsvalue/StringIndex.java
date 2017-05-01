@@ -25,7 +25,7 @@ public class StringIndex extends DebuggableLValue {
     public Object getValueImpl(VariableContext f, RuntimeExecutable<?> main) throws RuntimePascalException {
         StringBuilder str = (StringBuilder) string.getValue(f, main);
         int ind = (int) index.getValue(f, main);
-        return str.charAt(ind);
+        return str.charAt(ind-1);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class StringIndex extends DebuggableLValue {
     public Object compileTimeValue(CompileTimeContext context) throws ParsingException {
         StringBuilder str = (StringBuilder) string.compileTimeValue(context);
         int ind = (int) index.compileTimeValue(context);
-        return str.charAt(ind);
+        return str.charAt(ind-1);
     }
 
     @Override
