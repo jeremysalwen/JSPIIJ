@@ -12,11 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class String_plugins implements PascalPlugin {
-    @Override
-    public boolean instantiate(Map<String, Object> pluginargs) {
-        return true;
-    }
-
     public static String between(String s1, String s2, String s) {
         int startindex = s.indexOf(s1) + s1.length();
         int endindex = s.indexOf(s2, startindex);
@@ -292,5 +287,18 @@ public class String_plugins implements PascalPlugin {
 
     public static String uppercase(String s) {
         return s.toUpperCase();
+    }
+
+    /**
+     * @param c - input
+     * @return the upper case of c
+     */
+    public static char upCase(char c) {
+        return Character.toUpperCase(c);
+    }
+
+    @Override
+    public boolean instantiate(Map<String, Object> pluginargs) {
+        return true;
     }
 }
