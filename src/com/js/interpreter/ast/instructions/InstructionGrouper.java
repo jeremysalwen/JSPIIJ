@@ -31,11 +31,10 @@ public class InstructionGrouper extends DebuggableExecutable {
     @Override
     public ExecutionResult executeImpl(VariableContext f,
                                        RuntimeExecutable<?> main) throws RuntimePascalException {
-        forloop:
         for (Executable e : instructions) {
             switch (e.execute(f, main)) {
                 case BREAK:
-                    break forloop;
+                    return ExecutionResult.BREAK;
                 case RETURN:
                     return ExecutionResult.RETURN;
             }

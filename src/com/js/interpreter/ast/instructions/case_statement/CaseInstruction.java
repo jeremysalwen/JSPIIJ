@@ -33,7 +33,7 @@ public class CaseInstruction extends DebuggableExecutable {
     public CaseInstruction(CaseToken i, ExpressionContext context)
             throws ParsingException {
         this.line = i.lineInfo;
-        switch_value = new CachedRValue(i.getNextExpression(context));
+        switch_value = i.getNextExpression(context);
         Token next = i.take();
         if (!(next instanceof OfToken)) {
             throw new ExpectedTokenException("of", next);

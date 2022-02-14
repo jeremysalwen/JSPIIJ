@@ -41,8 +41,7 @@ public class ForStatement extends DebuggableExecutable {
                                        RuntimeExecutable<?> main) throws RuntimePascalException {
         setfirst.execute(f, main);
         while_loop:
-        while (((Boolean) lessthanlast.getValue(f, main))
-                .booleanValue()) {
+        while ((Boolean) lessthanlast.getValue(f, main)) {
             switch (command.execute(f, main)) {
                 case RETURN:
                     return ExecutionResult.RETURN;
@@ -68,7 +67,7 @@ public class ForStatement extends DebuggableExecutable {
         RValue comp = lessthanlast;
         Object val = lessthanlast.compileTimeValue(c);
         if (val != null) {
-            if (((Boolean) val)) {
+            if ((Boolean) val) {
                 return first;
             } else {
                 comp = new ConstantAccess(val, lessthanlast.getLineNumber());

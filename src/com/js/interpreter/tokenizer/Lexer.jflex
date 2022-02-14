@@ -47,7 +47,7 @@ import com.js.interpreter.tokens.value.*;
 		sourcenames.push(tmpname);
 		yypushStream(tmpreader);
 	}
-	
+
 	LineInfo getLine() {
 		return new LineInfo(yyline,yycolumn,sourcenames.peek());
 	}
@@ -88,7 +88,7 @@ CommentEnder		 =   "*)" | "}"
 BracesComment		 = {CommentStarter} {RestOfComment}
 
 RestOfComment		 = ([^*] | \*[^)}])* "}"
- 
+
 TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}
 
@@ -109,13 +109,13 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 	{WhiteSpace} {}
 	{IncludeStatement} {yybegin(INCLUDE);}
 	{CompilerDirective} {return new WarningToken(getLine(),"Warning! Unrecognized Compiler Directive!"); }
-	
+
 	{Comment} {}
 
 
 	{Float} {return new DoubleToken(getLine(),Double.parseDouble(yytext()));}
 	{Integer} {return new IntegerToken(getLine(),Integer.parseInt(yytext()));}
-	
+
 	"and" {return new OperatorToken(getLine(),OperatorTypes.AND); }
 	"not" {return new OperatorToken(getLine(),OperatorTypes.NOT); }
 	"or" {return new OperatorToken(getLine(),OperatorTypes.OR); }
@@ -167,6 +167,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 	"begin" {return new BeginEndToken(getLine());}
 	"record" {return new RecordToken(getLine());}
 	"case" {return new CaseToken(getLine());}
+	"break" {return new BreakToken(getLine());}
 	"(" {return new ParenthesizedToken(getLine());}
 	"[" {return new BracketedToken(getLine());}
 	"end" {return new EndToken(getLine());}
@@ -176,7 +177,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 		literal.setLength(0);
 		yybegin(STRING);
 	}
-	
+
 	{Identifier} {return new WordToken(getLine(),yytext().toLowerCase()); }
 
 }
@@ -189,7 +190,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 <STRINGPOUND> {
 	{Integer} {literal.append((char)Integer.parseInt(yytext())); yybegin(STRINGDONE);}
 	.|\n      { return new GroupingExceptionToken(getLine(),grouping_exception_types.INCOMPLETE_CHAR);}
-	
+
 }
 <STRINGDONE> {
 	{WhiteSpace} {}
@@ -198,7 +199,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 	"#" {yybegin(STRINGPOUND);}
 	.|\n {
 			yypushback(1);
-			yybegin(YYINITIAL); 
+			yybegin(YYINITIAL);
 			if(literal.length()==1) {
 				return new CharacterToken(getLine(),literal.toString().charAt(0));
 			} else {
@@ -207,8 +208,8 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 		}
 }
 
-<INCLUDE> { 
-	{WhiteSpace} {} 
+<INCLUDE> {
+	{WhiteSpace} {}
 	"'" {literal.setLength(0); yybegin(INCLUDE_SNGL_QUOTE);}
     "\"" {literal.setLength(0); yybegin(INCLUDE_DBL_QUOTE);}
     [^ \r\n*)}]+ {
@@ -233,7 +234,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
     		EnumeratedGroupingException t = new EnumeratedGroupingException(getLine(),grouping_exception_types.IO_EXCEPTION);
 			t.caused = e;
 			return new GroupingExceptionToken(t);
-    	} 
+    	}
     	yybegin(END_INCLUDE);
     }
 	[^\n\r]+ {literal.append(yytext());}
@@ -249,7 +250,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
     		EnumeratedGroupingException t = new EnumeratedGroupingException(getLine(),grouping_exception_types.IO_EXCEPTION);
 			t.caused = e;
 			return new GroupingExceptionToken(t);
-    	} 
+    	}
     	yybegin(END_INCLUDE);
     	}
 	[^\n\r]+ {literal.append(yytext());}

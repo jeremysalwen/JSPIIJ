@@ -2,10 +2,7 @@ package com.js.interpreter.tokens.grouping;
 
 import com.js.interpreter.ast.VariableDeclaration;
 import com.js.interpreter.ast.expressioncontext.ExpressionContext;
-import com.js.interpreter.ast.instructions.Assignment;
-import com.js.interpreter.ast.instructions.Executable;
-import com.js.interpreter.ast.instructions.InstructionGrouper;
-import com.js.interpreter.ast.instructions.NopInstruction;
+import com.js.interpreter.ast.instructions.*;
 import com.js.interpreter.ast.instructions.case_statement.CaseInstruction;
 import com.js.interpreter.ast.instructions.conditional.*;
 import com.js.interpreter.ast.returnsvalue.*;
@@ -438,6 +435,8 @@ public abstract class GrouperToken extends Token {
             return new RepeatInstruction(command, condition, initialline);
         } else if (next instanceof CaseToken) {
             return new CaseInstruction((CaseToken) next, context);
+        } else if (next instanceof BreakToken) {
+            return new BreakInstruction(next.lineInfo);
         } else if (next instanceof SemicolonToken) {
             return new NopInstruction(next.lineInfo);
         } else {
