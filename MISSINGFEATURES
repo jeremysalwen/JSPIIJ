@@ -2,7 +2,6 @@ Language features which the interpreter is currently missing, and which I have
 some interest in implementing:
 
 * Classes/Object Types
-* Pointers (including @ operator and ^ operator)
 * Exceptions
 * Forward Type Declarations
 * Conformant Arrays

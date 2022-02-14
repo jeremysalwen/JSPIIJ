@@ -134,11 +134,12 @@ public abstract class GrouperToken extends Token {
             DeclaredType pointed_type = get_next_pascal_type(context);
             return new PointerType(pointed_type);
         }
-        /*if (n instanceof ClassToken) {
-			ClassToken o = (ClassToken)n;
+        if (n instanceof ClassToken) {
+			ClassToken c = (ClassToken)n;
 			ClassType result = new ClassType();
-			throw new ExpectedTokenException("[asdf]", n);
-		}*/
+            // TODO: parse class.
+            return result;
+		}
         if (!(n instanceof WordToken)) {
             throw new ExpectedTokenException("[Type Identifier]", n);
         }

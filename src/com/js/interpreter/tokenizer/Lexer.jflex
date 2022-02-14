@@ -166,6 +166,7 @@ CompilerDirective = {CommentStarter}\$ {RestOfComment}
 	";" {return new SemicolonToken(getLine()); }
 	"begin" {return new BeginEndToken(getLine());}
 	"record" {return new RecordToken(getLine());}
+	"class" {return new ClassToken(getLine());}
 	"case" {return new CaseToken(getLine());}
 	"break" {return new BreakToken(getLine());}
 	"(" {return new ParenthesizedToken(getLine());}
